@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="multiclub-build" content="1.0.20C">
+  <meta name="multiclub-build" content="1.0.23">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Manager Multiclub</title>
   <link rel="stylesheet" href="styles-v2600.css?v=107">
@@ -24,6 +24,13 @@
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
+
+  <style id="reports-economic-pdf-v1023">
+    #reports .report-action-dual{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+    #reports .report-action-chip{display:inline-flex;align-items:center;justify-content:center;min-width:46px;padding:6px 9px;border-radius:9px;background:#eef6ff;border:1px solid #c9e1f7;color:#075c9c;font-weight:900;font-size:11px;line-height:1}
+    #reports .report-pdf-chip{background:#fff3f2;border-color:#ffc9c5;color:#b42318}
+    #reports .report-pdf-chip:hover{background:#ffe5e2}
+  </style>
 </head>
 <body>
   <div id="setupScreen" class="screen hidden">
@@ -86,7 +93,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo small crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
-        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.22</span></div>
+        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.23</span></div>
       </div>
       <div class="season season-switcher"><span>Temporada</span><select id="seasonSelector" aria-label="Temporada"><option>2026/27</option></select></div>
       <nav>
@@ -646,28 +653,28 @@
         <section class="reports-section">
           <div class="reports-section-title">
             <div><small>ÁREA ECONÓMICA</small><h3>Cobros, alquileres, patrocinio y tesorería</h3></div>
-            <span>4 informes</span>
+            <span>4 informes · CSV + PDF</span>
           </div>
           <div class="reports-grid premium-reports">
             <button class="report-card report-amber" id="rPayments">
               <span class="report-icon">€</span>
               <span class="report-content"><strong>Cobros pendientes</strong><small>Deudas por jugador, equipo e importe</small></span>
-              <span class="report-action">Descargar CSV →</span>
+              <span class="report-action report-action-dual"><span class="report-action-chip">CSV</span><span class="report-action-chip report-pdf-chip" data-econ-pdf="payments">PDF</span></span>
             </button>
             <button class="report-card report-violet" id="rPitches">
               <span class="report-icon">▧</span>
               <span class="report-content"><strong>Usos y alquileres</strong><small>Registros manuales, terceros, campo e importe</small></span>
-              <span class="report-action">Descargar CSV →</span>
+              <span class="report-action report-action-dual"><span class="report-action-chip">CSV</span><span class="report-action-chip report-pdf-chip" data-econ-pdf="pitches">PDF</span></span>
             </button>
             <button class="report-card report-cyan" id="rSponsorships">
               <span class="report-icon">★</span>
               <span class="report-content"><strong>Patrocinios</strong><small>Acuerdos, importes, cobrado, pendiente y estado</small></span>
-              <span class="report-action">Descargar CSV →</span>
+              <span class="report-action report-action-dual"><span class="report-action-chip">CSV</span><span class="report-action-chip report-pdf-chip" data-econ-pdf="sponsorships">PDF</span></span>
             </button>
             <button class="report-card report-green" id="rFinance">
               <span class="report-icon">↕</span>
               <span class="report-content"><strong>Ingresos y gastos</strong><small>Movimientos económicos y balance del club</small></span>
-              <span class="report-action">Descargar CSV →</span>
+              <span class="report-action report-action-dual"><span class="report-action-chip">CSV</span><span class="report-action-chip report-pdf-chip" data-econ-pdf="finance">PDF</span></span>
             </button>
           </div>
         </section>
@@ -1285,7 +1292,7 @@
     </div>
   </dialog>
 
-  <script src="app-multiclub-v1022.js?v=1022"></script>
+  <script src="app-multiclub-v1023.js?v=1023"></script>
   <script src="calendar-v27247.js?v=104"></script>
   <script src="inventory-v2600.js?v=114"></script>
 
