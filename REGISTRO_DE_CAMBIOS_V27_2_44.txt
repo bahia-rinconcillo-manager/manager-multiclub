@@ -1,0 +1,13 @@
+CD SAN BERNABÉ MANAGER · V27.2.44
+
+CALENDARIO COMPARTIDO ENTRE PC Y MÓVIL
+
+- Los partidos de Equipos > Calendario dejan de depender únicamente del almacenamiento local del dispositivo.
+- Se añade almacenamiento compartido en Supabase para el calendario del club.
+- Los partidos aparecen en Inicio y en Calendario tanto en PC como en móvil.
+- La primera vez que se abre V27.2.44 en el PC donde ya estaban los partidos, se migran automáticamente al calendario compartido.
+- Los usuarios técnicos cargan desde la nube únicamente los partidos de los equipos a los que tienen acceso.
+- Altas, ediciones, resultados, finalizar/reabrir, eliminaciones e importación RFAF se sincronizan con Supabase.
+- Se mantienen la vista Dos columnas y la vista Lista de V27.2.43.
+
+REQUIERE ejecutar EJECUTAR_ACTUALIZACION_V27_2_44.sql antes de instalar el ZIP.

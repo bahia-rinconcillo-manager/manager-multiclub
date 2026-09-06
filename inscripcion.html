@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inscripción CD San Bernabé</title><link rel="stylesheet" href="styles-v2600.css?v=27234">
+<link rel="stylesheet" href="mobile-v27231.css?v=27234">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#07111f">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="registration-page">
+<div class="registration-wrap">
+  <div class="reg-side"><div class="logo crest-logo"><img src="assets/escudo-oficial.png" alt="Escudo oficial CD San Bernabé"></div><small>CD SAN BERNABÉ</small><h1 id="publicSeasonTitle">Inscripción 2026/27</h1><p>Completa el formulario y adjunta la documentación solicitada.</p><div class="fees"><div><span>Inscripción</span><b>50 €</b></div><div><span>Tallaje</span><b>50 €</b></div><div><span>Recogida ropa</span><b>100 €</b></div></div></div>
+  <form id="registrationForm" class="reg-form">
+    <h2>Datos del jugador</h2>
+    <div class="form-grid">
+      <label>Nombre<input name="name" required></label><label>Apellidos<input name="surname" required></label>
+      <label>Fecha nacimiento<input name="birth_date" type="date" required></label><label>DNI/NIE jugador<input name="player_dni"></label>
+      <label>Equipo al que se inscribe<select name="team" id="publicTeamSelect" required><option value="">Seleccionar equipo</option></select></label><label>Talla camiseta<input name="shirt_size"></label><label>Talla pantalón<input name="short_size"></label>
+    </div>
+    <h2>Datos del tutor</h2>
+    <div class="form-grid">
+      <label>Nombre del tutor<input name="guardian" required></label><label>Teléfono<input name="phone" required></label>
+      <label>Email<input name="email" type="email" required></label>
+      <label class="full">Dirección<textarea name="address"></textarea></label>
+    </div>
+    <h2>Documentación</h2>
+    <div class="form-grid">
+      <label>DNI jugador / libro de familia<input name="doc_player_dni" type="file" accept=".pdf,.jpg,.jpeg,.png"></label>
+      <label>Fotografía<input name="doc_photo" type="file" accept=".jpg,.jpeg,.png"></label>
+      <label>Reconocimiento médico<input name="doc_medical" type="file" accept=".pdf,.jpg,.jpeg,.png"></label>
+      <label class="check full"><input name="privacy" type="checkbox" required> Acepto la política de protección de datos.</label>
+      <label class="check full"><input name="image_authorization" type="checkbox"> Autorizo el uso de imagen.</label>
+      <label class="full">Observaciones<textarea name="notes"></textarea></label>
+    </div>
+    <button id="submitBtn" class="primary" type="submit">Enviar inscripción</button>
+    <div id="message" class="message"></div>
+  </form>
+</div>
+<script src="config.js?v=27210"></script>
+<script src="public-v27211.js?v=27234"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js?v=27234").catch(() => {}));
+}
+</script>
+</body></html>

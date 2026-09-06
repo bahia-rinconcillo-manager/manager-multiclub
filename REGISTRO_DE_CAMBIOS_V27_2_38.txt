@@ -1,0 +1,14 @@
+V27.2.38
+
+MINUTOS EDITABLES PARA JUGADORES CONVOCADOS
+
+1. Partidos y tarjetas > Datos
+- El campo Minutos queda habilitado también cuando el jugador está en estado “Convocado”.
+- Sigue habilitado para “Titular” y “Suplente”.
+- Permanece bloqueado para “No convocado”, “Ausente” y “Lesionado”.
+- Al usar “Todos convocados”, los campos de minutos quedan disponibles inmediatamente.
+- Al usar “Limpiar convocatoria”, los minutos vuelven a 0 y quedan bloqueados.
+
+2. Se mantienen intactas las mejoras de V27.2.37: fotografías, PDF de convocatoria, scroll vertical y nuevo diseño de partidos en Inicio.
+
+3. No necesita SQL.

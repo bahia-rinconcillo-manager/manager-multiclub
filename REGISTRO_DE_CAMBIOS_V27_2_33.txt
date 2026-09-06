@@ -1,0 +1,11 @@
+CD San Bernabé Manager · V27.2.33
+
+- Corrección definitiva de los escudos en Equipos > Calendario:
+  * se elimina cualquier máscara, borde o fondo circular;
+  * el escudo se muestra completo manteniendo su proporción original;
+  * se fuerza también en móvil y aunque quede una hoja de estilos anterior en caché.
+- Amistoso aparece como opción de competición en el formulario normal de partidos.
+- Amistoso aparece también en el formulario de partidos del módulo deportivo.
+- La opción se reinyecta desde JavaScript al abrir el formulario para evitar problemas de caché o HTML antiguo.
+- Se mantiene la integración de todos los partidos de los equipos dentro del Calendario general del club de V27.2.32.
+- No necesita SQL.

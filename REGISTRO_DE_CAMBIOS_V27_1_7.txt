@@ -1,0 +1,11 @@
+CD SAN BERNABÉ MANAGER · V27.1.7
+
+CORRECCIONES DEL TARJETERO
+- El importador recupera la plantilla del equipo directamente desde Supabase si no llega desde la ficha del equipo.
+- Compatibilidad con jugadores vinculados por nombre de equipo o por team_id.
+- El desplegable “Asignar a jugador” vuelve a mostrar los jugadores del equipo.
+- El botón Guardar fichas muestra un aviso claro si todavía no hay asignaciones.
+- Se mantienen la detección y el recorte de varias fichas dentro de cada página PDF.
+- Caché renovada para forzar la carga de la versión corregida.
+
+No requiere ejecutar SQL.

@@ -1,0 +1,10 @@
+CD SAN BERNABÉ MANAGER · V27.2.14
+ACCIDENTES EN ZONA PRIVADA DE EQUIPOS
+
+- Añadida pestaña ACCIDENTES en la ficha privada de los equipos que tienen documentación asignada.
+- Cadete A, Cadete B, Infantil A, Infantil B y Alevín A: Parte de lesiones RFAF.
+- Alevín B y Prebenjamín: Parte de accidentes AAFB + Protocolo de accidentes AAFB Algeciras.
+- Cada documento dispone de Ver PDF y Descargar PDF.
+- Los PDF quedan incluidos dentro de la propia aplicación y también en la caché PWA para facilitar su acceso.
+- Compatible con acceso técnico de solo lectura y con móvil.
+- No requiere cambios SQL.

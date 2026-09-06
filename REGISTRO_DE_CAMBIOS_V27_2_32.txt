@@ -1,0 +1,16 @@
+CD San Bernabé Manager · V27.2.32
+
+CAMBIOS
+- Equipos > Calendario: se elimina el círculo que envolvía los escudos de los equipos.
+- Los escudos se muestran completos con object-fit: contain, sin recorte y con fondo transparente.
+- Se aumenta ligeramente el espacio reservado al escudo para mejorar su legibilidad.
+- Nuevo partido > Competición: se añade Amistoso.
+- Los amistosos se identifican con la abreviatura AM.
+- Calendario general del club: los partidos fijados en los distintos equipos aparecen automáticamente en el día correspondiente.
+- Los partidos se ordenan por fecha y hora junto con reuniones, entrenamientos y demás eventos.
+- Cada partido muestra equipo, rival, hora, campo, competición, jornada y condición de local/visitante.
+- Si se crea, edita, elimina o importa un partido, el calendario general se actualiza automáticamente.
+- Se mantienen intactos el acceso técnico multiequipo y el botón Cambiar de equipo de V27.2.31.
+
+BASE DE DATOS
+- No requiere SQL.

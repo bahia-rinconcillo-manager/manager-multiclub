@@ -1,0 +1,8 @@
+CD SAN BERNABÉ MANAGER · V27.2.8
+
+- Añade simulación obligatoria del cambio anual en Supabase sin escritura de datos.
+- La simulación valida temporada activa, nombre de la siguiente temporada, equipos nuevos, categorías, jugadores y cuerpo técnico.
+- Si el plan cambia después de simular, la simulación queda invalidada y debe repetirse.
+- El botón de cierre definitivo queda bloqueado hasta superar la simulación y escribir la confirmación exacta.
+- Antes del cierre real se genera y descarga automáticamente una copia de seguridad JSON de los datos operativos, históricos, fichas RFAF y estado local.
+- Si la copia automática falla, el cambio de temporada no se ejecuta.

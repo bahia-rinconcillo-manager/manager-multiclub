@@ -1,0 +1,17 @@
+CD SAN BERNABÉ MANAGER · V27.2.10
+
+1. EQUIPOS RIVALES
+- Eliminado el bloqueo práctico que aparecía tras registrar varios equipos con escudos grandes.
+- No existe un límite fijo de 10 equipos.
+- Los escudos nuevos se optimizan a un tamaño ligero antes de almacenarlos.
+- Los escudos ya guardados se compactan automáticamente cuando sea necesario.
+- Se muestra el número de equipos rivales registrados.
+
+2. CUADRO EQUIPOS, ESCUDOS Y CAMPOS
+- Cabecera azul fija y visible.
+- Título y X de cierre siempre visibles.
+- Desplazamiento vertical solo en el contenido interior.
+
+3. INSTALACIÓN
+- Sustituir archivos, Commit + Push y recargar.
+- No requiere SQL.

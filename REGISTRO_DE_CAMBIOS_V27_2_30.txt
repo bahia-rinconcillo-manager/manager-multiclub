@@ -1,0 +1,10 @@
+CD SAN BERNABÉ MANAGER · V27.2.30
+
+- Corregido el error «La sesión técnica no es válida o ha caducado» que aparecía inmediatamente después de iniciar sesión.
+- El nuevo RPC de acceso valida el token directamente en public.technical_sessions mediante token_hash, igual que los RPC técnicos estables del programa.
+- Ya no depende de public.technical_session() para descubrir los equipos.
+- Selector multiequipo general para cualquier usuario técnico.
+- La selección de equipo valida la sesión directamente y actualiza el equipo activo del usuario.
+- Se conservan las asignaciones explícitas de Usuarios, ficha de cuerpo técnico, entrenador y delegado.
+- No hay tratamientos especiales por nombre.
+- Requiere ejecutar EJECUTAR_ACTUALIZACION_V27_2_30.sql en Supabase.

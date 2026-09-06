@@ -1,0 +1,18 @@
+CD SAN BERNABÉ MANAGER · V27.2.23
+
+1. ACCESO TÉCNICO MULTIEQUIPO CORREGIDO
+- El selector ya no depende únicamente del team_id principal del acceso.
+- Combina los equipos asignados al usuario con los equipos donde la misma persona figura en Cuerpo técnico.
+- La coincidencia por nombre ignora mayúsculas y espacios repetidos.
+- Solo toma equipos de la temporada activa para evitar mezclar históricos.
+- Al elegir un equipo detectado desde Cuerpo técnico, el cambio queda permitido y se registra también como relación explícita.
+- El resolver de sesión técnica es más tolerante con distintos formatos de technical_session.
+- Caso de comprobación incluido: Francisca Teresa Ortega Suarez debe obtener CDSB Alevin B y CDSB Cadete B si ambos constan en Cuerpo técnico.
+
+2. MÓVIL
+- Se conserva íntegramente el menú ☰ introducido en V27.2.22.
+- No se modifica el comportamiento de Resumen, Plantilla, Tarjetero, etc.
+
+BASE
+- Conserva todas las funciones y correcciones de V27.2.22.
+- SÍ NECESITA SQL: EJECUTAR_ACTUALIZACION_V27_2_23.sql.

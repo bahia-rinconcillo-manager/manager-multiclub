@@ -1,0 +1,7 @@
+CD SAN BERNABÉ MANAGER · V27.2.12
+
+- Añadido desplazamiento vertical independiente en la ficha de Equipo.
+- La pestaña Asistencia puede recorrerse completa aunque haya muchas sesiones.
+- El formulario Nuevo entrenamiento / Asistencia incorpora scroll propio para la plantilla.
+- La cabecera de pestañas permanece accesible mientras se desplaza el contenido.
+- No requiere cambios SQL.

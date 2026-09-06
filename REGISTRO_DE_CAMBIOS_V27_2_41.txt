@@ -1,0 +1,12 @@
+CD San Bernabé Manager · V27.2.41
+
+PISTAS Y CAMPOS
+- Nuevo filtro por campo/instalación.
+- Permite Todos los campos, La Menacha, Montepalma y cualquier campo adicional presente en los registros.
+- El filtro se combina con mes y equipo.
+- Nuevo botón Descargar PDF.
+- El PDF respeta los filtros activos y muestra fecha, hora, equipo, tipo, campo, importe, estado y origen.
+- Incluye número de registros activos y total económico filtrado.
+
+NO REQUIERE SQL NUEVO
+- Usa la estructura ya instalada con V27.2.40.

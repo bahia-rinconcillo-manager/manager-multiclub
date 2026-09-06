@@ -1,0 +1,9 @@
+CD San Bernabé Manager · V27.2.31
+
+- Añadido “⇄ Cambiar de equipo” para usuarios técnicos con dos o más equipos.
+- En móvil aparece dentro del menú ☰ de la ficha del equipo.
+- También aparece en el pie de la ficha del equipo para acceso directo.
+- Al pulsarlo se cierra la ficha actual y vuelve a “¿Qué equipo quieres ver?” sin cerrar sesión.
+- Tras elegir el otro equipo se recargan los datos restringidos de ese equipo.
+- Funciona para cualquier usuario técnico multiequipo.
+- No necesita SQL nuevo; reutiliza la sesión y los RPC de V27.2.30.

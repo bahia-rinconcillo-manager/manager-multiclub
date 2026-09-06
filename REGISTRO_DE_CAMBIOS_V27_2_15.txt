@@ -1,0 +1,11 @@
+CD SAN BERNABÉ MANAGER · V27.2.15
+
+CAMBIOS
+- Nueva talla 4XS para jugadores.
+- 4XS disponible en formularios de tallaje, catálogo de existencias e inventario.
+- Ordenación estable del pedido de ropa por categoría/tipo de prenda.
+- Orden de tallas de menor a mayor: 4XS > 3XS > 2XS > XS > S > M > L > XL > 2XL > 3XL.
+- Las tallas de medias continúan siendo S, M y L.
+- Exportación e impresión del pedido respetan el mismo orden mostrado en pantalla.
+
+NO REQUIERE SQL.

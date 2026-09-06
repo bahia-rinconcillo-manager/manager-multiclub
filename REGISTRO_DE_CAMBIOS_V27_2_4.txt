@@ -1,0 +1,9 @@
+CD SAN BERNABÉ MANAGER · V27.2.4
+
+- El paso Jugadores del cambio anual muestra año de nacimiento y categoría orientativa de la nueva temporada.
+- Ya no se mantiene automáticamente el mismo equipo cuando el jugador cambia de categoría.
+- Si hay varios equipos posibles (A/B), el jugador queda pendiente hasta que administración elija destino.
+- Filtros por equipo actual y categoría nueva.
+- Asignación masiva del equipo de destino para los jugadores visibles.
+- El asistente impide avanzar mientras exista un jugador que continúa sin equipo de destino.
+- No requiere SQL adicional sobre V27.2.1/V27.2.2.

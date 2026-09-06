@@ -1,0 +1,8 @@
+CD San Bernabé Manager V27.1.9
+
+- Corrige el importador del Tarjetero para licencias de la Real Federación Andaluza de Fútbol (RFAF).
+- El bloque de datos y la fotografía ya no se detectan como fichas separadas.
+- Detecta cada licencia por sus anclas de texto (Nombre / Apellido 1) y recorta la ficha completa.
+- Conserva nombre, apellidos, licencia, club, categoría, fotografía, temporada y código de barras en un único recorte.
+- Mantiene compatibilidad con las fichas AAFB anteriores.
+- No requiere cambios SQL.

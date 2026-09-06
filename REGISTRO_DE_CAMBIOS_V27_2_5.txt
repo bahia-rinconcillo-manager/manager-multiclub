@@ -1,0 +1,17 @@
+CD SAN BERNABÉ MANAGER · V27.2.5
+
+CAMBIO ANUAL CORREGIDO
+- Los jugadores que continúan ya NO están obligados a tener equipo asignado al cerrar la temporada.
+- El asistente incorpora un paso específico para crear los equipos de la temporada siguiente.
+- Los desplegables de jugadores y cuerpo técnico muestran únicamente esos equipos nuevos.
+- Los equipos de una temporada ya no se reutilizan en la siguiente: se crean registros nuevos con nuevos identificadores.
+- La tabla de equipos queda vinculada a club_seasons mediante season_id.
+- Los equipos de años anteriores permanecen asociados a su temporada y el histórico conserva la instantánea completa.
+- Los accesos del cuerpo técnico vinculados a equipos antiguos se desactivan al cerrar la temporada para reasignarlos con seguridad.
+
+ASISTENTE DE 5 PASOS
+1. Nueva temporada.
+2. Equipos nuevos.
+3. Jugadores.
+4. Cuerpo técnico.
+5. Revisión final.

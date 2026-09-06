@@ -1,0 +1,17 @@
+CD SAN BERNABÉ MANAGER · V27.2.13
+REVISIÓN MÓVIL INTEGRAL
+
+- Menú móvil convertido en navegación horizontal independiente.
+- Contenido principal con desplazamiento vertical propio en todas las vistas.
+- Corrección de anchos, tarjetas, botones, filtros y formularios en pantallas estrechas.
+- Tablas con desplazamiento horizontal táctil sin cortar el contenido vertical.
+- Todos los cuadros de diálogo se adaptan a pantalla completa en móvil.
+- Cabeceras y acciones de diálogos permanecen accesibles.
+- Asistencia y partidos con plantillas largas completamente desplazables.
+- Ficha de equipo con pestañas horizontales y contenido vertical independiente.
+- Asistente de cambio anual adaptado a móvil con cuerpo desplazable.
+- Editor de carteles adaptado a pantalla móvil.
+- Inscripción pública revisada para móvil.
+- Compatibilidad con safe areas de iPhone y modo horizontal.
+
+No requiere SQL.

@@ -1,0 +1,11 @@
+CD San Bernabé Manager · V27.2.24
+
+MULTIEQUIPO REFORZADO
+- Corrige accesos técnicos que seguían mostrando un solo equipo.
+- El mapa efectivo de equipos combina: technical_user_teams, staff.team_name, teams.coach_id y teams.delegate_name.
+- Repara de forma explícita el caso de Francisca Teresa Ortega Suarez para CDSB Alevin B y CDSB Cadete B, si ambos equipos existen en la temporada activa.
+- El selector se muestra al entrar cuando hay más de un equipo disponible.
+- Se mantienen el botón Cambiar equipo y el menú móvil ☰.
+
+INSTALACIÓN
+- Requiere ejecutar EJECUTAR_ACTUALIZACION_V27_2_24.sql.

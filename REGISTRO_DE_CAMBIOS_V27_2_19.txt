@@ -1,0 +1,24 @@
+CD SAN BERNABÉ MANAGER · V27.2.19
+
+1. NUEVO APARTADO · TALLAJE TÉCNICOS
+- Nuevo acceso independiente en el menú lateral: Tallaje técnicos.
+- Muestra únicamente miembros del cuerpo técnico.
+- Filtro por equipo.
+- Descarga del listado en CSV.
+- Impresión directa y opción de guardar como PDF desde el navegador.
+- Incluye todas las prendas activas del cuerpo técnico y la mochila automática.
+
+2. ACCESO PRIVADO MULTIEQUIPO
+- Un mismo usuario del cuerpo técnico puede estar vinculado a uno o varios equipos.
+- En Usuarios, el administrador puede marcar varios equipos para un mismo acceso.
+- Si el entrenador tiene varios equipos, al entrar desde móvil u ordenador aparece un selector de equipo.
+- La elección se conserva en el dispositivo mientras la sesión permanece abierta.
+- Nuevo botón «Cambiar equipo» en la cabecera para pasar de un equipo a otro sin cambiar de usuario.
+- Los usuarios técnicos pueden utilizar también la instalación PWA en móvil u ordenador.
+
+3. COMPATIBILIDAD
+- Se conserva technical_users.team_id como equipo activo para no romper asistencia, partidos, estadísticas, calendario, fichas y demás RPC existentes.
+- Los accesos antiguos de un solo equipo se migran automáticamente.
+
+IMPORTANTE: ESTA VERSIÓN SÍ NECESITA SQL.
+Ejecutar EJECUTAR_ACTUALIZACION_V27_2_19.sql antes de probar accesos multiequipo.

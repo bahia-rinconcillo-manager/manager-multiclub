@@ -1,0 +1,10 @@
+CD SAN BERNABÉ MANAGER · V27.2.11
+
+CORRECCIÓN DE INGRESOS AL ELIMINAR JUGADORES
+- Los ingresos automáticos asociados a cobros de un jugador enviado a la papelera dejan de computar en Ingresos y gastos.
+- El saldo del panel principal se recalcula con la misma regla.
+- La exportación de Ingresos y gastos excluye esos movimientos mientras el jugador esté eliminado.
+- No se destruye el movimiento económico: si el jugador se restaura desde la papelera, sus ingresos vuelven a aparecer automáticamente.
+- Los movimientos manuales de tesorería no se modifican.
+
+No necesita SQL.

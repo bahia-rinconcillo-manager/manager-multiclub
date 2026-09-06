@@ -1,0 +1,29 @@
+V27.2.37
+
+PARTIDOS, CONVOCATORIA Y PANTALLA DE INICIO
+
+1. Partidos y tarjetas > Datos
+- El diálogo dispone de una zona central con desplazamiento vertical permanente.
+- Cabecera y botones de Guardar/Cancelar permanecen accesibles mientras se recorre la plantilla.
+- Adaptado a móvil con scroll de pantalla completa.
+
+2. Fotografías de jugadores
+- Cada jugador de la convocatoria muestra su fotografía real cuando está disponible.
+- Si no existe fotografía se usa el avatar de jugador del programa.
+
+3. Convocatoria PDF
+- Botón “Descargar convocatoria PDF” dentro del partido.
+- El PDF se genera con los jugadores marcados como Convocado, Titular o Suplente.
+- Incluye equipo, rival, fecha, hora, competición, campo, condición y estado de cada convocado.
+- Incluye la fotografía del jugador cuando se puede recuperar; si no, muestra sus iniciales.
+
+4. Inicio > Partidos de esta semana
+- Nueva tarjeta visual menos apretada.
+- Fecha y hora destacadas.
+- Competición y jornada separadas.
+- Local y visitante se leen en formato VS.
+- Campo y condición visibles.
+- Resultado o Pendiente destacado.
+- Responsive para PC y móvil.
+
+5. No necesita SQL.

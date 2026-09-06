@@ -1,0 +1,28 @@
+CD SAN BERNABÉ MANAGER · V27.2.0
+GESTIÓN MULTITEMPORADA
+
+NOVEDADES
+- Nueva tabla de temporadas con una única temporada activa.
+- Selector de temporadas integrado en el menú lateral.
+- Apartado específico para consultar el histórico y realizar el cambio anual.
+- Cierre de temporada con instantánea completa de los datos operativos.
+- Temporadas cerradas disponibles en modo solo lectura.
+- Seguimiento deportivo histórico: entrenamientos, asistencias, partidos, convocatorias, minutos y tarjetas.
+- Tarjetero RFAF archivado por temporada, manteniendo la ficha completa de V27.1.10.
+- Reinicio automático de los datos estrictamente anuales al abrir una nueva temporada.
+- Opciones para conservar jugadores, cuerpo técnico, documentación y tallajes.
+- Equipos conservados como estructura para no romper los accesos técnicos existentes.
+- Formulario de inscripción pública con temporada activa automática.
+- Caché PWA renovada para V27.2.0.
+- Copia de seguridad completa ampliada para incluir temporadas y fichas RFAF históricas.
+- Partidos de calendario y estado de equipación del staff guardados localmente con clave separada por temporada para evitar cruces entre años.
+
+SEGURIDAD
+- Solo un administrador puede ejecutar el cambio de temporada.
+- La operación se realiza mediante una función transaccional en Supabase.
+- Si falla cualquier paso, la operación completa se revierte.
+- Los usuarios técnicos solo trabajan sobre la temporada activa.
+- El formulario público solo puede consultar el nombre de la temporada activa.
+
+COMPATIBILIDAD
+- Parte de V27.1.10 y conserva la corrección de recorte completo de fichas RFAF.

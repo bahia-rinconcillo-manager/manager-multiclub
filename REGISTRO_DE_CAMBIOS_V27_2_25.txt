@@ -1,0 +1,10 @@
+V27.2.25 · Multiequipo por identidad
+
+- Corrige el caso en que un entrenador con dos equipos seguía viendo solo el equipo principal.
+- Unifica registros de technical_users que representen a la misma persona.
+- Recupera equipos desde technical_user_teams, staff.team_name, teams.coach_id, delegate_name y equipo principal.
+- Admite equipos legacy sin season_id y prioriza la copia de la temporada activa cuando hay duplicados por nombre.
+- Seleccionar un equipo actualiza todos los registros de acceso equivalentes para que los RPC antiguos carguen el equipo correcto.
+- Caso real de comprobación: Francisca Teresa Ortega Suarez → CDSB Alevin B y CDSB Cadete B.
+- Mantiene V27.2.22 menú móvil y V27.2.21 PDF de tallajes técnicos.
+- Requiere EJECUTAR_ACTUALIZACION_V27_2_25.sql.

@@ -1,0 +1,20 @@
+CD SAN BERNABÉ MANAGER · V27.2.2
+
+ASISTENTE SEGURO DE CAMBIO ANUAL
+
+- Cambio de temporada en 4 pasos.
+- Selección individual de jugadores: continúa / baja.
+- Asignación de equipo de destino para cada jugador que continúa.
+- Selección individual del cuerpo técnico: continúa / baja.
+- Cambio de equipo del cuerpo técnico para la nueva temporada.
+- Resumen final con totales de continuidades, bajas y cambios de equipo.
+- Confirmación reforzada: hay que escribir CERRAR + temporada actual.
+- Validación adicional en Supabase antes de cerrar.
+- Si el listado cambia mientras se prepara el cierre, la operación se cancela sin tocar datos.
+- Las fichas RFAF quedan archivadas en la temporada cerrada y no se trasladan como vigentes.
+- Documentación y tallajes pueden conservarse como referencia.
+- Etiqueta de la temporada activa corregida de “Abierta” a “Activa”.
+- Caché PWA renovada para V27.2.2.
+
+IMPORTANTE
+Los accesos del apartado Usuarios son credenciales independientes del registro de cuerpo técnico y no se desactivan automáticamente. Conviene revisarlos al comienzo de cada temporada.

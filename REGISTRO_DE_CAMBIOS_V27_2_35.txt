@@ -1,0 +1,16 @@
+V27.2.35
+
+1. Escudos rivales en Equipos > Calendario
+   - Se migra una sola vez cada escudo rival ya guardado.
+   - Se elimina el aro decorativo azul/gris exterior y el fondo claro conectado al borde.
+   - La imagen se recorta al contenido útil manteniendo transparencia.
+   - Los escudos nuevos pasan por el mismo procesamiento antes de guardarse.
+   - Se refuerza la eliminación de border-radius, border, background y box-shadow en la interfaz.
+
+2. Competición
+   - Se mantiene Amistoso, ya operativo en V27.2.34.
+
+3. Versión
+   - Se corrige la etiqueta visible a Manager Online · V27.2.35.
+
+No necesita SQL.

@@ -1,0 +1,7 @@
+CD SAN BERNABÉ MANAGER · V27.2.18
+
+- Corregido en móvil el formulario Nuevo partido accesible desde la zona privada del cuerpo técnico.
+- Cabecera del partido permanece visible.
+- Los campos centrales tienen desplazamiento vertical táctil propio.
+- Los botones Cancelar y Guardar partido permanecen accesibles al pie.
+- No requiere cambios en Supabase ni SQL.

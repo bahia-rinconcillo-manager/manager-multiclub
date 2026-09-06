@@ -1,0 +1,9 @@
+CD San Bernabé Manager · V27.2.39
+
+PISTAS Y CAMPOS
+- El listado ya no fuerza automáticamente el mes actual al entrar.
+- Por defecto se muestran todos los registros disponibles.
+- Se añade “Todos los meses” para quitar el filtro mensual con un toque.
+- Se mantiene el filtro por equipo y por mes.
+
+No necesita SQL.

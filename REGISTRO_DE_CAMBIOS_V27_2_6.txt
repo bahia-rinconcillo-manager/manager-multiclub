@@ -1,0 +1,9 @@
+CD SAN BERNABÉ MANAGER · V27.2.6
+
+- Separa Categoría de edad de Modalidad en cada equipo.
+- La categoría de edad se guarda como dato propio: Bebé, Prebenjamín, Benjamín, Alevín, Infantil, Cadete o Juvenil.
+- La modalidad mantiene Fútbol 7 / Fútbol 11 u otra denominación.
+- El asistente anual propone la categoría de edad a partir del nombre de los equipos actuales.
+- La asignación automática de jugadores utiliza la categoría de edad de los equipos de la nueva temporada.
+- Los jugadores pueden continuar sin equipo y asignarse después.
+- Los equipos elegibles en la nueva temporada siguen siendo únicamente los creados en el paso Equipos del asistente.

@@ -1,0 +1,9 @@
+CD SAN BERNABÉ MANAGER · V27.2.34
+
+- Corrección real de los círculos de los escudos en Equipos > Calendario.
+- Se detectó que algunos círculos estaban incrustados en la propia imagen guardada del rival, por eso el CSS anterior no podía eliminarlos.
+- La V27.2.34 limpia solo la copia visual usada en el calendario, elimina fondos claros/círculos, recorta márgenes transparentes y mantiene intacta la imagen original almacenada.
+- Amistoso se añade y se vuelve a comprobar automáticamente en cualquier selector de competición del programa.
+- El formulario deportivo de partido también garantiza Amistoso al abrirse.
+- Se mantiene el calendario general del club con partidos de todos los equipos.
+- No necesita SQL.

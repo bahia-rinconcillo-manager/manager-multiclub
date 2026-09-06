@@ -1,0 +1,11 @@
+CD SAN BERNABÉ MANAGER · V27.2.21
+
+CORRECCIÓN · TALLAJE TÉCNICOS / PDF
+- El botón pasa a llamarse «Abrir PDF».
+- Genera un PDF real con jsPDF + AutoTable en formato A4 apaisado.
+- El PDF se abre en el visor del navegador/dispositivo.
+- Desde ese visor el usuario decide si imprimir o descargar/guardar el PDF.
+- Ya no se lanza directamente el diálogo de impresión.
+- Mantiene filtro por equipo, escudo, cabecera, fecha y paginación.
+
+No necesita SQL.

@@ -1,0 +1,8 @@
+CD San Bernabé Manager · V27.2.46
+
+CORRECCIÓN DE RESULTADOS LOCAL – VISITANTE
+- Inicio: el marcador se muestra siempre en el orden real LOCAL – VISITANTE.
+- Calendario general: corregido el marcador de los partidos en los que el CD San Bernabé juega como visitante.
+- Calendario dentro de Equipos: mismo criterio LOCAL – VISITANTE en todas las vistas.
+- Se mantienen internamente los campos goles a favor / goles en contra para no alterar los datos existentes.
+- Sin cambios de base de datos.

@@ -1,0 +1,6 @@
+CD SAN BERNABÉ MANAGER · V27.2.7
+
+- Corrige el contador de cambios de equipo en la revisión final.
+- Un jugador que continúa sin equipo se contabiliza únicamente en “sin equipo”, no también como cambio.
+- Un técnico que continúa sin equipo se contabiliza únicamente en “sin equipo”.
+- No requiere cambios de base de datos.

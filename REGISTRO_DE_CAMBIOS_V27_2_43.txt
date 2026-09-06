@@ -1,0 +1,13 @@
+CD SAN BERNABÉ MANAGER · V27.2.43
+
+CALENDARIO DE EQUIPOS · VISTA EN LISTA
+
+- Se mantiene la vista actual en dos columnas.
+- Se añade un selector de vista con dos opciones: “Dos columnas” y “Lista”.
+- La vista Lista muestra un partido por fila con fecha, hora, competición, jornada, local, visitante, campo y estado.
+- En la misma fila se mantienen las acciones Editar, Resultado, Finalizar, Cartel y Eliminar.
+- La elección de vista se recuerda en el dispositivo.
+- Diseño adaptado a PC y móvil.
+- Se conserva la importación automática del calendario RFAF de V27.2.42.
+
+No necesita SQL.

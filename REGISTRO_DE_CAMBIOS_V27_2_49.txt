@@ -1,0 +1,19 @@
+CD SAN BERNABÉ MANAGER · V27.2.49
+
+TARJETERO · NUEVAS ACCIONES PARA ENTRENADORES
+- Debajo de cada ficha aparecen los botones TRASPASAR y ELIMINAR.
+- TRASPASAR permite elegir cualquier otro equipo activo de la temporada.
+- La acción crea una COPIA de la ficha en el tarjetero de destino.
+- La ficha permanece en el equipo de origen.
+- El jugador NO cambia de equipo ni se duplica su ficha de jugador.
+- Si la ficha ya existe en el equipo de destino, no se crea un duplicado.
+- ELIMINAR quita la ficha únicamente del tarjetero que el entrenador tiene abierto.
+- El jugador no se elimina del Manager.
+- Las copias que existan en otros equipos permanecen intactas.
+- El entrenador solo puede traspasar o eliminar fichas desde el equipo que tiene abierto.
+
+ADMINISTRACIÓN
+- Las mismas acciones quedan disponibles desde el tarjetero de administración.
+
+IMPORTANTE
+Ejecutar EJECUTAR_ACTUALIZACION_V27_2_49_TRASPASO_FICHAS.sql una sola vez en Supabase antes de usar estas acciones desde los accesos de entrenadores.

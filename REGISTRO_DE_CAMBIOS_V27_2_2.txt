@@ -1,0 +1,8 @@
+CD SAN BERNABÉ MANAGER · V27.2.2
+
+CORRECCIÓN DE ACTUALIZACIÓN PWA
+- Corrige el caso en que el navegador seguía ejecutando el cierre antiguo de V27.2.0.
+- Fuerza una limpieza única de cachés y service workers al detectar V27.2.2.
+- Tras limpiar, recarga automáticamente una vez para que el asistente V27.2.2 quede realmente activo.
+- El cierre anual continúa requiriendo el asistente de 4 pasos y la confirmación final escrita.
+- No requiere SQL adicional si V27.2.1 ya está instalada en Supabase.

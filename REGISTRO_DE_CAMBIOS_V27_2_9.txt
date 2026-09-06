@@ -1,0 +1,20 @@
+CD SAN BERNABÉ MANAGER · V27.2.9
+
+CORRECCIONES DE DESPLAZAMIENTO
+
+1. MENÚ LATERAL INDEPENDIENTE
+- En ordenador, la columna izquierda queda fija dentro de la ventana de la aplicación.
+- El contenido central se desplaza de forma independiente.
+- Si el menú lateral supera la altura disponible, dispone de su propio scroll vertical.
+
+2. EQUIPOS > CALENDARIO > EQUIPOS, ESCUDOS Y CAMPOS
+- Corregido el cuadro que podía ocultar equipos, escudos, campos e instalaciones situados más abajo.
+- El cuadro dispone ahora de desplazamiento vertical real y estable.
+- La cabecera permanece visible mientras se desplaza el contenido.
+
+3. MÓVIL / PANTALLAS PEQUEÑAS
+- Se mantiene el desplazamiento normal para evitar romper la navegación móvil.
+
+BASE DE DATOS
+- No hay cambios de esquema.
+- No ejecutar SQL para esta versión.

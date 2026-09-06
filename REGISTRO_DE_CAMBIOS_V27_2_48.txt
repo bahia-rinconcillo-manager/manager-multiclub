@@ -1,0 +1,29 @@
+CD SAN BERNABÉ MANAGER · V27.2.48
+
+NUEVO APARTADO: PATROCINIO
+- Alta, edición y eliminación de patrocinadores.
+- Logo del patrocinador.
+- Nombre del patrocinador.
+- Tipo de patrocinio:
+  · Patrocinador principal
+  · Mangas primera equipación
+  · Camiseta entrenamiento parte frontal
+  · Camiseta entrenamiento parte trasera
+  · Sudadera
+  · Chándal
+  · Lona
+  · Otros
+- Duración: 6 meses, 1 temporada o 2 temporadas.
+- Importe.
+- Estado: Pagado o Pendiente.
+- Filtros por tipo y estado.
+- Resumen de importe total, pagado y pendiente.
+
+CONTABILIDAD AUTOMÁTICA
+- Al marcar un patrocinio como PAGADO se crea automáticamente un Ingreso en Contabilidad.
+- Si cambia el importe, el ingreso se actualiza sin duplicarse.
+- Si vuelve a PENDIENTE, el ingreso automático desaparece.
+- Si se elimina el patrocinio, también se elimina su ingreso automático.
+
+IMPORTANTE
+Ejecutar EJECUTAR_ACTUALIZACION_V27_2_48_PATROCINIO.sql una sola vez en Supabase antes de utilizar el apartado.

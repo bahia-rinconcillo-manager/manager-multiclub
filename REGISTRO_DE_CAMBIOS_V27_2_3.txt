@@ -1,0 +1,10 @@
+CD SAN BERNABÉ MANAGER · V27.2.3
+
+CORRECCIÓN
+- El botón “Abrir asistente de cambio de temporada” ya abre el diálogo.
+- El fallo se debía a que app-v2722.js se ejecutaba antes de que el navegador hubiese creado el <dialog> del asistente, por lo que la referencia quedaba vacía.
+- app-v2723.js se carga después del diálogo, con todos los elementos del asistente ya disponibles.
+- Caché PWA renovada para forzar la actualización.
+
+BASE DE DATOS
+- No requiere SQL nuevo. Mantiene la actualización V27.2.1 ya instalada.

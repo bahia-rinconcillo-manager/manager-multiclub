@@ -1,0 +1,1233 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manager Multiclub</title>
+  <script>
+    (() => {
+      const version = "27.2.29";
+      const key = "cdsb_forced_asset_version";
+      if (localStorage.getItem(key) === version) return;
+      localStorage.setItem(key, version);
+      const clearCaches = ("caches" in window)
+        ? caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith("cdsb-manager-")).map(k => caches.delete(k))))
+        : Promise.resolve();
+      const clearWorkers = ("serviceWorker" in navigator)
+        ? navigator.serviceWorker.getRegistrations().then(regs => Promise.all(regs.map(r => r.unregister())))
+        : Promise.resolve();
+      Promise.all([clearCaches, clearWorkers]).finally(() => location.reload());
+    })();
+  </script>
+  <link rel="stylesheet" href="styles-v2600.css?v=27248">
+  <link rel="stylesheet" href="sponsorship-v27248.css?v=27248">
+  <link rel="stylesheet" href="calendar-v27243.css?v=27248">
+  <link rel="stylesheet" href="sports-v2702.css?v=27248">
+  <link rel="stylesheet" href="cards-v27249.css?v=27249">
+  <link rel="stylesheet" href="mobile-v27231.css?v=27248">
+  <link rel="stylesheet" href="multiclub-v100.css?v=100">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#07111f">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+</head>
+<body>
+  <div id="setupScreen" class="screen hidden">
+    <form id="setupForm" class="auth-card setup-card">
+      <div class="logo crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
+      <div class="step-label">CONFIGURACIÓN INICIAL</div>
+      <h1>Conectar con Supabase</h1>
+      <p>Pega los dos datos de tu proyecto. Solo tendrás que hacerlo una vez en cada ordenador.</p>
+      <label>Project URL<input id="setupUrl" placeholder="https://xxxxxxxx.supabase.co" required></label>
+      <label>Publishable key<input id="setupKey" placeholder="sb_publishable_..." required></label>
+      <button class="primary" type="submit">Guardar y continuar</button>
+      <small>Estos datos no son la contraseña del club.</small>
+    </form>
+  </div>
+
+  <div id="authScreen" class="screen hidden">
+    <div class="auth-card">
+      <div class="logo crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
+      <div class="step-label">ACCESO PRIVADO</div>
+      <h1>Manager Multiclub</h1>
+      <p>Accede como administrador o con el usuario asignado al cuerpo técnico.</p>
+      <form id="loginForm">
+        <label>Correo administrador o usuario técnico<input id="email" type="text" autocomplete="username" required></label>
+        <label>Contraseña<input id="password" type="password" autocomplete="current-password" required></label>
+        <button class="primary" type="submit">Entrar</button>
+      </form>
+      <button id="changeConnection" class="link-btn muted">Cambiar conexión de Supabase</button>
+      <div id="authMessage" class="message"></div>
+    </div>
+  </div>
+
+  <div id="technicalTeamScreen" class="screen technical-entry-screen hidden">
+    <div class="auth-card technical-entry-card">
+      <div class="logo crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
+      <div class="step-label">ÁREA PRIVADA DEL CUERPO TÉCNICO</div>
+      <h1 id="technicalTeamScreenTitle">¿Qué equipo quieres ver?</h1>
+      <p id="technicalTeamScreenHelp">Selecciona el equipo al que quieres acceder.</p>
+      <div id="technicalTeamScreenChoices" class="technical-entry-team-grid"></div>
+      <div id="technicalTeamScreenMessage" class="message hidden"></div>
+      <div class="technical-entry-actions">
+        <button id="technicalTeamScreenBack" class="secondary hidden" type="button">Volver al equipo actual</button>
+        <button id="technicalTeamScreenLogout" class="link-btn muted" type="button">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="clubSelectScreen" class="screen hidden multiclub-screen">
+    <div class="auth-card multiclub-card">
+      <div class="logo crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub"></div>
+      <div class="step-label">SELECCIONAR CLUB</div>
+      <h1>Manager Multiclub</h1>
+      <p>Elige el club con el que quieres trabajar.</p>
+      <div id="clubChoices" class="club-choices"></div>
+      <button id="clubSelectLogout" class="link-btn muted" type="button">Cerrar sesión</button>
+      <div id="clubSelectMessage" class="message"></div>
+    </div>
+  </div>
+
+  <div id="app" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo small crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
+        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub</span></div>
+      </div>
+      <div class="season season-switcher"><span>Temporada</span><select id="seasonSelector" aria-label="Temporada"><option>2026/27</option></select></div>
+      <nav>
+        <button class="nav active" data-view="dashboard"><b>⌂</b> Inicio</button>
+        <button class="nav" data-view="players"><b>◎</b> Jugadores</button>
+        <button class="nav" data-view="payments"><b>€</b> Cobros</button>
+        <button class="nav" data-view="documents"><b>▤</b> Documentos</button>
+        <button class="nav" data-view="kits"><b>◈</b> Equipaciones</button>
+        <button class="nav" data-view="teams"><b>⚽</b> Equipos</button>
+        <button class="nav" data-view="staff"><b>◆</b> Cuerpo técnico</button>
+        <button class="nav" data-view="staffSizing"><b>▦</b> Tallaje técnicos</button>
+        <button class="nav" data-view="calendar"><b>▦</b> Calendario</button>
+        <button class="nav" data-view="pitches"><b>▧</b> Pistas</button>
+        <button class="nav" data-view="finance"><b>↕</b> Ingresos y gastos</button>
+        <button class="nav" data-view="sponsorships"><b>★</b> Patrocinio</button>
+        <button class="nav" data-view="reports"><b>▥</b> Informes</button>
+        <button class="nav" data-view="trash"><b>♻</b> Papelera</button>
+        <button class="nav" data-view="activity"><b>◷</b> Actividad</button>
+        <button class="nav" data-view="backup"><b>⬇</b> Copias de seguridad</button>
+        <button class="nav" data-view="users"><b>🔐</b> Usuarios</button>
+        <button class="nav" data-view="seasons"><b>◫</b> Temporadas</button>
+        <button class="nav" data-view="publicForm"><b>✚</b> Inscripción pública</button>
+      </nav>
+      <div class="bottom">
+        <div id="syncState" class="sync">● Conectado</div>
+        <button id="logout" class="side-btn">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div><span>CD SAN BERNABÉ</span><h1 id="pageTitle">Panel principal</h1><p id="pageSub">Resumen actualizado del club</p></div>
+        <div id="historicalSeasonBanner" class="historical-season-banner hidden">HISTÓRICO · SOLO LECTURA</div><div class="header-actions"><label class="global-list-sort"><span>Orden de listas</span><select id="globalListSort" aria-label="Orden alfabético de las listas"><option value="az">Nombre A–Z</option><option value="za">Nombre Z–A</option></select></label><button id="switchTechnicalTeam" class="secondary hidden" type="button">⇄ Cambiar equipo</button><button id="installApp" class="install-btn hidden">Instalar aplicación</button><button id="headerAddPlayer" class="primary">+ Nuevo jugador</button></div>
+      </header>
+
+      <section id="dashboard" class="view active">
+        <div class="dashboard-welcome">
+          <div>
+            <small id="dashboardSeasonLabel">CD SAN BERNABÉ · TEMPORADA 2026/27</small>
+            <h2>Panel de gestión del club</h2>
+            <p id="dashboardDate">Resumen actualizado de jugadores, cobros, documentos y equipaciones.</p>
+          </div>
+          <img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest>
+        </div>
+
+        <div class="dashboard-kpis">
+          <button class="dashboard-kpi" data-go="players">
+            <span class="dashboard-kpi-icon">👥</span>
+            <span><small>Jugadores</small><strong id="stPlayers">0</strong><em id="stApproved">0 aprobados</em></span>
+          </button>
+          <button class="dashboard-kpi" data-go="teams">
+            <span class="dashboard-kpi-icon">🛡️</span>
+            <span><small>Equipos</small><strong id="stTeams">0</strong><em>Equipos creados</em></span>
+          </button>
+          <button class="dashboard-kpi" data-go="staff">
+            <span class="dashboard-kpi-icon">🧑‍🏫</span>
+            <span><small>Cuerpo técnico</small><strong id="stStaff">0</strong><em>Miembros registrados</em></span>
+          </button>
+          <button class="dashboard-kpi warning" data-go="payments">
+            <span class="dashboard-kpi-icon">💶</span>
+            <span><small>Pendiente de cobro</small><strong id="stPending">0 €</strong><em id="stPendingPlayers">0 jugadores</em></span>
+          </button>
+          <button class="dashboard-kpi warning" data-go="documents">
+            <span class="dashboard-kpi-icon">📄</span>
+            <span><small>Documentación pendiente</small><strong id="stDocumentsPending">0</strong><em>Expedientes incompletos</em></span>
+          </button>
+          <button class="dashboard-kpi warning" data-go="kits">
+            <span class="dashboard-kpi-icon">👕</span>
+            <span><small>Equipaciones pendientes</small><strong id="stKitsPending">0</strong><em>Sin entregar</em></span>
+          </button>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel dashboard-recent-panel">
+            <div class="panel-title dashboard-panel-title">
+              <div><small>ACTIVIDAD RECIENTE</small><h3>Últimos jugadores inscritos</h3></div>
+              <button class="mini" data-dashboard-go="players">Ver todos</button>
+            </div>
+            <div id="recent" class="dashboard-recent-list"></div>
+          </section>
+
+          <section class="panel dashboard-alert-panel">
+            <div class="panel-title dashboard-panel-title">
+              <div><small>ATENCIÓN NECESARIA</small><h3>Pendientes del club</h3></div>
+            </div>
+            <div id="alerts" class="dashboard-alert-list"></div>
+          </section>
+        </div>
+
+        <section class="panel dashboard-actions-panel">
+          <div class="panel-title"><small>ACCESOS RÁPIDOS</small><h3>¿Qué necesitas hacer?</h3></div>
+          <div class="dashboard-quick-actions">
+            <button id="dashboardAddPlayer" class="dashboard-action primary-action"><b>＋</b><span>Nuevo jugador<small>Crear una ficha completa</small></span></button>
+            <button data-dashboard-go="teams" class="dashboard-action"><b>🛡️</b><span>Gestionar equipos<small>Plantillas y responsables</small></span></button>
+            <button data-dashboard-go="payments" class="dashboard-action"><b>€</b><span>Registrar un pago<small>Cobros y justificantes</small></span></button>
+            <button data-dashboard-go="reports" class="dashboard-action"><b>▤</b><span>Generar informes<small>PDF, Excel, CSV e impresión</small></span></button>
+          </div>
+        </section>
+
+        <section class="panel dashboard-matches-panel">
+          <div class="panel-title dashboard-panel-title">
+            <div><small>JORNADA ACTUAL</small><h3>Partidos de esta semana</h3><p>Separados entre encuentros en casa y fuera.</p></div>
+          </div>
+          <div class="dashboard-match-columns">
+            <section class="dashboard-match-group"><h4>🏠 Partidos en casa</h4><div id="dashboardHomeMatches" class="dashboard-match-list"></div></section>
+            <section class="dashboard-match-group"><h4>🚌 Partidos fuera</h4><div id="dashboardAwayMatches" class="dashboard-match-list"></div></section>
+          </div>
+        </section>
+
+        <section class="panel dashboard-progress-panel">
+          <div class="panel-title"><small>ESTADO DE LA TEMPORADA</small><h3>Seguimiento general</h3></div>
+          <div id="dashboardProgress" class="dashboard-progress-list"></div>
+        </section>
+
+        <div class="dashboard-grid dashboard-lower-grid">
+          <div class="panel"><div class="panel-title"><small>PRÓXIMOS 30 DÍAS</small><h3>Cumpleaños</h3></div><div id="birthdays"></div></div>
+          <div class="panel"><div class="panel-title"><small>AGENDA</small><h3>Próximos eventos</h3></div><div id="upcomingEvents"></div></div>
+        </div>
+
+        
+        <section class="panel dashboard-activity-panel">
+          <div class="panel-title dashboard-panel-title">
+            <div><h3>Actividad reciente</h3><p>Últimos cambios realizados en el programa</p></div>
+            <button class="mini" data-dashboard-go="activity">Ver historial</button>
+          </div>
+          <div id="dashboardActivity" class="activity-list compact"></div>
+        </section>
+
+        <div class="dashboard-hidden-legacy" aria-hidden="true">
+          <span id="stPaid">0 €</span><span id="stPitches">0 €</span><span id="stBalance">0 €</span>
+        </div>
+      </section>
+
+      <section id="players" class="view">
+        <div class="module-hero players-module-hero">
+          <div>
+            <small>GESTIÓN DE JUGADORES</small>
+            <h2>Jugadores del club</h2>
+            <p>Consulta fotografías, equipos, documentación, pagos y tallajes.</p>
+          </div>
+          <button id="playersAddPlayer" class="primary module-primary-action">＋ Nuevo jugador</button>
+        </div>
+
+        <div class="players-toolbar">
+          <div class="players-search-box">
+            <span>⌕</span>
+            <input id="playerSearch" type="search" placeholder="Buscar por nombre, tutor, teléfono o equipo">
+          </div>
+          <select id="playerTeamFilter"><option value="">Todos los equipos</option></select>
+          <select id="playerStatusFilter">
+            <option value="">Todos los estados</option>
+            <option value="Pendiente revisión">Pendiente revisión</option>
+            <option value="Aprobada">Aprobada</option>
+            <option value="Rechazada">Rechazada</option>
+            <option value="Baja">Baja</option>
+          </select>
+          <select id="playerIssueFilter">
+            <option value="">Todas las situaciones</option>
+            <option value="documents">Documentación pendiente</option>
+            <option value="payments">Pagos pendientes</option>
+            <option value="sizing">Sin tallaje</option>
+            <option value="kit">Equipación sin entregar</option>
+            <option value="photo">Sin fotografía</option>
+          </select>
+          <button id="clearPlayerFilters" class="mini">Limpiar</button>
+        </div>
+
+        <div class="players-overview">
+          <article><small>Total</small><strong id="playersOverviewTotal">0</strong></article>
+          <article><small>Con foto</small><strong id="playersOverviewPhotos">0</strong></article>
+          <article><small>Documentación completa</small><strong id="playersOverviewDocs">0</strong></article>
+          <article><small>Sin pagos pendientes</small><strong id="playersOverviewPayments">0</strong></article>
+        </div>
+
+        <div class="players-list-header">
+          <div><strong id="playersResultCount">0 jugadores</strong><small>Haz clic en una tarjeta para abrir su expediente.</small></div>
+          <div class="players-view-switch">
+            <button id="playersGridView" class="active" type="button">Tarjetas</button>
+            <button id="playersTableView" type="button">Listado</button>
+          </div>
+        </div>
+
+        <div id="playersGrid" class="players-professional-grid"></div>
+
+        <div id="playersTableWrap" class="players-professional-table hidden">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Foto</th><th>Jugador</th><th>Equipo</th><th>Estado</th><th>Documentación</th><th>Pagos</th><th>Tallaje</th><th>Equipación</th><th></th></tr></thead>
+              <tbody id="playersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="payments" class="view">
+        <div class="panel"><div class="panel-title"><small>TESORERÍA</small><h3>Control de cobros</h3><p>50 € inscripción · 50 € tallaje · 100 € recogida de ropa</p></div>
+          <div class="payments-filter-bar">
+            <label for="paymentsTeamFilter"><span>Filtrar por equipo</span>
+              <select id="paymentsTeamFilter"><option value="">Todos los equipos</option></select>
+            </label>
+            <button id="clearPaymentsTeamFilter" class="mini" type="button">Mostrar todos</button>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Jugador</th><th>Equipo</th><th>Inscripción</th><th>Tallaje</th><th>Ropa</th><th>Pagado</th><th>Pendiente</th><th></th></tr></thead><tbody id="paymentsBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="documents" class="view">
+        <div class="panel"><div class="panel-title"><small>EXPEDIENTES</small><h3>Documentación</h3></div>
+          <div class="payments-filter-bar">
+            <label for="documentsTeamFilter"><span>Filtrar por equipo</span>
+              <select id="documentsTeamFilter"><option value="">Todos los equipos</option></select>
+            </label>
+            <button id="clearDocumentsTeamFilter" class="mini" type="button">Mostrar todos</button>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Jugador</th><th>Equipo</th><th>DNI / libro de familia</th><th>Fotografía</th><th>Reconocimiento médico</th><th>Estado</th><th>Gestión</th></tr></thead><tbody id="documentsBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="kits" class="view">
+        <div class="panel">
+          <div class="panel-title"><small>MATERIAL</small><h3>Equipaciones</h3><p>Gestiona los tallajes y las fotografías de cada prenda.</p></div>
+          <section class="clothing-catalog-panel">
+            <div class="clothing-catalog-heading">
+              <div><small>CATÁLOGO VISUAL</small><h4>Catálogo de equipaciones</h4><p>Sube fotografías, cambia el nombre, organiza por categorías y activa o desactiva prendas.</p></div>
+              <div class="clothing-catalog-actions"><span>Fotos guardadas en Supabase</span><button id="addClothingItem" class="primary" type="button">+ Crear nueva prenda</button></div>
+            </div>
+            <div id="clothingCatalogGrid" class="clothing-catalog-grid"></div>
+          </section>
+          <section class="kit-order-panel">
+            <div class="kit-order-heading">
+              <div><small>PEDIDO DE ROPA</small><h4>Resumen automático por prendas y tallas</h4><p>Filtra por equipo y genera el pedido preparado para imprimir o abrir en Excel.</p></div>
+              <div class="kit-order-actions">
+                <button id="exportKitOrderCsv" class="secondary" type="button">Exportar Excel/CSV</button>
+                <button id="printKitOrder" class="primary" type="button">Imprimir / PDF</button>
+              </div>
+            </div>
+            <div class="kit-order-filters">
+              <label><span>Equipo</span><select id="kitOrderTeam"><option value="">Todos los equipos</option></select></label>
+              <label><span>Personal</span><select id="kitOrderScope"><option value="players">Jugadores</option><option value="staff">Cuerpo técnico</option><option value="all">Jugadores y cuerpo técnico</option></select></label>
+              <label class="kit-order-check"><input id="kitOrderOnlySized" type="checkbox" checked><span>Solo tallajes realizados</span></label>
+            </div>
+            <div class="kit-order-summary"><div id="kitOrderStats" class="kit-order-stats"></div><div class="table-wrap"><table><thead><tr><th>Prenda</th><th>Talla</th><th>Unidades</th></tr></thead><tbody id="kitOrderSummaryBody"></tbody></table></div></div>
+          </section>
+          <section class="kit-inventory-panel">
+            <div class="kit-inventory-heading">
+              <div><small>INVENTARIO</small><h4>Control de existencias</h4><p>Edita las existencias desde el desplegable Disponibles de cada prenda. Aquí se muestra únicamente el resumen general.</p></div>
+              <div class="kit-inventory-actions">
+                <button id="resetKitInventory" class="secondary" type="button">Poner existencias a cero</button>
+                <button id="exportKitInventory" class="primary" type="button">Exportar inventario</button>
+              </div>
+            </div>
+            <div class="kit-inventory-filters">
+              <label><span>Equipo</span><select id="kitInventoryTeam"><option value="">Todos los equipos</option></select></label>
+              <label><span>Personal</span><select id="kitInventoryScope"><option value="players">Jugadores</option><option value="staff">Cuerpo técnico</option><option value="all">Jugadores y cuerpo técnico</option></select></label>
+              <label class="kit-order-check"><input id="kitInventoryOnlySized" type="checkbox" checked><span>Contar solo tallajes realizados</span></label>
+            </div>
+            <div class="inventory-help">Abre el desplegable Disponibles dentro de cada tarjeta de prenda para editar las cantidades por talla. Este listado muestra el resumen.</div>
+            <div id="kitInventoryStats" class="kit-order-stats"></div>
+            <div class="table-wrap"><table class="kit-inventory-table kit-inventory-summary-table"><thead><tr><th>Prenda</th><th>Solicitadas</th><th>Disponibles</th><th>Faltan</th><th>Estado</th></tr></thead><tbody id="kitInventoryBody"></tbody></table></div>
+          </section>
+          <section class="kit-sizing-panel kits-uniform-panel">
+            <div class="kit-sizing-heading"><div><small>TALLAJES DE JUGADORES</small><h4>Prendas por jugador</h4><p>Cada prenda aparece en una columna independiente.</p></div></div>
+            <div class="table-wrap kits-detail-table"><table><thead><tr id="kitsHeadRow"></tr></thead><tbody id="kitsBody"></tbody></table></div>
+          </section>
+          <section class="kit-sizing-panel kits-uniform-panel">
+            <div class="kit-sizing-heading"><div><small>TALLAJES DEL CUERPO TÉCNICO</small><h4>Prendas por miembro</h4><p>El polo de paseo sustituye a la equipación de juego.</p></div></div>
+            <div class="table-wrap kits-detail-table"><table><thead><tr id="kitsStaffHeadRow"></tr></thead><tbody id="kitsStaffBody"></tbody></table></div>
+          </section>
+        </div>
+      </section>
+
+
+      <section id="staffSizing" class="view">
+        <div class="panel">
+          <div class="panel-title team-title">
+            <div><small>TALLAJES · CUERPO TÉCNICO</small><h3>Listado de tallajes del cuerpo técnico</h3><p>Listado independiente de entrenadores, delegados y demás miembros del cuerpo técnico. Filtra por equipo, descarga el CSV o abre el informe en PDF para imprimirlo o guardarlo desde el visor.</p></div>
+          </div>
+          <section class="staff-sizing-report-panel">
+            <div class="staff-sizing-report-heading">
+              <div><small>LISTADO EXCLUSIVO · CUERPO TÉCNICO</small><h4>Tallaje del cuerpo técnico</h4><p>Consulta únicamente los tallajes de entrenadores, delegados y demás miembros. Puedes descargar el listado o abrir un PDF y, desde el visor, imprimirlo o descargarlo.</p></div>
+              <div class="staff-sizing-report-actions">
+                <button id="exportStaffSizingCsv" class="secondary" type="button">Descargar CSV</button>
+                <button id="printStaffSizingReport" class="primary" type="button">Abrir PDF</button>
+              </div>
+            </div>
+            <div class="staff-sizing-report-filters">
+              <label><span>Equipo</span><select id="staffSizingTeam"><option value="">Todos los equipos</option></select></label>
+              <div id="staffSizingStats" class="staff-sizing-stats"></div>
+            </div>
+            <div class="table-wrap kits-detail-table staff-sizing-report-table">
+              <table><thead><tr id="staffSizingReportHead"></tr></thead><tbody id="staffSizingReportBody"></tbody></table>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="teams" class="view">
+        <div class="panel">
+          <div class="panel-title team-title">
+            <div><small>ESTRUCTURA DEPORTIVA</small><h3>Equipos</h3><p>Entra en la ficha de cada equipo para gestionar plantilla, asistencia, partidos, minutos, tarjetas y estadísticas.</p></div>
+            <button id="addTeam" class="primary" type="button">+ Nuevo equipo</button>
+          </div>
+          <div id="teamsGrid" class="cards-grid"></div>
+        </div>
+      </section>
+
+      <section id="staff" class="view">
+        <div class="panel">
+          <div class="panel-title team-title">
+            <div><small>PERSONAL DEPORTIVO</small><h3>Cuerpo técnico</h3><p>Entrenadores, delegados y coordinadores.</p></div>
+            <button id="addStaff" class="primary" type="button">+ Nuevo miembro</button>
+          </div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Nombre</th><th>Cargo</th><th>Equipo</th><th>Teléfono</th><th>Email</th><th></th></tr></thead><tbody id="staffBody"></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <section id="calendar" class="view">
+        <div class="panel">
+          <div class="panel-title team-title">
+            <div><small>AGENDA DEL CLUB</small><h3>Calendario</h3><p>Entrenamientos, partidos, reuniones y eventos.</p></div>
+            <button id="addEvent" class="primary">+ Nuevo evento</button>
+          </div>
+          <div id="calendarList" class="calendar-list"></div>
+        </div>
+      </section>
+
+
+
+      <section id="pitches" class="view">
+        <div class="panel">
+          <div class="panel-title team-title">
+            <div><small>CONTROL DE INSTALACIONES</small><h3>Pistas y campos</h3><p>Horarios fijos 2026/27 cargados del 31/08/2026 al 15/06/2027. Puedes anular un entrenamiento concreto y seguir registrando manualmente los partidos.</p></div>
+            <button id="addPitch" class="primary">+ Registrar uso</button>
+          </div>
+          <div class="pitch-defaults">
+            <div><strong>La Menacha</strong><span>Cadete A · Cadete B · Infantil A · Infantil B</span><small>Entrenamiento 1,90 € / hora · Partido 3,80 €</small></div>
+            <div><strong>Montepalma</strong><span>Alevín A · Alevín B · Prebenjamín · Escuela</span><small>Entrenamiento 12,50 € / hora · Partido 37,50 €</small></div>
+          </div>
+          <div class="toolbar">
+            <input id="pitchMonth" type="month" aria-label="Filtrar pistas por mes">
+            <button id="pitchAllMonths" type="button" class="secondary">Todos los meses</button>
+            <select id="pitchTeamFilter"><option value="">Todos los equipos</option></select>
+            <select id="pitchFieldFilter"><option value="">Todos los campos</option></select>
+            <button id="pitchPdf" type="button" class="secondary">📄 Descargar PDF</button>
+          </div>
+          <div class="stats mini-stats pitch-stats">
+            <article><i>▧</i><div><span>Entrenamientos activos</span><strong id="pitchTrainings">0</strong></div></article>
+            <article><i>⚽</i><div><span>Partidos activos</span><strong id="pitchMatches">0</strong></div></article>
+            <article><i>⊘</i><div><span>Anulados</span><strong id="pitchCancelled">0</strong></div></article>
+            <article><i>€</i><div><span>Total filtrado</span><strong id="pitchTotal">0 €</strong></div></article>
+          </div>
+          <div class="table-wrap pitch-table-wrap"><table><thead><tr><th>Fecha</th><th>Hora</th><th>Equipo</th><th>Tipo</th><th>Campo</th><th>Importe</th><th>Estado</th><th></th></tr></thead><tbody id="pitchesBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="sponsorships" class="view">
+        <div class="panel sponsorship-panel">
+          <div class="panel-title team-title">
+            <div><small>ÁREA COMERCIAL</small><h3>Patrocinio</h3><p>Control de patrocinadores, acuerdos e ingresos asociados.</p></div>
+            <button id="addSponsorship" class="primary">+ Nuevo patrocinio</button>
+          </div>
+          <div class="toolbar sponsorship-toolbar">
+            <select id="sponsorshipTypeFilter" aria-label="Filtrar por tipo de patrocinio">
+              <option value="">Todos los tipos</option>
+              <option>Patrocinador principal</option>
+              <option>Mangas primera equipación</option>
+              <option>Camiseta entrenamiento parte frontal</option>
+              <option>Camiseta entrenamiento parte trasera</option>
+              <option>Sudadera</option>
+              <option>Chándal</option>
+              <option>Lona</option>
+              <option>Otros</option>
+            </select>
+            <select id="sponsorshipStatusFilter" aria-label="Filtrar por estado">
+              <option value="">Todos los estados</option>
+              <option>Pagado</option>
+              <option>Pendiente</option>
+            </select>
+          </div>
+          <div class="stats mini-stats sponsorship-stats">
+            <article><i>★</i><div><span>Patrocinios</span><strong id="sponsorshipCount">0</strong></div></article>
+            <article><i>€</i><div><span>Importe total</span><strong id="sponsorshipTotal">0 €</strong></div></article>
+            <article><i>✓</i><div><span>Pagado</span><strong id="sponsorshipPaid">0 €</strong></div></article>
+            <article><i>◷</i><div><span>Pendiente</span><strong id="sponsorshipPending">0 €</strong></div></article>
+          </div>
+          <div class="table-wrap sponsorship-table-wrap">
+            <table>
+              <thead><tr><th>Logo</th><th>Patrocinador</th><th>Tipo</th><th>Duración</th><th>Importe</th><th>Estado</th><th></th></tr></thead>
+              <tbody id="sponsorshipBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="finance" class="view">
+        <div class="panel">
+          <div class="panel-title team-title">
+            <div><small>TESORERÍA GENERAL</small><h3>Ingresos y gastos</h3><p>Control económico sencillo del club.</p></div>
+            <button id="addMovement" class="primary">+ Nuevo movimiento</button>
+          </div>
+          <div class="toolbar">
+            <input id="financeMonth" type="month" aria-label="Filtrar por mes">
+            <button id="financeAllMonths" type="button" class="secondary">Todos los meses</button>
+            <select id="financeTypeFilter"><option value="">Ingresos y gastos</option><option>Ingreso</option><option>Gasto</option></select>
+          </div>
+          <div class="stats mini-stats">
+            <article><i>↑</i><div><span>Ingresos</span><strong id="financeIncome">0 €</strong></div></article>
+            <article><i>↓</i><div><span>Gastos</span><strong id="financeExpense">0 €</strong></div></article>
+            <article><i>=</i><div><span>Balance</span><strong id="financeBalance">0 €</strong></div></article>
+          </div>
+          <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Concepto</th><th>Importe</th><th>Forma pago</th><th></th></tr></thead><tbody id="financeBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="reports" class="view">
+        <div class="reports-hero">
+          <div class="reports-hero-copy">
+            <small>CENTRO DE INFORMES</small>
+            <h2>Datos preparados para imprimir y compartir</h2>
+            <p>Genera listados actualizados de jugadores, cobros, tallajes, documentación, pistas y tesorería.</p>
+          </div>
+          <div class="reports-hero-badge">
+            <img src="assets/manager-multiclub.svg" alt="Escudo del club" data-club-crest>
+          </div>
+        </div>
+
+        <div class="reports-summary">
+          <article>
+            <span class="summary-symbol">◎</span>
+            <div><small>Jugadores</small><strong id="reportStatPlayers">0</strong></div>
+          </article>
+          <article>
+            <span class="summary-symbol">€</span>
+            <div><small>Con pagos pendientes</small><strong id="reportStatPayments">0</strong></div>
+          </article>
+          <article>
+            <span class="summary-symbol">▤</span>
+            <div><small>Documentación incompleta</small><strong id="reportStatDocs">0</strong></div>
+          </article>
+          <article>
+            <span class="summary-symbol">▧</span>
+            <div><small>Pistas del mes</small><strong id="reportStatPitches">0 €</strong></div>
+          </article>
+        </div>
+
+        <section class="team-report-builder">
+          <div class="team-report-heading">
+            <div>
+              <small>INFORMES POR EQUIPO</small>
+              <h3>Generador de listados</h3>
+              <p>Selecciona un equipo y prepara el documento que necesitas.</p>
+            </div>
+            <span class="team-report-badge">PDF · Excel · CSV · Impresión</span>
+          </div>
+
+          <div class="team-report-controls">
+            <label>
+              <span>Equipo</span>
+              <select id="teamReportTeam">
+                <option value="">Seleccionar equipo</option>
+              </select>
+            </label>
+            <label>
+              <span>Tipo de informe</span>
+              <select id="teamReportType">
+                <option value="players">Listado de jugadores</option>
+                <option value="documents">Documentación</option>
+                <option value="payments">Pagos</option>
+                <option value="sizes">Tallajes</option>
+                <option value="full">Informe completo</option>
+              </select>
+            </label>
+            <label>
+              <span>Ordenar por</span>
+              <select id="teamReportSort">
+                <option value="surname">Apellidos</option>
+                <option value="name">Nombre</option>
+                <option value="status">Estado</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="team-report-options">
+            <label><input id="teamReportSensitive" type="checkbox"> Incluir DNI del jugador, teléfono, email y dirección</label>
+            <label><input id="teamReportNotes" type="checkbox" checked> Incluir observaciones</label>
+            <label><input id="teamReportOnlyPending" type="checkbox"> Mostrar únicamente incidencias o pendientes</label>
+          </div>
+
+          <div class="team-report-actions">
+            <button id="teamReportPreview" class="primary">Vista previa</button>
+            <button id="teamReportPdf" class="report-export pdf-export">PDF</button>
+            <button id="teamReportExcel" class="report-export excel-export">Excel</button>
+            <button id="teamReportCsv" class="report-export csv-export">CSV</button>
+            <button id="teamReportPrint" class="report-export print-export">Imprimir</button>
+          </div>
+
+          <div id="teamReportEmpty" class="team-report-empty">
+            <span>▦</span>
+            <strong>Selecciona un equipo</strong>
+            <p>Aquí aparecerá la vista previa del listado antes de imprimirlo o exportarlo.</p>
+          </div>
+
+          <div id="teamReportPreviewArea" class="team-report-preview hidden">
+            <div class="report-document-header">
+              <img src="assets/manager-multiclub.svg" alt="Escudo del club" data-club-crest>
+              <div>
+                <small>CD SAN BERNABÉ</small>
+                <h2 id="teamReportTitle">Informe del equipo</h2>
+                <p id="teamReportMeta"></p>
+              </div>
+            </div>
+            <div id="teamReportSummary" class="team-report-kpis"></div>
+            <div class="table-wrap report-preview-table">
+              <table>
+                <thead id="teamReportHead"></thead>
+                <tbody id="teamReportBody"></tbody>
+              </table>
+            </div>
+            <p class="report-privacy-note">Documento de uso interno del club seleccionado. Contiene información sujeta a protección de datos.</p>
+          </div>
+        </section>
+
+
+        <section class="reports-section">
+          <div class="reports-section-title">
+            <div><small>GESTIÓN DEPORTIVA</small><h3>Jugadores y equipaciones</h3></div>
+            <span>4 informes</span>
+          </div>
+          <div class="reports-grid premium-reports">
+            <button class="report-card report-blue" id="rPlayers">
+              <span class="report-icon">◎</span>
+              <span class="report-content"><strong>Listado de jugadores</strong><small>Datos generales, equipo, tutor y contacto</small></span>
+              <span class="report-action">Descargar CSV →</span>
+            </button>
+            <button class="report-card report-cyan" id="rSizes">
+              <span class="report-icon">◈</span>
+              <span class="report-content"><strong>Tallajes de jugadores</strong><small>Todas las prendas y tallas solicitadas</small></span>
+              <span class="report-action">Descargar CSV →</span>
+            </button>
+            <button class="report-card report-sky" id="rDocs">
+              <span class="report-icon">▤</span>
+              <span class="report-content"><strong>Documentación pendiente</strong><small>Jugadores con expedientes incompletos</small></span>
+              <span class="report-action">Descargar CSV →</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="reports-section">
+          <div class="reports-section-title">
+            <div><small>ÁREA ECONÓMICA</small><h3>Cobros, pistas y tesorería</h3></div>
+            <span>3 informes</span>
+          </div>
+          <div class="reports-grid premium-reports">
+            <button class="report-card report-amber" id="rPayments">
+              <span class="report-icon">€</span>
+              <span class="report-content"><strong>Cobros pendientes</strong><small>Deudas por jugador, equipo e importe</small></span>
+              <span class="report-action">Descargar CSV →</span>
+            </button>
+            <button class="report-card report-violet" id="rPitches">
+              <span class="report-icon">▧</span>
+              <span class="report-content"><strong>Pistas y campos</strong><small>Entrenamientos, partidos y total mensual</small></span>
+              <span class="report-action">Descargar CSV →</span>
+            </button>
+            <button class="report-card report-green" id="rFinance">
+              <span class="report-icon">↕</span>
+              <span class="report-content"><strong>Ingresos y gastos</strong><small>Movimientos económicos y balance del club</small></span>
+              <span class="report-action">Descargar CSV →</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="reports-section print-section">
+          <div class="reports-section-title">
+            <div><small>IMPRESIÓN</small><h3>Documento visible en pantalla</h3></div>
+          </div>
+          <button class="print-report-card" id="rPrint">
+            <span class="print-icon">⎙</span>
+            <span><strong>Imprimir el apartado actual</strong><small>Abre la ventana de impresión del navegador para guardar también como PDF.</small></span>
+            <span class="print-arrow">Imprimir →</span>
+          </button>
+        </section>
+      </section>
+
+      
+      <section id="trash" class="view">
+        <div class="section-head">
+          <div><h2>Papelera</h2><p>Jugadores y equipos eliminados que todavía pueden recuperarse.</p></div>
+          <button id="refreshTrash" class="secondary">Actualizar</button>
+        </div>
+        <div class="trash-grid">
+          <section class="panel">
+            <div class="panel-title"><h3>Jugadores eliminados</h3></div>
+            <div id="trashPlayers" class="trash-list"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-title"><h3>Equipos eliminados</h3></div>
+            <div id="trashTeams" class="trash-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="activity" class="view">
+        <div class="section-head">
+          <div><h2>Registro de actividad</h2><p>Historial de altas, cambios, eliminaciones, restauraciones y copias.</p></div>
+          <button id="refreshActivity" class="secondary">Actualizar</button>
+        </div>
+        <section class="panel">
+          <div id="activityList" class="activity-list"></div>
+        </section>
+      </section>
+
+      <section id="backup" class="view">
+        <div class="section-head">
+          <div><h2>Copias de seguridad</h2><p>Descarga los datos administrativos del club en un archivo JSON.</p></div>
+        </div>
+        <div class="backup-grid">
+          <section class="panel backup-card">
+            <div class="backup-icon">⬇</div>
+            <h3>Crear copia completa</h3>
+            <p>Incluye jugadores, equipos, pagos, documentos, tallajes, equipaciones, cuerpo técnico, calendario, pistas y tesorería.</p>
+            <button id="createBackup" class="primary">Descargar copia de seguridad</button>
+            <small id="backupStatus">Todavía no se ha creado ninguna copia en este dispositivo.</small>
+          </section>
+          <section class="panel backup-card">
+            <div class="backup-icon">✓</div>
+            <h3>Recomendación</h3>
+            <p>Guarda una copia después de una carga importante de jugadores y, como mínimo, una vez por semana.</p>
+            <p class="backup-note">Los archivos adjuntos no se descargan; la copia guarda sus rutas y todos los datos asociados.</p>
+          </section>
+        </div>
+      </section>
+
+      <section id="users" class="view">
+        <div class="panel">
+          <div class="panel-title team-title">
+            <div><small>ACCESOS RESTRINGIDOS</small><h3>Usuarios del cuerpo técnico</h3><p>Crea accesos de solo lectura y asigna uno o varios equipos al mismo entrenador. Consulta sus credenciales y restablécelas cuando sea necesario.</p></div>
+            <button id="addTeamUser" class="primary" type="button">+ Nuevo usuario</button>
+          </div>
+          <div id="usersSetupWarning" class="message hidden"></div>
+          <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Usuario</th><th>Equipos</th><th>Cargo</th><th>Contraseña inicial</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="teamUsersBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <section id="seasons" class="view">
+        <div class="section-head"><div><small>HISTÓRICO DEL CLUB</small><h2>Temporadas</h2><p>Cierra una temporada sin borrar sus datos y abre la siguiente para seguir usando el programa año tras año.</p></div></div>
+        <div class="season-manager-grid">
+          <section class="panel season-current-panel"><div class="panel-title"><small>SELECCIONADA</small><h3 id="seasonCurrentTitle">Temporada 2026/27</h3></div><div id="seasonCurrentState" class="season-state-card"></div></section>
+          <section class="panel"><div class="panel-title"><small>HISTÓRICO</small><h3>Temporadas registradas</h3></div><div id="seasonsList" class="seasons-list"></div></section>
+        </div>
+        <section id="seasonRolloverPanel" class="panel season-rollover-panel">
+          <div class="panel-title"><small>CAMBIO DE TEMPORADA</small><h3>Preparar la siguiente temporada</h3><p>Un asistente te permitirá decidir qué jugadores y técnicos continúan y a qué equipo pasan.</p></div>
+          <p class="season-warning"><strong>No se borra el histórico.</strong> Antes del cambio se guarda una copia completa de la temporada actual. La temporada cerrada quedará disponible en modo consulta.</p>
+          <div class="season-reset-note"><strong>Al abrir la siguiente temporada:</strong> cobros, entregas de equipaciones, calendario, uso de pistas, ingresos/gastos, asistencia, partidos, estadísticas y fichas RFAF comienzan de nuevo. Las fichas RFAF anteriores quedan archivadas en su temporada.</div>
+          <button id="openSeasonWizard" class="primary" type="button">Abrir asistente de cambio de temporada</button>
+        </section>
+      </section>
+
+      <section id="publicForm" class="view">
+        <div class="public-box">
+          <div class="public-side"><small>FORMULARIO PÚBLICO</small><h2>Inscripción online</h2><p>Comparte este enlace con las familias:</p><div id="publicUrl" class="url-box"></div><button id="copyUrl" class="light-btn">Copiar enlace</button></div>
+          <div class="public-info"><h3>¿Cómo funciona?</h3><div><b>1</b> Los padres abren el enlace.</div><div><b>2</b> Rellenan los datos y adjuntan documentos.</div><div><b>3</b> La inscripción aparece automáticamente aquí.</div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="playerDialog"><form id="playerForm" class="modal">
+    <div class="modal-head"><div><small>JUGADORES</small><h2>Ficha del jugador</h2></div><button type="button" data-close="playerDialog">×</button></div>
+    <input name="id" type="hidden">
+    <div class="form-grid">
+      <div class="full player-form-section"><strong>Datos del jugador</strong><small>Información personal y deportiva</small></div>
+      <label>Nombre<input name="name" required></label><label>Apellidos<input name="surname" required></label>
+      <label>Fecha nacimiento<input name="birth_date" type="date"></label><label>DNI/NIE jugador<input name="player_dni"></label>
+      <label>Equipo<select name="team" id="playerTeamSelect"><option value="">Sin equipo / seleccionar después</option></select></label><label>Estado<select name="status"><option>Pendiente revisión</option><option>Aprobada</option><option>Rechazada</option><option>Baja</option></select></label>
+      <label>Tutor<input name="guardian"></label><label>Teléfono<input name="phone"></label>
+      <label>Email<input name="email" type="email"></label>
+      <label class="full">Dirección<textarea name="address"></textarea></label><label class="full">Observaciones<textarea name="notes"></textarea></label>
+
+      <div class="full player-form-section"><strong>Documentación adjunta</strong><small>PDF, JPG o PNG. Máximo recomendado: 10 MB por archivo</small></div>
+      <label class="file-upload-card">Fotografía del jugador<input name="photo_file" type="file" accept=".jpg,.jpeg,.png,.webp"><span id="currentPhotoFile"></span></label>
+      <label class="file-upload-card">DNI o libro de familia<input name="player_dni_file" type="file" accept=".pdf,.jpg,.jpeg,.png"><span id="currentPlayerDniFile"></span></label>
+      <label class="file-upload-card">Reconocimiento médico<input name="medical_file" type="file" accept=".pdf,.jpg,.jpeg,.png"><span id="currentMedicalFile"></span></label>
+
+      <div class="full player-form-section"><strong>Ropa y tallaje</strong><small>Jugador y portero quedan diferenciados. La mochila se añade automáticamente a todos los jugadores.</small></div>
+      <label>Camiseta primera equipación jugador<select name="game_shirt"></select></label>
+      <label>Camiseta primera equipación portero<select name="game_shirt_goalkeeper"></select></label>
+      <label>Pantalón equipación jugador<select name="game_shorts"></select></label>
+      <label>Pantalón equipación portero<select name="game_shorts_goalkeeper"></select></label>
+      <label>Camiseta segunda equipación jugador<select name="second_shirt_player"></select></label>
+      <label>Medias jugador<select name="socks"></select></label>
+      <label>Medias portero<select name="socks_goalkeeper"></select></label>
+      <label>Camiseta entrenamiento jugador<select name="training_shirt"></select></label>
+      <label>Camiseta entrenamiento portero<select name="training_shirt_goalkeeper"></select></label>
+      <label>Pantalón entrenamiento jugador<select name="training_shorts"></select></label>
+      <label>Pantalón entrenamiento portero<select name="training_shorts_goalkeeper"></select></label>
+      <label>Sudadera entrenamiento<select name="training_sweatshirt"></select></label>
+      <label>Chaqueta chándal<select name="tracksuit_jacket"></select></label>
+      <label>Pantalón chándal<select name="tracksuit_trousers"></select></label>
+      <label>Mochila<input value="Incluida por defecto" disabled></label>
+    </div>
+    <div class="modal-actions modal-actions-split">
+      <button id="deletePlayerFromForm" type="button" class="danger-action hidden">Eliminar jugador</button>
+      <div class="modal-actions-right">
+        <button type="button" class="secondary" data-close="playerDialog">Cancelar</button>
+        <button class="primary" type="submit">Guardar</button>
+      </div>
+    </div>
+  </form></dialog>
+
+  <dialog id="paymentDialog"><form id="paymentForm" class="modal">
+    <div class="modal-head"><div><small>TESORERÍA</small><h2>Registrar cobro</h2></div><button type="button" data-close="paymentDialog">×</button></div>
+    <input name="player_id" type="hidden">
+    <div class="form-grid">
+      <label>Concepto<select name="concept"><option value="registration">Inscripción</option><option value="sizing">Tallaje</option><option value="clothing">Recogida de ropa</option></select></label>
+      <label>Estado<select name="status"><option>Pendiente</option><option>Pagado</option><option>Parcial</option><option>Exento</option></select></label>
+      <label>Importe<input name="amount" type="number" min="0" step=".01" inputmode="decimal" title="Se completa automáticamente según el concepto"></label><label>Fecha<input name="paid_at" type="date"></label>
+      <label>Forma de pago<select name="method"><option>Efectivo</option><option>Transferencia</option><option>Bizum</option><option>Tarjeta</option><option>Otro</option></select></label>
+      <label>Nº recibo<input name="receipt"></label><label class="full">Justificante de pago<input name="receipt_file" type="file" accept=".pdf,.jpg,.jpeg,.png"></label><div id="existingReceipt" class="full existing-file hidden"></div>
+    </div>
+    <p class="payment-income-note">El importe se completa automáticamente: <strong>50 € inscripción</strong>, <strong>50 € tallaje</strong> o <strong>100 € recogida de ropa</strong>. Solo se escribe manualmente cuando el pago es parcial. El cobro se registrará como <strong>Ingreso</strong>.</p><div class="modal-actions"><button type="button" class="secondary" data-close="paymentDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+  </form></dialog>
+
+  <dialog id="documentDialog"><form id="documentForm" class="modal">
+    <div class="modal-head"><div><small>EXPEDIENTE</small><h2>Documentación</h2></div><button type="button" data-close="documentDialog">×</button></div>
+    <input name="player_id" type="hidden">
+    <div class="form-grid">
+      <label>DNI jugador<select name="player_dni_status"><option>Pendiente</option><option>Recibido</option><option>No requerido</option></select></label>
+      <label>Fotografía<select name="photo_status"><option>Pendiente</option><option>Recibido</option><option>No requerido</option></select></label>
+      <label>Reconocimiento médico<select name="medical_status"><option>Pendiente</option><option>Recibido</option><option>No requerido</option></select></label>
+    </div>
+    <div class="modal-actions"><button type="button" class="secondary" data-close="documentDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+  </form></dialog>
+
+  <dialog id="clothingItemDialog"><form id="clothingItemForm" class="modal clothing-item-modal">
+    <div class="modal-head"><div><small>CATÁLOGO DE EQUIPACIONES</small><h2>Añadir nueva prenda</h2></div><button type="button" data-close="clothingItemDialog">×</button></div>
+    <div class="form-grid">
+      <label class="full">Nombre de la prenda<input name="label" required placeholder="Ej.: Chaleco de entrenamiento"></label>
+      <label>Categoría<select name="category"><option>Juego</option><option>Entrenamiento</option><option>Paseo</option><option selected>Complementos</option></select></label>
+      <label>Destinada a<select name="audience"><option value="players">Jugadores</option><option value="staff">Cuerpo técnico</option><option value="both" selected>Jugadores y cuerpo técnico</option></select></label>
+      <p class="full clothing-item-help">La prenda aparecerá automáticamente en la categoría y en el apartado de tallajes seleccionado.</p>
+    </div>
+    <div class="modal-actions"><button type="button" class="secondary" data-close="clothingItemDialog">Cancelar</button><button class="primary" type="submit">Añadir prenda</button></div>
+  </form></dialog>
+
+  <dialog id="kitDialog"><form id="kitForm" class="modal">
+    <div class="modal-head"><div><small>TALLAJE JUGADOR</small><h2>Equipación completa</h2></div><button type="button" data-close="kitDialog">×</button></div>
+    <input name="player_id" type="hidden">
+    <div class="form-grid size-grid visual-size-grid">
+      <label class="visual-size-field" data-clothing-key="game_shirt"><span class="visual-size-photo"></span><span class="visual-size-name">Camiseta primera equipación jugador</span><select name="game_shirt"></select></label>
+      <label class="visual-size-field" data-clothing-key="game_shirt_goalkeeper"><span class="visual-size-photo"></span><span class="visual-size-name">Camiseta primera equipación portero</span><select name="game_shirt_goalkeeper"></select></label>
+      <label class="visual-size-field" data-clothing-key="game_shorts"><span class="visual-size-photo"></span><span class="visual-size-name">Pantalón equipación jugador</span><select name="game_shorts"></select></label>
+      <label class="visual-size-field" data-clothing-key="game_shorts_goalkeeper"><span class="visual-size-photo"></span><span class="visual-size-name">Pantalón equipación portero</span><select name="game_shorts_goalkeeper"></select></label>
+      <label class="visual-size-field" data-clothing-key="second_shirt_player"><span class="visual-size-photo"></span><span class="visual-size-name">Camiseta segunda equipación jugador</span><select name="second_shirt_player"></select></label>
+      <label class="visual-size-field" data-clothing-key="socks"><span class="visual-size-photo"></span><span class="visual-size-name">Medias jugador</span><select name="socks"></select></label>
+      <label class="visual-size-field" data-clothing-key="socks_goalkeeper"><span class="visual-size-photo"></span><span class="visual-size-name">Medias portero</span><select name="socks_goalkeeper"></select></label>
+      <label class="visual-size-field" data-clothing-key="training_shirt"><span class="visual-size-photo"></span><span class="visual-size-name">Camiseta entrenamiento jugador</span><select name="training_shirt"></select></label>
+      <label class="visual-size-field" data-clothing-key="training_shirt_goalkeeper"><span class="visual-size-photo"></span><span class="visual-size-name">Camiseta entrenamiento portero</span><select name="training_shirt_goalkeeper"></select></label>
+      <label class="visual-size-field" data-clothing-key="training_shorts"><span class="visual-size-photo"></span><span class="visual-size-name">Pantalón entrenamiento jugador</span><select name="training_shorts"></select></label>
+      <label class="visual-size-field" data-clothing-key="training_shorts_goalkeeper"><span class="visual-size-photo"></span><span class="visual-size-name">Pantalón entrenamiento portero</span><select name="training_shorts_goalkeeper"></select></label>
+      <label class="visual-size-field" data-clothing-key="training_sweatshirt"><span class="visual-size-photo"></span><span class="visual-size-name">Sudadera entrenamiento</span><select name="training_sweatshirt"></select></label>
+      <label class="visual-size-field" data-clothing-key="tracksuit_jacket"><span class="visual-size-photo"></span><span class="visual-size-name">Chaqueta chándal</span><select name="tracksuit_jacket"></select></label>
+      <label class="visual-size-field" data-clothing-key="tracksuit_trousers"><span class="visual-size-photo"></span><span class="visual-size-name">Pantalón chándal</span><select name="tracksuit_trousers"></select></label>
+      <label class="visual-size-field" data-clothing-key="backpack"><span class="visual-size-photo"></span><span class="visual-size-name">Mochila</span><input value="Incluida por defecto" disabled></label>
+      <div id="playerCustomClothingFields" class="full custom-clothing-fields"></div>
+      <label>Tallaje realizado<select name="sized"><option>No</option><option>Sí</option></select></label>
+      <label>Ropa entregada<select name="delivered"><option>No</option><option>Sí</option></select></label>
+      <label>Fecha tallaje<input name="sizing_date" type="date"></label>
+      <label>Fecha entrega<input name="delivery_date" type="date"></label>
+      <label class="full">Observaciones<textarea name="notes"></textarea></label>
+    </div>
+    <div class="modal-actions"><button type="button" class="secondary" data-close="kitDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+  </form></dialog>
+
+
+  <dialog id="teamDialog"><form id="teamForm" class="modal">
+    <div class="modal-head"><div><small>EQUIPOS</small><h2>Ficha del equipo</h2></div><button type="button" data-close="teamDialog">×</button></div>
+    <input name="id" type="hidden">
+    <div class="form-grid">
+      <label>Nombre del equipo<input name="name" required></label>
+      <label>Categoría de edad<select name="age_category"><option value="">Seleccionar</option><option>Bebé</option><option>Prebenjamín</option><option>Benjamín</option><option>Alevín</option><option>Infantil</option><option>Cadete</option><option>Juvenil</option></select></label>
+      <label>Modalidad<input name="category" placeholder="Fútbol 7 / Fútbol 11"></label>
+      <label>Entrenador<select name="coach_id"><option value="">Sin asignar</option></select></label>
+      <label>Delegado<input name="delegate_name"></label>
+      <label>Horario de entrenamiento<input name="training_schedule"></label>
+      <label>Campo<input name="field"></label>
+      <label class="full">Observaciones<textarea name="notes"></textarea></label>
+    </div>
+    <div class="modal-actions modal-actions-split">
+      <button id="deleteTeamFromForm" type="button" class="danger-action hidden">Eliminar equipo</button>
+      <div class="modal-actions-right">
+        <button type="button" class="secondary" data-close="teamDialog">Cancelar</button>
+        <button class="primary" type="submit">Guardar</button>
+      </div>
+    </div>
+  </form></dialog>
+
+  <dialog id="staffDialog"><form id="staffForm" class="modal">
+    <div class="modal-head"><div><small>CUERPO TÉCNICO</small><h2 id="staffDialogTitle">Nuevo miembro</h2></div><button type="button" data-close="staffDialog">×</button></div>
+    <input name="id" type="hidden">
+    <div class="form-grid">
+      <label>Nombre y apellidos<input name="name" required></label>
+      <label>Cargo<select name="role" required><option value="">Seleccionar cargo</option><option>Entrenador</option><option>Segundo entrenador</option><option>Delegado</option><option>Encargado del material</option></select></label>
+      <label>Equipo<select name="team_name"><option value="">Sin asignar</option></select></label>
+      <label>Teléfono<input name="phone"></label>
+      <label>Email<input name="email" type="email"></label>
+      <label class="full">Observaciones<textarea name="notes"></textarea></label>
+      <div class="full staff-size-title">Tallaje del cuerpo técnico</div>
+      <label>Camiseta entrenamiento<select name="training_shirt"></select></label>
+      <label>Pantalón entrenamiento cuerpo técnico<select name="training_shorts"></select></label>
+      <label>Sudadera entrenamiento<select name="training_sweatshirt"></select></label>
+      <label>Chaqueta chándal<select name="tracksuit_jacket"></select></label>
+      <label>Pantalón chándal<select name="tracksuit_trousers"></select></label>
+      <label>Polo de paseo<select name="polo"></select></label>
+      <label>Mochila<input value="Incluida por defecto" disabled></label>
+      <label>Tallaje realizado<select name="sized"><option>No</option><option>Sí</option></select></label>
+      <label>Ropa entregada<select name="delivered"><option>No</option><option>Sí</option></select></label>
+      <div id="staffCustomClothingFields" class="full custom-clothing-fields"></div>
+    </div>
+    <div class="modal-actions"><button type="button" class="secondary" data-close="staffDialog">Cancelar</button><button class="primary" type="submit">Guardar miembro</button></div>
+  </form></dialog>
+
+  <dialog id="eventDialog"><form id="eventForm" class="modal">
+    <div class="modal-head"><div><small>CALENDARIO</small><h2>Nuevo evento</h2></div><button type="button" data-close="eventDialog">×</button></div>
+    <input name="id" type="hidden">
+    <div class="form-grid">
+      <label>Título<input name="title" required></label>
+      <label>Tipo<select name="event_type"><option>Entrenamiento</option><option>Partido</option><option>Reunión</option><option>Evento</option><option>Captación</option><option>Otro</option></select></label>
+      <label>Fecha<input name="event_date" type="date" required></label>
+      <label>Hora<input name="event_time" type="time"></label>
+      <label>Equipo<input name="team_name"></label>
+      <label>Lugar<input name="location"></label>
+      <label class="full">Descripción<textarea name="description"></textarea></label>
+    </div>
+    <div class="modal-actions"><button type="button" class="secondary" data-close="eventDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+  </form></dialog>
+
+
+  <dialog id="pitchDialog"><form id="pitchForm" class="modal">
+    <div class="modal-head"><div><small>PISTAS</small><h2>Registrar uso</h2></div><button type="button" data-close="pitchDialog">×</button></div>
+    <input name="id" type="hidden">
+    <div class="form-grid">
+      <label>Fecha<input name="usage_date" type="date" required></label>
+      <label>Equipo<select name="team_name" required></select></label>
+      <label>Tipo<select name="usage_type"><option>Entrenamiento</option><option>Partido</option></select></label>
+      <label>Importe (€)<input name="amount" type="number" step=".01" required></label>
+      <label>Campo o pista<input name="field_name"></label>
+      <label>Hora<input name="usage_time" type="time"></label>
+      <label class="full">Observaciones<textarea name="notes"></textarea></label>
+    </div>
+    <div class="modal-actions"><button type="button" class="secondary" data-close="pitchDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+  </form></dialog>
+
+  <dialog id="sponsorshipDialog"><form id="sponsorshipForm" class="modal sponsorship-modal">
+    <div class="modal-head"><div><small>PATROCINIO</small><h2 id="sponsorshipDialogTitle">Nuevo patrocinio</h2></div><button type="button" data-close="sponsorshipDialog">×</button></div>
+    <input name="id" type="hidden">
+    <input name="logo_path" type="hidden">
+    <div class="form-grid">
+      <label class="full">Nombre del patrocinador<input name="sponsor_name" required placeholder="Ej.: Empresa patrocinadora"></label>
+      <label class="full sponsorship-logo-field">Logo del patrocinador<input id="sponsorshipLogoFile" name="logo_file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"><span class="field-help">PNG, JPG, WEBP o SVG.</span></label>
+      <div id="sponsorshipLogoPreviewWrap" class="full sponsorship-logo-preview hidden"><img id="sponsorshipLogoPreview" alt="Vista previa del logo"></div>
+      <label>Tipo de patrocinio<select name="sponsorship_type" required>
+        <option>Patrocinador principal</option>
+        <option>Mangas primera equipación</option>
+        <option>Camiseta entrenamiento parte frontal</option>
+        <option>Camiseta entrenamiento parte trasera</option>
+        <option>Sudadera</option>
+        <option>Chándal</option>
+        <option>Lona</option>
+        <option>Otros</option>
+      </select></label>
+      <label>Duración<select name="duration" required><option>6 meses</option><option>1 temporada</option><option>2 temporadas</option></select></label>
+      <label>Importe (€)<input name="amount" type="number" min="0" step="0.01" required placeholder="0,00"></label>
+      <label>Estado<select name="status" required><option>Pendiente</option><option>Pagado</option></select></label>
+    </div>
+    <p class="form-help sponsorship-accounting-help">Al marcarlo como <strong>Pagado</strong>, el importe se añadirá automáticamente a <strong>Ingresos y gastos</strong> como ingreso de Patrocinio.</p>
+    <div class="modal-actions"><button type="button" class="secondary" data-close="sponsorshipDialog">Cancelar</button><button class="primary" type="submit">Guardar patrocinio</button></div>
+  </form></dialog>
+
+  <dialog id="movementDialog"><form id="movementForm" class="modal">
+    <div class="modal-head"><div><small>TESORERÍA</small><h2>Nuevo movimiento</h2></div><button type="button" data-close="movementDialog">×</button></div>
+    <input name="id" type="hidden">
+    <div class="form-grid">
+      <label>Fecha<input name="movement_date" type="date" required></label>
+      <label>Tipo<select name="movement_type"><option>Ingreso</option><option>Gasto</option></select></label>
+      <label>Categoría<input name="category" required></label>
+      <label>Concepto<input name="concept" required></label>
+      <label>Importe (€)<input name="amount" type="number" min="0" step=".01" required></label>
+      <label>Forma de pago<select name="payment_method"><option>Efectivo</option><option>Transferencia</option><option>Bizum</option><option>Tarjeta</option><option>Banco</option><option>Otro</option></select></label>
+      <label>Proveedor / persona<input name="party_name"></label>
+      <label>Nº factura / justificante<input name="document_number"></label>
+      <label class="full">Observaciones<textarea name="notes"></textarea></label>
+    </div>
+    <div class="modal-actions"><button type="button" class="secondary" data-close="movementDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+  </form></dialog>
+
+
+  <dialog id="technicalTeamChooser" class="technical-team-chooser">
+    <div class="modal technical-team-chooser-modal">
+      <div class="modal-head"><div><small>ACCESO DEL CUERPO TÉCNICO</small><h2>¿Qué equipo quieres ver?</h2></div></div>
+      <p class="technical-team-chooser-help">Este usuario tiene acceso a varios equipos. Elige el que quieres abrir en este dispositivo. Podrás cambiarlo después desde la parte superior.</p>
+      <div id="technicalTeamChoices" class="technical-team-choice-grid"></div>
+    </div>
+  </dialog>
+
+  <dialog id="teamUserDialog">
+    <form id="teamUserForm" class="modal">
+      <div class="modal-head"><div><small>USUARIO RESTRINGIDO</small><h2>Acceso del cuerpo técnico · Multiequipo</h2></div><button type="button" data-close="teamUserDialog">×</button></div>
+      <input type="hidden" name="id">
+      <div class="form-grid">
+        <label>Nombre completo<input name="display_name" required></label>
+        <label>Cargo<select name="role_label"><option>Entrenador</option><option>Segundo entrenador</option><option>Delegado</option><option>Encargado del material</option><option>Cuerpo técnico</option></select></label>
+        <input type="hidden" name="team_id">
+        <div class="wide team-user-teams-field">
+          <span>Equipos asignados</span>
+          <div id="teamUserTeamChoices" class="team-user-team-choices"></div>
+          <small>Marca uno o varios equipos. El primero seleccionado se utilizará como equipo principal.</small>
+        </div>
+        <label class="wide">Nombre de usuario<div class="credential-field"><input name="username" type="text" minlength="3" pattern="[A-Za-z0-9._-]+" placeholder="Ej.: ent_alevin_a" required><button id="generateUsername" class="secondary mini" type="button">Generar</button></div></label>
+        <label class="wide">Contraseña inicial<div class="credential-field"><input name="password" type="text" minlength="6" autocomplete="new-password" placeholder="Mínimo 6 caracteres"><button id="generatePassword" class="secondary mini" type="button">Generar</button></div></label>
+        <label>Estado<select name="active"><option value="true">Activo</option><option value="false">Inactivo</option></select></label>
+      </div>
+      <p class="form-help">La contraseña inicial será visible únicamente para el administrador. Si se olvida, podrás restablecerla, imprimirla o copiarla para enviarla por WhatsApp.</p>
+      <div class="modal-actions"><button type="button" class="secondary" data-close="teamUserDialog">Cancelar</button><button class="primary" type="submit">Guardar acceso</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="teamDetailDialog" class="team-detail-dialog-large">
+    <div class="modal team-detail-modal">
+      <div class="modal-head"><div><small>EQUIPO</small><h2 id="teamDetailTitle">Plantilla</h2></div><button type="button" data-close="teamDetailDialog">×</button></div>
+      <div id="teamDetailContent" class="team-detail-content"></div>
+      <div class="modal-actions modal-actions-split">
+        <button id="deleteTeamFromDetail" type="button" class="danger-action">Eliminar equipo</button>
+        <div class="modal-actions-right">
+          <button id="teamDetailSwitchTechnicalTeam" type="button" class="secondary hidden">⇄ Cambiar de equipo</button>
+          <button type="button" class="secondary" data-close="teamDetailDialog">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="matchDialog">
+    <form id="matchForm" class="modal match-modal">
+      <div class="modal-head"><div><small>PARTIDO</small><h2 id="matchDialogTitle">Nuevo partido</h2></div><button type="button" data-close="matchDialog">×</button></div>
+      <input name="id" type="hidden">
+      <div class="form-grid">
+        <label>Equipo<select name="team" required></select></label>
+        <label>Competición<select name="competition" id="matchCompetition" required><option value="">Selecciona competición</option><option value="Liga RFAF">Liga RFAF</option><option value="Liga AAFB">Liga AAFB</option><option value="Copa Primavera">Copa Primavera</option><option value="Amistoso">Amistoso</option></select></label>
+        <div class="competition-logo-preview" id="competitionLogoPreview"><span>Selecciona una competición</span></div>
+        <label>Jornada<select name="round" id="matchRound" required></select></label>
+        <label>Fecha<input name="match_date" type="date" required></label>
+        <label>Hora<input name="match_time" type="time"></label>
+        <label>Condición<select name="venue"><option value="home">Local</option><option value="away">Visitante</option></select></label>
+        <label>Equipo rival<select name="opponent" id="matchOpponent" required></select></label>
+        <label id="customOpponentWrap" class="full match-extra-field" hidden>Nombre del rival<input name="opponent_custom" placeholder="Escribe el nombre del equipo rival"></label>
+        <label>Campo / instalación<select name="location" id="matchLocation"></select></label>
+        <label id="customLocationWrap" class="full match-extra-field" hidden>Nombre del campo<input name="location_custom" placeholder="Escribe el campo o instalación"></label>
+        <label class="full">Observaciones<textarea name="notes"></textarea></label>
+      </div>
+      <div class="modal-actions"><button type="button" class="secondary" data-close="matchDialog">Cancelar</button><button class="primary" type="submit">Guardar partido</button></div>
+    </form>
+  </dialog>
+
+
+  <dialog id="resultDialog">
+    <form id="resultForm" class="modal result-modal">
+      <div class="modal-head"><div><small>RESULTADO</small><h2 id="resultDialogTitle">Añadir resultado</h2></div><button type="button" data-close="resultDialog">×</button></div>
+      <input name="id" type="hidden">
+      <div class="result-score-grid">
+        <label><span id="resultTeamLabel">Club</span><input name="goals_for" type="number" min="0" step="1" required></label>
+        <strong>–</strong>
+        <label><span id="resultOpponentLabel">Rival</span><input name="goals_against" type="number" min="0" step="1" required></label>
+      </div>
+      <div class="modal-actions"><button type="button" class="secondary" data-close="resultDialog">Cancelar</button><button class="primary" type="submit">Guardar resultado</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="matchesPdfDialog">
+    <div class="modal match-import-modal">
+      <div class="modal-head"><div><small>IMPORTACIÓN</small><h2>Importar calendario RFAF / PDF</h2></div><button type="button" data-close="matchesPdfDialog">×</button></div>
+      <div class="match-import-grid">
+        <label>Equipo<select id="pdfImportTeam"></select></label>
+        <label>Competición<input id="pdfImportCompetition" placeholder="Liga, Copa Primavera..."></label>
+        <label class="full">Archivo PDF<input id="matchesPdfFile" type="file" accept="application/pdf"></label>
+      </div>
+      <p class="match-import-help">Reconoce automáticamente el modelo oficial de Calendario de Competiciones de la RFAF. Detecta cada jornada y su fecha, local/visitante y rival, y crea solo los partidos del equipo seleccionado. Los descansos se omiten y los partidos ya existentes no se duplican. Antes de guardar podrás revisar el resultado.</p>
+      <div id="matchesPdfStatus" class="match-import-status"></div>
+      <div class="table-wrap match-import-preview-wrap">
+        <table class="match-import-preview"><thead><tr><th>Importar</th><th>Fecha</th><th>Hora</th><th>Jornada</th><th>Local</th><th>Visitante</th><th>Campo</th><th>Estado</th></tr></thead><tbody id="matchesPdfPreview"></tbody></table>
+      </div>
+      <div class="modal-actions"><button type="button" class="secondary" data-close="matchesPdfDialog">Cancelar</button><button id="analyzeMatchesPdf" class="secondary" type="button">Analizar PDF</button><button id="confirmMatchesImport" class="primary" type="button" disabled>Importar partidos</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="rivalTeamsDialog">
+    <div class="modal rival-teams-modal">
+      <div class="modal-head"><div><small>EQUIPOS RIVALES</small><h2>Equipos, escudos y campos</h2></div><button type="button" data-close="rivalTeamsDialog" aria-label="Cerrar">×</button></div>
+      <div class="rival-teams-scroll-body">
+        <form id="rivalTeamForm" class="rival-team-form">
+          <input name="id" type="hidden">
+          <label>Nombre del equipo<input name="name" required placeholder="Ej. Algeciras CF"></label>
+          <label>Escudo<input name="crest" type="file" accept="image/*"></label>
+          <div id="rivalCrestPreview" class="rival-crest-preview"><span>Sin escudo</span></div>
+          <div class="modal-actions"><button type="button" id="cancelRivalEdit" class="secondary">Limpiar</button><button type="submit" class="primary">Guardar equipo</button></div>
+        </form>
+        <div class="rival-manager-summary"><strong id="rivalTeamsCount">0 equipos rivales</strong><span>Sin límite fijo de equipos. Los escudos se optimizan automáticamente para no llenar el almacenamiento del navegador.</span></div>
+        <div id="rivalTeamsList" class="rival-teams-list"></div>
+        <section class="v258-fields-section">
+          <div class="v258-fields-section-head"><div><h3>Campos e instalaciones</h3><p>Crea los campos que aparecerán en el desplegable de cada partido.</p></div></div>
+          <form id="matchFieldForm" class="v258-field-form">
+            <input name="field_name" required placeholder="Ej. Montepalma · Campo 1">
+            <button type="submit">+ Añadir campo</button>
+          </form>
+          <div id="matchFieldsList" class="v258-fields-list"></div>
+        </section>
+      </div>
+    </div>
+  </dialog>
+
+
+  <dialog id="sportsTrainingDialog">
+    <form id="sportsTrainingForm" class="modal sports-modal" data-technical-edit="true">
+      <input name="id" type="hidden">
+      <div class="modal-head"><div><small>ASISTENCIA</small><h2 id="sportsTrainingDialogTitle">Nuevo entrenamiento</h2></div><button type="button" data-close="sportsTrainingDialog">×</button></div>
+      <div class="sports-form-grid">
+        <label><span>Equipo</span><select name="team_id" required></select></label>
+        <label><span>Fecha</span><input name="session_date" type="date" required></label>
+        <label><span>Hora</span><input name="session_time" type="time"></label>
+        <label><span>Tipo de sesión</span><select name="session_type"><option>Entrenamiento</option><option>Preparación física</option><option>Técnica</option><option>Táctica</option><option>Recuperación</option><option>Otro</option></select></label>
+        <label class="span-2"><span>Título</span><input name="title" required placeholder="Entrenamiento semanal"></label>
+        <label class="span-2"><span>Observaciones</span><input name="notes" placeholder="Contenido o incidencias de la sesión"></label>
+      </div>
+      <section class="sports-roster-panel"><div class="sports-roster-heading"><div><h3>Asistencia de la plantilla</h3><p>Marca la situación de cada jugador.</p></div></div><div id="sportsTrainingRoster"></div></section>
+      <div class="sports-dialog-actions"><button type="button" class="secondary" data-close="sportsTrainingDialog">Cancelar</button><button type="submit" class="primary">Guardar asistencia</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="sportsMatchDialog">
+    <form id="sportsMatchForm" class="modal sports-modal" data-technical-edit="true">
+      <input name="id" type="hidden">
+      <div class="modal-head"><div><small>PARTIDO</small><h2 id="sportsMatchDialogTitle">Nuevo partido</h2></div><button type="button" data-close="sportsMatchDialog">×</button></div>
+      <div class="sports-match-scroll-body">
+        <div class="sports-form-grid">
+          <label><span>Equipo</span><select name="team_id" required></select></label>
+          <label><span>Fecha</span><input name="match_date" type="date" required></label>
+          <label><span>Hora</span><input name="match_time" type="time"></label>
+          <label><span>Condición</span><select name="home_away"><option>Local</option><option>Visitante</option></select></label>
+          <label class="span-2"><span>Rival</span><input name="opponent" required placeholder="Nombre del equipo rival"></label>
+          <label><span>Competición</span><select name="competition" id="sportsMatchCompetition"><option value="">Selecciona competición</option><option value="Liga RFAF">Liga RFAF</option><option value="Liga AAFB">Liga AAFB</option><option value="Copa Primavera">Copa Primavera</option><option value="Amistoso">Amistoso</option></select></label>
+          <label><span>Campo</span><input name="venue" placeholder="Instalación"></label>
+          <label><span>Goles a favor</span><input name="goals_for" type="number" min="0" placeholder="Pendiente"></label>
+          <label><span>Goles en contra</span><input name="goals_against" type="number" min="0" placeholder="Pendiente"></label>
+          <label class="span-2"><span>Observaciones</span><input name="notes" placeholder="Incidencias del partido"></label>
+        </div>
+        <section class="sports-roster-panel">
+          <div class="sports-roster-heading"><div><h3>Convocatoria y estadísticas</h3><p>Introduce la situación, minutos y tarjetas de cada jugador.</p></div><button type="button" class="secondary sports-callup-pdf" id="sportsCallupPdf">📄 Descargar convocatoria PDF</button></div>
+          <div id="sportsMatchRoster"></div>
+        </section>
+      </div>
+      <div class="sports-dialog-actions"><button type="button" class="secondary" data-close="sportsMatchDialog">Cancelar</button><button type="submit" class="primary">Guardar partido</button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+  <script src="config.js?v=27246"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="sports-v27238.js?v=27246"></script>
+  <script src="cards-v27249.js?v=27249"></script>
+
+  <dialog id="posterDialog" class="v261-poster-dialog">
+    <div class="v261-poster-shell">
+      <header class="v261-editor-head">
+        <div class="v261-brand"><span class="v261-dragon">🐉</span><div><strong>EDITOR DE CARTEL DEL PARTIDO</strong><small>Crea carteles espectaculares para tus partidos</small></div></div>
+        <nav class="v261-steps"><span class="active">1 EDITAR</span><span>2 PREVIA</span><span>3 DESCARGAR / COMPARTIR</span></nav>
+        <button id="closePosterEditor" type="button" aria-label="Cerrar editor">×</button>
+      </header>
+      <div class="v261-editor-grid">
+        <aside class="v261-left-panel">
+          <section><h3>⚔ DATOS DEL PARTIDO</h3></section>
+          <section><h3>Ⓣ TEXTO PRINCIPAL</h3><input id="posterHeadline" maxlength="30" value="MATCH DAY"><div class="v261-style-row"><select id="posterTitleFont"><option value="serif">Bebas / épica</option><option value="sans">Moderna</option><option value="impact">Impacto</option></select><button type="button" class="v261-style-btn" data-title-style="bold">B</button><button type="button" class="v261-style-btn" data-title-style="italic">I</button><button type="button" class="v261-style-btn" data-title-style="underline">U</button><input id="posterTitleColor" type="color" value="#eef7ff" aria-label="Color del título"></div></section>
+          <section><h3>Ⓣ TEXTO SECUNDARIO</h3><input id="posterSubtitle" maxlength="40" value="PROHIBIDO RENDIRSE"><div class="v261-style-row"><select id="posterSubtitleFont"><option value="sans">Moderna</option><option value="serif">Clásica</option><option value="impact">Impacto</option></select><button type="button" class="v261-style-btn" data-subtitle-style="bold">B</button><button type="button" class="v261-style-btn" data-subtitle-style="italic">I</button><button type="button" class="v261-style-btn" data-subtitle-style="underline">U</button><input id="posterSubtitleColor" type="color" value="#168cff" aria-label="Color del subtítulo"></div></section>
+          <section><h3>🏆 COMPETICIÓN</h3><input id="posterCompetition" type="text"><div class="v260-two"><label>Jornada<input id="posterRound" type="text"></label><label>Temporada<input id="posterSeason" type="text" value="2026/27"></label></div></section>
+          <section><h3>🛡 EQUIPOS</h3><label>Equipo local<input id="posterHome" type="text"></label><div class="v261-vs">VS</div><label>Equipo visitante<input id="posterAway" type="text"></label></section>
+          <section><h3>📅 FECHA, HORA Y LUGAR</h3><div class="v260-two"><label>Fecha<input id="posterDate" type="date"></label><label>Hora<input id="posterTime" type="time"></label></div><label>Campo / instalación<input id="posterField" type="text"></label></section>
+          <section><h3>☷ ELEMENTOS VISIBLES</h3><div class="v261-switches"><label><span>Escudos de los equipos</span><input id="posterShowCrests" type="checkbox" checked></label><label><span>Competición y jornada</span><input id="posterShowComp" type="checkbox" checked></label><label><span>Fecha y hora</span><input id="posterShowDate" type="checkbox" checked></label><label><span>Campo / instalación</span><input id="posterShowField" type="checkbox" checked></label><label><span>Resultado</span><input id="posterShowResult" type="checkbox" checked></label></div><div class="v260-two"><label>Goles local<input id="posterHomeGoals" type="number" min="0" placeholder="-"></label><label>Goles visitante<input id="posterAwayGoals" type="number" min="0" placeholder="-"></label></div></section>
+          <button id="regeneratePoster" type="button" class="v261-generate">✨ GENERAR CARTEL</button>
+        </aside>
+        <main class="v261-preview"><canvas id="matchPosterCanvas" width="1080" height="1350"></canvas></main>
+        <aside class="v261-right-panel">
+          <section><h3>PLANTILLAS</h3><div id="posterTemplatesGrid" class="v261-template-grid"></div><select id="posterTemplate" hidden></select></section>
+          <section><h3>FORMATO DEL CARTEL</h3><div class="v261-format-grid"><button type="button" data-format="square">CUADRADO<small>1080×1080</small></button><button type="button" data-format="portrait" class="active">VERTICAL<small>1080×1350</small></button><button type="button" data-format="story">HISTORIA<small>1080×1920</small></button></div><select id="posterFormat" hidden><option value="square">Cuadrado</option><option value="portrait" selected>Vertical</option><option value="story">Historia</option></select></section>
+          <section><h3>ACCIONES</h3><button id="downloadPoster" type="button" class="v261-primary">⬇ DESCARGAR JPG</button><button id="sharePosterFacebook" type="button">● COMPARTIR EN FACEBOOK</button><button id="sharePosterInstagram" type="button">◎ COMPARTIR EN INSTAGRAM</button><button id="sharePoster" type="button">↗ MÁS OPCIONES</button></section>
+          <div class="v261-tip"><strong>Consejo:</strong> usa una plantilla diferente para cada jornada y personaliza todos los textos antes de descargar.</div>
+        </aside>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="seasonRolloverWizard" class="season-wizard-dialog">
+    <div class="season-wizard-shell">
+      <header class="season-wizard-head">
+        <div><small>ASISTENTE DE CAMBIO ANUAL</small><h2 id="seasonWizardTitle">Preparar nueva temporada</h2></div>
+        <button id="closeSeasonWizard" type="button" aria-label="Cerrar">×</button>
+      </header>
+      <div id="seasonWizardSteps" class="season-wizard-steps"></div>
+      <div id="seasonWizardBody" class="season-wizard-body"></div>
+      <footer class="season-wizard-footer">
+        <button id="seasonWizardBack" class="secondary" type="button">Anterior</button>
+        <div class="season-wizard-footer-right">
+          <span id="seasonWizardHint"></span>
+          <button id="seasonWizardNext" class="primary" type="button">Continuar</button>
+        </div>
+      </footer>
+    </div>
+  </dialog>
+
+  <script src="app-v27248.js?v=27248"></script>
+  <script src="calendar-v27247.js?v=27247"></script>
+  <script src="inventory-v2600.js?v=27246"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js?v=27249", { updateViaCache: "none" })
+          .then(registration => registration.update())
+          .catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

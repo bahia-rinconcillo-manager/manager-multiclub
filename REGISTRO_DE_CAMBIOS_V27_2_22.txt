@@ -1,0 +1,19 @@
+CD SAN BERNABÉ MANAGER · V27.2.22
+
+1. ACCESO TÉCNICO MULTIEQUIPO
+- Si un usuario técnico tiene dos o más equipos asignados, el selector se muestra siempre al entrar.
+- Se elimina el salto automático al último equipo guardado en el dispositivo.
+- El entrenador puede elegir cualquiera de sus equipos antes de cargar el área privada.
+- Se mantiene el botón “Cambiar equipo” para cambiar posteriormente sin cerrar sesión.
+
+2. FICHA DE EQUIPO EN MÓVIL
+- Las pestañas Resumen, Plantilla, Tarjetero, Cuerpo técnico, Documentación, Pagos, Tallajes, Calendario, Asistencia, Partidos, Estadísticas, Informes y Accidentes dejan de ocupar una franja fija.
+- En móvil se sustituyen por un menú compacto ☰.
+- El menú no es fijo: se desplaza con el contenido y deja libre la pantalla.
+- Al abrirlo muestra todos los apartados y al elegir uno vuelve a quedar cerrado.
+- En ordenador se mantienen las pestañas normales.
+
+BASE
+- Conserva todas las funciones y correcciones de V27.2.21.
+- No requiere cambios en Supabase.
+- NO NECESITA SQL.

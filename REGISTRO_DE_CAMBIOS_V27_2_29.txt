@@ -1,0 +1,10 @@
+CD SAN BERNABÉ MANAGER · V27.2.29
+
+- Se vuelve a una base estable anterior a las revisiones que provocaban pantalla en blanco.
+- El acceso del cuerpo técnico se resuelve antes que cualquier sesión de administrador almacenada.
+- Si hay varios equipos, la elección se muestra en una pantalla independiente antes de cargar el programa.
+- El selector usa el bundle general V27.2.26, válido para cualquier técnico con varios equipos.
+- Al elegir equipo se activa en Supabase y solo entonces se carga el área privada correspondiente.
+- Si falla la sesión o el selector, se muestra un mensaje visible y nunca se deja una pantalla en blanco.
+- Se fuerza limpieza real de caché/PWA al detectar V27.2.29.
+- No requiere SQL adicional si V27.2.26 ya fue ejecutado.

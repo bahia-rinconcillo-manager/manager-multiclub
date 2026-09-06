@@ -1,0 +1,12 @@
+V27.2.36
+
+CORRECCIÓN DEFINITIVA DEL CÍRCULO DEL CALENDARIO POR EQUIPO
+
+1. Se corrige el componente que realmente renderiza las tarjetas visibles del calendario: v258.
+2. Se elimina border-radius:50%, borde, fondo blanco, sombra y overflow:hidden de .v258-team-crest.
+3. El escudo usa object-fit:contain y se muestra entero sin máscara circular.
+4. En móvil se mantiene el mismo comportamiento, con tamaño adaptado.
+5. Amistoso queda incluido directamente en el módulo calendar-v27236.js.
+6. La cabecera de Amistoso ya no muestra un círculo blanco con '?': muestra AM sobre fondo transparente.
+7. Se conserva sin cambios el calendario general del club y el acceso técnico multiequipo.
+8. No necesita SQL.

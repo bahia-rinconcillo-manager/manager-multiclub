@@ -1,0 +1,11 @@
+CD San Bernabé Manager V27.1.10
+
+CORRECCIÓN TARJETERO RFAF
+- Se corrige el caso en el que el PDF repite varias veces en la capa de texto etiquetas como "Nombre:" de una misma licencia.
+- Esas repeticiones ya no se interpretan como fichas distintas.
+- Si una página RFAF contiene una única licencia lógica, se conserva la página completa como una sola ficha.
+- Ya no se calcula el ancho de la licencia usando únicamente el bloque de texto, porque la fotografía y el código/barra son imágenes y no aparecen en esa capa.
+- En páginas con varias licencias, el tamaño se calcula por la distancia entre las anclas de cada ficha para incluir también la fotografía situada a la derecha.
+- Se cambia el nombre del archivo JS y la versión de caché para evitar que el navegador siga utilizando V27.1.9.
+
+NO REQUIERE SQL.

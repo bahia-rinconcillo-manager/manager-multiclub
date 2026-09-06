@@ -1,0 +1,10 @@
+CD SAN BERNABÉ MANAGER · V27.2.20
+
+CORRECCIÓN
+- Tallaje técnicos > Imprimir / PDF ya no usa una ventana emergente.
+- La impresión se genera desde la propia aplicación, compatible con PWA instalada, móvil y escritorio.
+- Se abre directamente el diálogo nativo de impresión, desde donde se puede imprimir o Guardar como PDF.
+- Formato de impresión apaisado para que entren las columnas del tallaje.
+
+BASE DE DATOS
+- No necesita SQL.

@@ -1,0 +1,25 @@
+CD SAN BERNABÉ MANAGER · V27.2.16
+
+CAMBIOS
+1. Se diferencian en Ropa y tallaje:
+   - Camiseta primera equipación jugador
+   - Camiseta primera equipación portero
+   - Pantalón equipación jugador
+   - Pantalón equipación portero
+   - Camiseta segunda equipación jugador
+   - Medias jugador
+   - Medias portero
+   - Camiseta entrenamiento jugador
+   - Camiseta entrenamiento portero
+
+2. La mochila aparece incluida por defecto para cada jugador y se cuenta como una unidad en pedidos e inventario.
+
+3. Se conservan las prendas adicionales que ya existían (pantalón de entrenamiento, sudadera y chándal) para no perder información previa.
+
+4. Pedido de ropa, inventario, listados por equipo, informes y CSV utilizan las nuevas prendas.
+
+5. Se mantiene la talla 4XS y el orden de tallas de menor a mayor.
+
+BASE DE DATOS
+Necesita ejecutar EJECUTAR_ACTUALIZACION_V27_2_16.sql.
+El SQL añade cinco campos nuevos a player_sizes sin borrar ni modificar los tallajes existentes.

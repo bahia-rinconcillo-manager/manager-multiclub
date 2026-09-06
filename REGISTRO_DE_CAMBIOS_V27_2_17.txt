@@ -1,0 +1,9 @@
+CD SAN BERNABÉ MANAGER · V27.2.17
+
+- Pantalón entrenamiento jugador y pantalón entrenamiento portero quedan separados.
+- Nueva talla training_shorts_goalkeeper en player_sizes.
+- La mochila se incluye automáticamente para cada jugador y cada miembro del cuerpo técnico.
+- La mochila no necesita talla (talla única).
+- Pedido de ropa e inventario cuentan las mochilas automáticas incluso si la persona todavía no tiene tallaje completo.
+- Exportaciones de tallajes actualizadas.
+- No se altera ningún tallaje existente.

@@ -1,0 +1,11 @@
+
+.multiclub-screen{background:radial-gradient(circle at top,#123a63 0,#07111f 52%,#030811 100%)}
+.multiclub-card{width:min(760px,92vw);max-width:760px}
+.club-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:24px 0}
+.club-choice{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);border-radius:18px;padding:22px 18px;display:flex;align-items:center;gap:16px;color:inherit;text-align:left;cursor:pointer;transition:.18s transform,.18s border-color,.18s background}
+.club-choice:hover{transform:translateY(-2px);border-color:#55a9e8;background:rgba(85,169,232,.12)}
+.club-choice img{width:76px;height:76px;object-fit:contain;border-radius:14px;background:#fff;padding:6px}
+.club-choice .club-fallback{width:76px;height:76px;border-radius:14px;display:grid;place-items:center;background:#0d5b91;color:#fff;font-size:28px;font-weight:800}
+.club-choice strong{font-size:18px;display:block}.club-choice small{opacity:.72;display:block;margin-top:4px}
+.multiclub-switch{margin-top:8px;width:100%}
+@media(max-width:680px){.club-choices{grid-template-columns:1fr}.club-choice{padding:16px}.club-choice img,.club-choice .club-fallback{width:62px;height:62px}}

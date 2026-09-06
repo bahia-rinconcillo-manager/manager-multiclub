@@ -1,0 +1,16 @@
+CD SAN BERNABÉ MANAGER · V27.2.42
+
+IMPORTACIÓN AUTOMÁTICA DE CALENDARIO RFAF
+
+- Nuevo reconocimiento específico del PDF oficial “Calendario de Competiciones” de la Real Federación Andaluza de Fútbol.
+- Compatible con el diseño a dos columnas de primera y segunda vuelta.
+- Lee la fecha desde “Jornada N (dd-mm-aaaa)” y la asigna a todos los encuentros de esa jornada.
+- Filtra automáticamente solo los encuentros del CD San Bernabé para el equipo seleccionado.
+- Omite jornadas de descanso.
+- Detecta local / visitante, rival y jornada.
+- En casa aplica el campo habitual del equipo cuando está configurado; hora y campos visitantes quedan pendientes para su fijación posterior.
+- Evita duplicados al volver a importar el mismo calendario.
+- Crea los rivales detectados en Equipos y escudos sin alterar los escudos existentes.
+- Conserva el importador genérico anterior para otros modelos de PDF.
+
+No necesita SQL.

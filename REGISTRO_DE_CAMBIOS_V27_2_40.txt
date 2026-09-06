@@ -1,0 +1,16 @@
+CD San Bernabé Manager · V27.2.40
+
+PISTAS Y CAMPOS
+- Horario fijo 2026/27 precargado del 31/08/2026 al 15/06/2027.
+- 664 entrenamientos previstos si están presentes los 8 equipos configurados.
+- Instalaciones por defecto: La Menacha y Montepalma según equipo.
+- Tarifas por defecto diferenciadas para entrenamientos y partidos.
+- Anulación/reactivación de un día concreto sin eliminar el registro.
+- Registro manual de partidos y usos adicionales se mantiene disponible.
+- Hora, estado y origen visibles en el listado.
+- Equipos actualizados con campo y horario habitual en la temporada activa 2026/27.
+
+REQUIERE SQL
+- Ejecutar EJECUTAR_ACTUALIZACION_V27_2_40.sql.
+
+- Escuela se admite como equipo operativo de Pistas aunque no exista todavía en public.teams.

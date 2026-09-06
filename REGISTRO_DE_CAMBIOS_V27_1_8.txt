@@ -1,0 +1,9 @@
+CD SAN BERNABÉ MANAGER V27.1.8
+
+- Corregido el recorte del PDF del tarjetero.
+- Nuevo detector basado en la franja azul izquierda de cada ficha oficial.
+- El recorte empieza antes de la franja y conserva la tarjeta completa.
+- Se conserva fotografía, nombre, datos y QR.
+- Vista previa horizontal ampliada para comprobar la ficha antes de guardar.
+- Reimportar el mismo PDF sustituye las fichas anteriores de cada jugador.
+- No requiere cambios SQL.

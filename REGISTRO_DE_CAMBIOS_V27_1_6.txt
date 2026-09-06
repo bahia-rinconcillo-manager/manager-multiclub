@@ -1,0 +1,10 @@
+V27.1.6 · TARJETERO: DIVISIÓN REAL DE FICHAS EN PDF
+
+- Corregido el importador que trataba cada página como una única ficha.
+- Detección automática de varias fichas dentro de una misma página.
+- Recorte individual de cada ficha conservando diseño, foto y QR completos.
+- Detección de filas y columnas por separación visual del PDF.
+- Asignación automática al jugador utilizando el texto de cada ficha.
+- Las regiones vacías de páginas incompletas no se importan.
+- Vista previa indica página y número de ficha detectada.
+- Sin cambios SQL.

@@ -1,0 +1,12 @@
+CD SAN BERNABÉ MANAGER · V27.2.47
+
+CORRECCIONES
+- Inicio: vuelven a mostrarse los escudos de ambos equipos.
+- Calendario general: vuelven a mostrarse los escudos de local y visitante.
+- Calendario por equipo: usa el escudo guardado en el partido como respaldo si el registro local del rival no está disponible.
+- Web/Wix: el escudo rival se guarda junto al partido y se actualiza o se limpia cuando cambia el rival.
+- Reparación automática: al abrir el Manager se revisan los partidos y se corrigen escudos antiguos o heredados de otro rival.
+- Se mantiene la corrección del marcador en orden LOCAL - VISITANTE de V27.2.46.
+
+NOTA
+Se incluye EJECUTAR_ACTUALIZACION_V27_2_47_ESCUDOS_WEB.sql para instalaciones que todavía no tengan habilitado el campo opponent_crest y el feed público V27.2.45. Es seguro ejecutarlo de nuevo porque usa IF NOT EXISTS / CREATE OR REPLACE.

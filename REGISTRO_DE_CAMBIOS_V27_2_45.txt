@@ -1,0 +1,9 @@
+CD San Bernabé Manager · V27.2.45
+
+CORRECCIÓN IMPORTADOR PDF RFAF
+- Botón Analizar PDF dentro del diálogo de importación.
+- Análisis automático al seleccionar archivo.
+- Mensajes visibles de estado durante lectura, detección y errores.
+- Reintento de carga del lector PDF.js mediante jsDelivr, cdnjs y unpkg.
+- Liga RFAF como competición predeterminada en el importador del calendario de equipos.
+- Sin cambios de base de datos.
