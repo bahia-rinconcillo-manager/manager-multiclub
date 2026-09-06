@@ -1,29 +1,11 @@
 /* CD San Bernabé Manager V24.5.0 — Existencias dentro de cada prenda y resumen compacto */
 (() => {
-  const STORAGE_KEY = "cdsb_kit_inventory_v24_4_9";
-  const LEGACY_KEYS = ["cdsb_kit_inventory_v24_3", "cdsb_kit_inventory_v24_4_8"];
-  let rendering = false;
-  let catalogWrapped = false;
-  let kitsWrapped = false;
-
-  const readStock = () => {
-    let data = {};
-    try { data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") || {}; } catch (_) {}
-    if (!Object.keys(data).length) {
-      for (const key of LEGACY_KEYS) {
-        try {
-          const legacy = JSON.parse(localStorage.getItem(key) || "{}") || {};
-          if (Object.keys(legacy).length) { data = legacy; break; }
-        } catch (_) {}
-      }
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
-    }
-    return data;
-  };
+  const readStock = () => ({...(window.MULTICLUB_EQUIPMENT_INVENTORY || {})});
 
   let stock = readStock();
   const saveStock = () => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(stock)); }
+    window.MULTICLUB_EQUIPMENT_INVENTORY = {...stock};
+    try { window.saveMulticlubEquipmentState?.(); }
     catch (error) { console.warn("No se pudo guardar el inventario", error); }
   };
   const keyOf = (itemKey, size) => `${itemKey}|||${size}`;
@@ -317,7 +299,14 @@
     window.renderInventoryV2450 = renderSummary;
   }
 
+  window.multiclubInventoryLoad = data => {
+    stock = {...(data || {})};
+    window.MULTICLUB_EQUIPMENT_INVENTORY = {...stock};
+    try { renderCardStock(); renderSummary(); } catch (_) {}
+  };
+
   function start() {
+    stock = readStock();
     wrapRenderers();
     bind();
     renderCardStock();

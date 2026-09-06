@@ -13,7 +13,7 @@ const MULTICLUB_TABLES=new Set([
   "sports_match_player_stats","club_calendar_matches","team_player_cards",
   "season_team_player_cards","technical_users","technical_user_teams","technical_sessions",
   "clothing_items","clothing_inventory","player_custom_clothing_sizes",
-  "staff_custom_clothing_sizes","public_registration_links","sponsorships"
+  "staff_custom_clothing_sizes","club_equipment_state","public_registration_links","sponsorships"
 ]);
 function activeClubId(){return currentMulticlubClub?.id||""}
 const MULTICLUB_LOCAL_CRESTS=Object.freeze({
@@ -240,27 +240,15 @@ function seasonStorageSuffix(){const season=String(window.CDSB_SEASON_STATE?.lab
 function staffKitSeasonKey(){return `${STAFF_KIT_STATUS_KEY}_${seasonStorageSuffix()}`}
 let customPlayerClothingSizes={},customStaffClothingSizes={},staffKitStatus={};
 function loadStaffKitStatus(){
-  try{
-    const key=staffKitSeasonKey();
-    let raw=localStorage.getItem(key);
-    if(raw==null&&(window.CDSB_SEASON_STATE?.label||"2026/27")==="2026/27"){
-      raw=localStorage.getItem(STAFF_KIT_STATUS_KEY);
-      if(raw!=null)localStorage.setItem(key,raw);
-    }
-    staffKitStatus=JSON.parse(raw||"{}")||{};
-  }catch(_){staffKitStatus={}}
+  if(!multiclubEquipmentStateReady)staffKitStatus={};
 }
-function saveStaffKitStatus(){localStorage.setItem(staffKitSeasonKey(),JSON.stringify(staffKitStatus))}
+function saveStaffKitStatus(){scheduleMulticlubEquipmentSave()}
 function staffKitStatusFor(id){return staffKitStatus[id]||{}}
 function setStaffKitStatus(id,values){staffKitStatus[id]={...(staffKitStatus[id]||{}),...values};saveStaffKitStatus()}
 function loadCustomClothingSizes(){
-  try{customPlayerClothingSizes=JSON.parse(localStorage.getItem(CUSTOM_PLAYER_SIZES_KEY)||"{}")||{}}catch(_){customPlayerClothingSizes={}}
-  try{customStaffClothingSizes=JSON.parse(localStorage.getItem(CUSTOM_STAFF_SIZES_KEY)||"{}")||{}}catch(_){customStaffClothingSizes={}}
+  if(!multiclubEquipmentStateReady){customPlayerClothingSizes={};customStaffClothingSizes={};}
 }
-function saveCustomClothingSizes(){
-  localStorage.setItem(CUSTOM_PLAYER_SIZES_KEY,JSON.stringify(customPlayerClothingSizes));
-  localStorage.setItem(CUSTOM_STAFF_SIZES_KEY,JSON.stringify(customStaffClothingSizes));
-}
+function saveCustomClothingSizes(){scheduleMulticlubEquipmentSave()}
 function customClothingSizesFor(audience,id){
   return audience==="staff"?(customStaffClothingSizes[id]||{}):(customPlayerClothingSizes[id]||{});
 }
@@ -275,46 +263,85 @@ loadCustomClothingSizes();
 loadStaffKitStatus();
 let CLOTHING_ITEMS=[...BASE_CLOTHING_ITEMS];
 let clothingCatalogConfig={};
-function loadCustomClothingItems(){
-  let saved=[];
-  try{saved=JSON.parse(localStorage.getItem(CUSTOM_CLOTHING_KEY)||"[]")||[]}catch(_){saved=[]}
-  const valid=saved.filter(item=>item&&item.key&&item.label).map(item=>({
-    key:String(item.key),label:String(item.label),icon:item.icon||"👕",category:CLOTHING_CATEGORIES.includes(item.category)?item.category:"Complementos",audience:["players","staff","both"].includes(item.audience)?item.audience:"both",custom:true
+let multiclubEquipmentStateReady=false;
+let multiclubEquipmentSaveTimer=null;
+window.MULTICLUB_EQUIPMENT_INVENTORY={};
+function normalizeEquipmentJson(value,fallback){
+  if(value==null)return fallback;
+  if(typeof value==="object")return value;
+  try{return JSON.parse(value)}catch(_){return fallback}
+}
+function equipmentCustomItemsPayload(){
+  return (CLOTHING_ITEMS||[]).filter(item=>item?.custom).map(item=>({
+    key:String(item.key),label:String(item.label||"Prenda"),icon:item.icon||"👕",
+    category:CLOTHING_CATEGORIES.includes(item.category)?item.category:"Complementos",
+    audience:["players","staff","both"].includes(item.audience)?item.audience:"both",
+    custom:true,noSize:!!item.noSize,defaultForPlayer:!!item.defaultForPlayer,defaultForStaff:!!item.defaultForStaff
+  }));
+}
+function equipmentStatePayload(){
+  return {
+    club_id:activeClubId(),
+    catalog_items:equipmentCustomItemsPayload(),
+    catalog_config:clothingCatalogConfig||{},
+    inventory:window.MULTICLUB_EQUIPMENT_INVENTORY||{},
+    custom_player_sizes:customPlayerClothingSizes||{},
+    custom_staff_sizes:customStaffClothingSizes||{},
+    staff_kit_status:staffKitStatus||{},
+    updated_at:new Date().toISOString()
+  };
+}
+async function saveMulticlubEquipmentStateNow(){
+  const clubId=activeClubId();
+  if(!clubId||!multiclubEquipmentStateReady)return;
+  const payload=equipmentStatePayload();
+  const {error}=await sb.from("club_equipment_state").upsert(payload,{onConflict:"club_id"});
+  if(error){console.error("Equipaciones multiclub",error);toast("No se pudo guardar la configuración de equipaciones")}
+}
+function scheduleMulticlubEquipmentSave(){
+  if(!activeClubId()||!multiclubEquipmentStateReady)return;
+  clearTimeout(multiclubEquipmentSaveTimer);
+  multiclubEquipmentSaveTimer=setTimeout(()=>saveMulticlubEquipmentStateNow(),120);
+}
+window.saveMulticlubEquipmentState=scheduleMulticlubEquipmentSave;
+async function loadMulticlubEquipmentState(){
+  const clubId=activeClubId();
+  if(!clubId)return;
+  multiclubEquipmentStateReady=false;
+  let {data,error}=await sb.from("club_equipment_state").select("*").eq("club_id",clubId).maybeSingle();
+  if(error)throw error;
+  if(!data){
+    const initial={club_id:clubId,catalog_items:[],catalog_config:{},inventory:{},custom_player_sizes:{},custom_staff_sizes:{},staff_kit_status:{}};
+    const created=await sb.from("club_equipment_state").upsert(initial,{onConflict:"club_id"}).select("*").single();
+    if(created.error)throw created.error;
+    data=created.data;
+  }
+  const savedItems=normalizeEquipmentJson(data.catalog_items,[]);
+  const valid=(Array.isArray(savedItems)?savedItems:[]).filter(item=>item&&item.key&&item.label).map(item=>({
+    key:String(item.key),label:String(item.label),icon:item.icon||"👕",
+    category:CLOTHING_CATEGORIES.includes(item.category)?item.category:"Complementos",
+    audience:["players","staff","both"].includes(item.audience)?item.audience:"both",
+    custom:true,noSize:!!item.noSize,defaultForPlayer:!!item.defaultForPlayer,defaultForStaff:!!item.defaultForStaff
   }));
   CLOTHING_ITEMS=[...BASE_CLOTHING_ITEMS,...valid.filter(item=>!BASE_CLOTHING_ITEMS.some(base=>base.key===item.key))];
+  clothingCatalogConfig=normalizeEquipmentJson(data.catalog_config,{})||{};
+  customPlayerClothingSizes=normalizeEquipmentJson(data.custom_player_sizes,{})||{};
+  customStaffClothingSizes=normalizeEquipmentJson(data.custom_staff_sizes,{})||{};
+  staffKitStatus=normalizeEquipmentJson(data.staff_kit_status,{})||{};
+  window.MULTICLUB_EQUIPMENT_INVENTORY=normalizeEquipmentJson(data.inventory,{})||{};
+  if(typeof kitInventoryStock!=="undefined")kitInventoryStock={...window.MULTICLUB_EQUIPMENT_INVENTORY};
+  multiclubEquipmentStateReady=true;
+  window.multiclubInventoryLoad?.(window.MULTICLUB_EQUIPMENT_INVENTORY);
 }
-function saveCustomClothingItems(){
-  localStorage.setItem(CUSTOM_CLOTHING_KEY,JSON.stringify(CLOTHING_ITEMS.filter(item=>item.custom)));
+function loadCustomClothingItems(){
+  if(!multiclubEquipmentStateReady)CLOTHING_ITEMS=[...BASE_CLOTHING_ITEMS];
 }
+function saveCustomClothingItems(){scheduleMulticlubEquipmentSave()}
 loadCustomClothingItems();
 function loadClothingCatalogConfig(){
-  try{clothingCatalogConfig=JSON.parse(localStorage.getItem("cdsb_clothing_catalog_v24_1")||"{}")||{}}
-  catch(_){clothingCatalogConfig={}}
-  const renameLegacy={
-    game_shirt:["Camiseta equipación","Camiseta de juego"],
-    game_shorts:["Pantalón equipación","Pantalón de juego"],
-    socks:["Medias"],
-    training_shirt:["Camiseta entrenamiento"],
-    training_shorts:["Pantalón entrenamiento"]
-  };
-  const currentDefaults={
-    game_shirt:"Camiseta primera equipación jugador",
-    game_shorts:"Pantalón equipación jugador",
-    socks:"Medias jugador",
-    training_shirt:"Camiseta entrenamiento jugador",
-    training_shorts:"Pantalón entrenamiento jugador"
-  };
-  let changed=false;
-  Object.entries(renameLegacy).forEach(([key,legacy])=>{
-    const cfg=clothingCatalogConfig[key];
-    if(cfg&&legacy.includes(String(cfg.label||"").trim())){
-      clothingCatalogConfig[key]={...cfg,label:currentDefaults[key]};
-      changed=true;
-    }
-  });
-  if(changed)saveClothingCatalogConfig();
+  if(!multiclubEquipmentStateReady)clothingCatalogConfig={};
 }
-function saveClothingCatalogConfig(){localStorage.setItem("cdsb_clothing_catalog_v24_1",JSON.stringify(clothingCatalogConfig))}
+function saveClothingCatalogConfig(){scheduleMulticlubEquipmentSave()}
 function clothingConfig(item){
   const saved=clothingCatalogConfig[item.key]||{};
   return {label:saved.label||item.label,category:saved.category||item.category,active:saved.active!==false};
@@ -349,7 +376,7 @@ window.removeCustomClothingItem=async key=>{
   Object.values(customPlayerClothingSizes).forEach(values=>delete values[key]);
   Object.values(customStaffClothingSizes).forEach(values=>delete values[key]);
   saveCustomClothingItems();saveClothingCatalogConfig();saveCustomClothingSizes();
-  try{await sb.storage.from("documents").remove([`clothing-catalog/${key}.jpg`])}catch(_){}
+  try{await sb.storage.from("documents").remove([multiclubStoragePrefix(`clothing-catalog/${key}.jpg`)])}catch(_){}
   renderClothingCatalog();renderKits();toast("Prenda eliminada del catálogo");
 };
 function openNewClothingItem(){
@@ -375,12 +402,13 @@ async function imageToJpeg(file){
 async function loadClothingImages(){
   clothingImages={};
   try{
-    const {data,error}=await sb.storage.from("documents").list("clothing-catalog",{limit:100});
+    const folder=multiclubStoragePrefix("clothing-catalog");
+    const {data,error}=await sb.storage.from("documents").list(folder,{limit:100});
     if(error)throw error;
     for(const item of data||[]){
       const key=String(item.name||"").replace(/\.jpg$/i,"");
       if(CLOTHING_ITEMS.some(x=>x.key===key)){
-        const path=`clothing-catalog/${item.name}`;
+        const path=`${folder}/${item.name}`;
         clothingImages[key]=await signedUrl(path);
       }
     }
@@ -423,7 +451,7 @@ window.uploadClothingImage=async(key,input)=>{
   try{
     if(button){button.disabled=true;button.textContent="Subiendo..."}
     const blob=await imageToJpeg(file);
-    const path=`clothing-catalog/${key}.jpg`;
+    const path=multiclubStoragePrefix(`clothing-catalog/${key}.jpg`);
     const {error}=await sb.storage.from("documents").upload(path,blob,{contentType:"image/jpeg",upsert:true,cacheControl:"0"});
     if(error)throw error;
     signedCache[path]=null;
@@ -703,8 +731,8 @@ async function loadArchivedSeason(season){
   render();
 }
 async function loadActiveSeasonData(){
-  loadCustomClothingItems();loadClothingCatalogConfig();loadCustomClothingSizes();loadStaffKitStatus();
   if(typeof loadClubMatches==="function")loadClubMatches();
+  await loadMulticlubEquipmentState();
   await loadAll();
   await window.sportsV2703?.load?.();
 }
@@ -1434,6 +1462,7 @@ async function returnToClubSelector(){
     clubSeasons=[];activeClubSeason=null;selectedClubSeason=null;
     players=[];payments=[];paymentConcepts=[];documents=[];kits=[];teams=[];staff=[];events=[];playerSizes=[];staffSizes=[];pitchUsage=[];financeMovements=[];sponsorships=[];
     deletedPlayers=[];deletedTeams=[];activityLogs=[];signedCache={};clothingImages={};sponsorshipLogoUrls={};
+    multiclubEquipmentStateReady=false;CLOTHING_ITEMS=[...BASE_CLOTHING_ITEMS];clothingCatalogConfig={};customPlayerClothingSizes={};customStaffClothingSizes={};staffKitStatus={};kitInventoryStock={};window.MULTICLUB_EQUIPMENT_INVENTORY={};window.multiclubInventoryLoad?.({});
     await openClubSelector();
   }catch(error){
     console.error("Cambiar de club",error);
@@ -3010,7 +3039,7 @@ async function start(){
   await loadCurrentAccess();
   await loadClubSeasons();
   if(isTechnicalReadOnly()){setSeasonState(activeClubSeason);renderSeasonSelector()}
-  if(isHistoricalSeason())await loadArchivedSeason(selectedClubSeason);else{await loadAll();await window.sportsV2700?.load?.()}
+  if(isHistoricalSeason())await loadArchivedSeason(selectedClubSeason);else{await loadMulticlubEquipmentState();await loadAll();await window.sportsV2700?.load?.()}
   await applyCurrentAccess();
   renderSeasonsManager();
   if(!isTechnicalReadOnly()&&!isHistoricalSeason())realtime();
@@ -3696,8 +3725,10 @@ document.querySelectorAll(".nav[data-view]").forEach(button=>{
 // El inventario muestra siempre todas las prendas activas y todas sus tallas,
 // aunque todavía no exista ningún tallaje registrado.
 let kitInventoryStock={};
-try{kitInventoryStock=JSON.parse(localStorage.getItem("cdsb_kit_inventory_v24_3")||"{}")||{}}catch(_){kitInventoryStock={}}
-function saveKitInventory(){localStorage.setItem("cdsb_kit_inventory_v24_3",JSON.stringify(kitInventoryStock))}
+function saveKitInventory(){
+  window.MULTICLUB_EQUIPMENT_INVENTORY={...(kitInventoryStock||{})};
+  scheduleMulticlubEquipmentSave();
+}
 function inventoryKey(prendaKey,talla){return `${prendaKey}|||${talla}`}
 function inventoryLegacyKey(prenda,talla){return `${prenda}|||${talla}`}
 function itemSupportsAudience(item,audience){return item.audience===audience||item.audience==="both"}

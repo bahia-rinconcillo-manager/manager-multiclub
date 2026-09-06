@@ -1,0 +1,7 @@
+MANAGER MULTICLUB · V1.0.9
+
+- Equipaciones deja de guardar catálogo e inventario en localStorage compartido.
+- Estado de equipaciones sincronizado en Supabase por club.
+- Nombres, categorías, altas/bajas, prendas nuevas, inventario, tallajes personalizados y estado de entrega quedan separados entre Bahía y Rinconcillo.
+- Fotos de prendas guardadas bajo la carpeta privada del UUID del club.
+- Cambio de club limpia el estado anterior antes de cargar el nuevo.

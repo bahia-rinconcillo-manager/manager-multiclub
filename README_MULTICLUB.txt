@@ -34,3 +34,9 @@ V1.0.4
 V1.0.7
 - Cobros configurables por club mediante la tabla payment_concepts.
 - Ejecutar EJECUTAR_ACTUALIZACION_MULTICLUB_V1_0_7_CONCEPTOS_COBRO.sql antes de usar esta versión.
+
+
+V1.0.9
+- Equipaciones e inventario sincronizados por club en Supabase mediante club_equipment_state.
+- Eliminado el estado compartido de catálogo/inventario entre Bahía y Rinconcillo.
+- Fotos de prendas aisladas por club en Storage.
