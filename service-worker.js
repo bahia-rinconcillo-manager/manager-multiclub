@@ -1,4 +1,4 @@
-const CACHE = "manager-multiclub-v1-0-20c-patrocinio-selector-logo";
+const CACHE = "manager-multiclub-v1-0-21-patrocinio-historial-pagos";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -9,12 +9,12 @@ const CORE_FILES = [
   "./wix-public-v27247.js?v=27248",
   "./styles-v2600.css?v=107",
   "./sponsorship-v27248.css?v=27248",
-  "./sponsorship-multiclub-v1020c.css?v=1020c",
+  "./sponsorship-multiclub-v1021.css?v=1021",
   "./calendar-v27243.css?v=27248",
   "./sports-v2702.css?v=27248",
   "./cards-v27249.css?v=27249",
   "./mobile-v27231.css?v=27248",
-  "./app-multiclub-v1020c.js?v=1020c",
+  "./app-multiclub-v1021.js?v=1021",
   "./sports-v27238-multiclub.js?v=103",
   "./cards-v27249.js?v=106",
   "./calendar-v27247.js?v=104",

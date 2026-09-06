@@ -7,7 +7,7 @@
   <title>Manager Multiclub</title>
   <link rel="stylesheet" href="styles-v2600.css?v=107">
   <link rel="stylesheet" href="sponsorship-v27248.css?v=27248">
-  <link rel="stylesheet" href="sponsorship-multiclub-v1020c.css?v=1020c">
+  <link rel="stylesheet" href="sponsorship-multiclub-v1021.css?v=1021">
   <link rel="stylesheet" href="calendar-v27243.css?v=27248">
   <link rel="stylesheet" href="sports-v2702.css?v=27248">
   <link rel="stylesheet" href="cards-v27249.css?v=27249">
@@ -86,7 +86,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo small crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
-        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.20C</span></div>
+        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.21</span></div>
       </div>
       <div class="season season-switcher"><span>Temporada</span><select id="seasonSelector" aria-label="Temporada"><option>2026/27</option></select></div>
       <nav>
@@ -992,20 +992,49 @@
       </select></label>
       <label>Duración<select name="duration" required><option>6 meses</option><option>1 temporada</option><option>2 temporadas</option></select></label>
       <label>Importe total (€)<input name="amount" type="number" min="0" step="0.01" required placeholder="0,00"></label>
-      <label>Importe pagado (€)<input name="paid_amount" type="number" min="0" step="0.01" value="0" placeholder="0,00"></label>
-      <label>Estado (automático)<select name="status" disabled><option>Pendiente</option><option>Parcial</option><option>Pagado</option></select></label>
-      <label>Fecha del pago<input name="paid_at" type="date"></label>
-      <label>Forma de pago<select name="payment_method"><option value="">Seleccionar</option><option>Efectivo</option><option>Transferencia</option><option>Bizum</option><option>Tarjeta</option><option>Banco</option><option>Otro</option></select></label>
-      <label>Nº factura / justificante<input name="document_number" placeholder="Opcional"></label>
+      <label>Importe pagado (automático)<input name="paid_amount" type="number" value="0.00" readonly tabindex="-1"></label>
+      <label>Estado (automático)<input name="status" value="Pendiente" readonly tabindex="-1"></label>
+      <div class="sponsorship-payment-info">Los pagos ya no se escriben aquí. Guarda el patrocinio y usa <strong>Registrar pago</strong> para conservar fecha, importe, forma de pago y justificante de cada entrega.</div>
       <div class="full sponsorship-section-title">Contacto</div>
       <label>Persona de contacto<input name="contact_name"></label>
       <label>Teléfono<input name="contact_phone"></label>
       <label class="full">Email<input name="contact_email" type="email"></label>
       <label class="full">Observaciones<textarea name="notes"></textarea></label>
     </div>
-    <p class="form-help sponsorship-accounting-help">El <strong>importe pagado</strong> se sincroniza automáticamente con <strong>Ingresos y gastos</strong>. Los pagos parciales actualizan el mismo ingreso y nunca crean duplicados.</p>
+    <p class="form-help sponsorship-accounting-help">El <strong>importe pagado</strong> y el <strong>estado</strong> se calculan automáticamente desde el historial real de pagos.</p>
     <div class="modal-actions"><button type="button" class="secondary" data-close="sponsorshipDialog">Cancelar</button><button class="primary" type="submit">Guardar patrocinio</button></div>
   </form></dialog>
+
+  <dialog id="sponsorshipPaymentDialog"><form id="sponsorshipPaymentForm" class="modal sponsorship-payment-modal">
+    <div class="modal-head"><div><small>PATROCINIO · COBRO</small><h2 id="sponsorshipPaymentTitle">Registrar pago</h2></div><button type="button" data-close="sponsorshipPaymentDialog">×</button></div>
+    <input name="id" type="hidden">
+    <input name="sponsorship_id" type="hidden">
+    <div class="sponsorship-payment-summary">
+      <div><span>Patrocinador</span><strong id="sponsorshipPaymentSponsor">-</strong></div>
+      <div><span>Total</span><strong id="sponsorshipPaymentTotal">0 €</strong></div>
+      <div><span>Ya pagado</span><strong id="sponsorshipPaymentPaid">0 €</strong></div>
+      <div><span>Pendiente</span><strong id="sponsorshipPaymentPending">0 €</strong></div>
+    </div>
+    <div class="form-grid">
+      <label>Fecha del pago<input name="payment_date" type="date" required></label>
+      <label>Importe de este pago (€)<input name="amount" type="number" min="0.01" step="0.01" required></label>
+      <label>Forma de pago<select name="payment_method" required><option>Efectivo</option><option>Transferencia</option><option>Bizum</option><option>Tarjeta</option><option>Banco</option><option>Otro</option></select></label>
+      <label>Nº factura / justificante<input name="document_number" placeholder="Opcional"></label>
+      <label class="full">Observaciones<textarea name="notes"></textarea></label>
+    </div>
+    <div class="modal-actions modal-actions-split">
+      <button id="deleteSponsorshipPayment" type="button" class="danger-action" hidden>Eliminar pago</button>
+      <div class="modal-actions-right"><button type="button" class="secondary" data-close="sponsorshipPaymentDialog">Cancelar</button><button class="primary" type="submit">Guardar pago</button></div>
+    </div>
+  </form></dialog>
+
+  <dialog id="sponsorshipHistoryDialog"><div class="modal sponsorship-history-modal">
+    <div class="modal-head"><div><small>PATROCINIO</small><h2 id="sponsorshipHistoryTitle">Historial de pagos</h2></div><button type="button" data-close="sponsorshipHistoryDialog">×</button></div>
+    <div id="sponsorshipHistorySummary" class="sponsorship-history-summary"></div>
+    <div class="sponsorship-history-toolbar"><button id="sponsorshipHistoryAdd" type="button" class="primary">+ Registrar pago</button></div>
+    <div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Importe</th><th>Forma pago</th><th>Justificante</th><th>Observaciones</th><th></th></tr></thead><tbody id="sponsorshipHistoryBody"></tbody></table></div>
+    <div class="modal-actions"><button type="button" class="secondary" data-close="sponsorshipHistoryDialog">Cerrar</button></div>
+  </div></dialog>
 
   <dialog id="movementDialog"><form id="movementForm" class="modal">
     <div class="modal-head"><div><small>TESORERÍA</small><h2>Nuevo movimiento</h2></div><button type="button" data-close="movementDialog">×</button></div>
@@ -1246,7 +1275,7 @@
     </div>
   </dialog>
 
-  <script src="app-multiclub-v1020c.js?v=1020c"></script>
+  <script src="app-multiclub-v1021.js?v=1021"></script>
   <script src="calendar-v27247.js?v=104"></script>
   <script src="inventory-v2600.js?v=114"></script>
 
