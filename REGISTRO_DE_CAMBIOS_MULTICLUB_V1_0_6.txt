@@ -1,0 +1,7 @@
+MANAGER MULTICLUB V1.0.6
+
+- Corregidos los upsert de documentación, tallaje, equipación y cobros para usar claves únicas multiclub con club_id.
+- Corregido el tallaje del cuerpo técnico para club_id + staff_id.
+- Corregido el tarjetero para club_id + season_id + player_id.
+- Al editar un jugador, se crean los conceptos de cobro que falten sin sobrescribir cobros existentes.
+- Actualizada la caché PWA para forzar la carga de esta versión.

@@ -1289,7 +1289,7 @@
         };
         const { data, error } = await importContext.client
           .from("team_player_cards")
-          .upsert(payload, { onConflict: "team_id,player_id" })
+          .upsert(payload, { onConflict: "club_id,season_id,player_id" })
           .select("id")
           .single();
         if (error) throw error;

@@ -2228,7 +2228,7 @@ window.openKit=id=>{const s=sizeFor(id),k=kit(id);kitForm.reset();kitForm.player
 kitForm.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(kitForm));const pid=d.player_id;
  const sizeData={player_id:pid,game_shirt:d.game_shirt,game_shirt_goalkeeper:d.game_shirt_goalkeeper,game_shorts:d.game_shorts,game_shorts_goalkeeper:d.game_shorts_goalkeeper,second_shirt_player:d.second_shirt_player,socks:d.socks,socks_goalkeeper:d.socks_goalkeeper,training_shirt:d.training_shirt,training_shirt_goalkeeper:d.training_shirt_goalkeeper,training_shorts:d.training_shorts,training_shorts_goalkeeper:d.training_shorts_goalkeeper,training_sweatshirt:d.training_sweatshirt,tracksuit_jacket:d.tracksuit_jacket,tracksuit_trousers:d.tracksuit_trousers,sized:d.sized,sizing_date:d.sizing_date||null,notes:d.notes};
  const kitData={player_id:pid,sized:d.sized,delivered:d.delivered,delivery_date:d.delivery_date||null};
- let r1=await sb.from("player_sizes").upsert(sizeData,{onConflict:"player_id"});let r2=await sb.from("kits").upsert(kitData,{onConflict:"player_id"});
+ let r1=await sb.from("player_sizes").upsert(sizeData,{onConflict:"club_id,player_id"});let r2=await sb.from("kits").upsert(kitData,{onConflict:"club_id,player_id"});
  if(r1.error||r2.error)return showOperationError("No se pudo guardar el tallaje.",r1.error||r2.error);savePersonCustomClothingSizes("players",pid,collectCustomClothingValues(kitForm,"players"));kitDialog.close();toast("Tallaje guardado");await loadAll()}
 
 function fillStaffTeams(selected=""){
@@ -2281,7 +2281,7 @@ staffForm.onsubmit=async event=>{
     let staffId=id;
     if(id){const r=await sb.from("staff").update(staffData).eq("id",id).select("id").single();if(r.error)throw r.error;staffId=r.data.id}
     else{const r=await sb.from("staff").insert(staffData).select("id").single();if(r.error)throw r.error;staffId=r.data.id}
-    const sizeResult=await sb.from("staff_sizes").upsert({staff_id:staffId,...sizeData},{onConflict:"staff_id"});
+    const sizeResult=await sb.from("staff_sizes").upsert({staff_id:staffId,...sizeData},{onConflict:"club_id,staff_id"});
     if(sizeResult.error){console.warn("Tallaje no guardado",sizeResult.error);toast("Miembro creado; el tallaje queda pendiente de reparar")}
     else toast("Miembro guardado correctamente");
     savePersonCustomClothingSizes("staff",staffId,collectCustomClothingValues(staffForm,"staff"));
@@ -2669,30 +2669,30 @@ if(playerFormEl)playerFormEl.onsubmit=async e=>{
       }
       if(playerDniFile?.name){docData.player_dni_path=await uploadPrivate(playerDniFile,`players/${playerId}/dni`);docData.player_dni_status="Recibido"}
       if(medicalFile?.name){docData.medical_path=await uploadPrivate(medicalFile,`players/${playerId}/medical`);docData.medical_status="Recibido"}
-      const dres=await sb.from("documents").upsert(docData,{onConflict:"player_id"});
+      const dres=await sb.from("documents").upsert(docData,{onConflict:"club_id,player_id"});
       if(dres.error)throw dres.error;
     }catch(auxErr){warnings.push("Documentos: "+supabaseErrorText(auxErr))}
 
     try{
-      const sres=await sb.from("player_sizes").upsert({player_id:playerId,...sizeData,sized:Object.values(sizeData).some(Boolean)?"Sí":"No"},{onConflict:"player_id"});
+      const sres=await sb.from("player_sizes").upsert({player_id:playerId,...sizeData,sized:Object.values(sizeData).some(Boolean)?"Sí":"No"},{onConflict:"club_id,player_id"});
       if(sres.error)throw sres.error;
     }catch(auxErr){warnings.push("Tallaje: "+supabaseErrorText(auxErr))}
 
     try{
-      const kres=await sb.from("kits").upsert({player_id:playerId,sized:Object.values(sizeData).some(Boolean)?"Sí":"No",delivered:kit(playerId).delivered||"No",delivery_date:kit(playerId).delivery_date||null},{onConflict:"player_id"});
+      const kres=await sb.from("kits").upsert({player_id:playerId,sized:Object.values(sizeData).some(Boolean)?"Sí":"No",delivered:kit(playerId).delivered||"No",delivery_date:kit(playerId).delivery_date||null},{onConflict:"club_id,player_id"});
       if(kres.error)throw kres.error;
     }catch(auxErr){warnings.push("Equipación: "+supabaseErrorText(auxErr))}
 
-    if(!editingId){
-      try{
-        const pres=await sb.from("payments").upsert([
-          {player_id:playerId,concept:"registration",status:"Pendiente",amount:0},
-          {player_id:playerId,concept:"sizing",status:"Pendiente",amount:0},
-          {player_id:playerId,concept:"clothing",status:"Pendiente",amount:0}
-        ],{onConflict:"player_id,concept"});
-        if(pres.error)throw pres.error;
-      }catch(auxErr){warnings.push("Pagos: "+supabaseErrorText(auxErr))}
-    }
+    // Garantiza los tres conceptos básicos también al editar un jugador antiguo.
+    // ignoreDuplicates evita sobrescribir cobros que ya tengan importes/estados reales.
+    try{
+      const pres=await sb.from("payments").upsert([
+        {player_id:playerId,concept:"registration",status:"Pendiente",amount:0},
+        {player_id:playerId,concept:"sizing",status:"Pendiente",amount:0},
+        {player_id:playerId,concept:"clothing",status:"Pendiente",amount:0}
+      ],{onConflict:"club_id,player_id,concept",ignoreDuplicates:true});
+      if(pres.error)throw pres.error;
+    }catch(auxErr){warnings.push("Pagos: "+supabaseErrorText(auxErr))}
 
     await logActivity(editingId?"actualizar":"crear","jugador",playerId,`${editingId?"Jugador actualizado":"Jugador creado"}: ${playerData.name} ${playerData.surname}`);
     playerDialogEl.close();
@@ -2736,7 +2736,7 @@ paymentForm.onsubmit=async e=>{
   try{
     const file=fd.get("receipt_file");
     if(file&&file.name)d.receipt_path=await uploadPrivate(file,`payments/${d.player_id}/${d.concept}`);
-    const {error}=await sb.from("payments").upsert(d,{onConflict:"player_id,concept"});
+    const {error}=await sb.from("payments").upsert(d,{onConflict:"club_id,player_id,concept"});
     if(error)throw error;
     paymentDialog.close();
     toast("Cobro guardado y añadido automáticamente a Ingresos");
@@ -2744,7 +2744,7 @@ paymentForm.onsubmit=async e=>{
   }catch(error){showOperationError("No se pudo guardar el cobro.",error)}
 };
 window.openDocs=id=>{const d=docs(id);documentForm.player_id.value=id;["player_dni_status","photo_status","medical_status"].forEach(k=>documentForm.elements[k].value=d[k]||"Pendiente");documentDialog.showModal()};
-documentForm.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(documentForm));d.guardian_dni_status="No requerido";try{const {error}=await sb.from("documents").upsert(d,{onConflict:"player_id"});if(error)throw error;documentDialog.close();toast("Documentación guardada");await loadAll()}catch(error){showOperationError("No se pudo guardar la documentación.",error)}};
+documentForm.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(documentForm));d.guardian_dni_status="No requerido";try{const {error}=await sb.from("documents").upsert(d,{onConflict:"club_id,player_id"});if(error)throw error;documentDialog.close();toast("Documentación guardada");await loadAll()}catch(error){showOperationError("No se pudo guardar la documentación.",error)}};
 copyUrl.onclick=async()=>{await navigator.clipboard.writeText(publicUrl.textContent);toast("Enlace copiado")};
 
 function renderTrash(){
