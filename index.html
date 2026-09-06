@@ -85,7 +85,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo small crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
-        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.18B</span></div>
+        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.19</span></div>
       </div>
       <div class="season season-switcher"><span>Temporada</span><select id="seasonSelector" aria-label="Temporada"><option>2026/27</option></select></div>
       <nav>
@@ -1002,7 +1002,10 @@
       <label>Nº factura / justificante<input name="document_number"></label>
       <label class="full">Observaciones<textarea name="notes"></textarea></label>
     </div>
-    <div class="modal-actions"><button type="button" class="secondary" data-close="movementDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+    <div class="modal-actions modal-actions-split">
+      <button id="deleteMovement" type="button" class="danger-action" hidden>Eliminar movimiento</button>
+      <div class="modal-actions-right"><button type="button" class="secondary" data-close="movementDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+    </div>
   </form></dialog>
 
 
@@ -1224,7 +1227,7 @@
     </div>
   </dialog>
 
-  <script src="app-multiclub-v1018b.js?v=1018b"></script>
+  <script src="app-multiclub-v1019.js?v=1019"></script>
   <script src="calendar-v27247.js?v=104"></script>
   <script src="inventory-v2600.js?v=114"></script>
 
