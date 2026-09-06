@@ -1,0 +1,8 @@
+MANAGER MULTICLUB V1.0.12
+
+Corrección del catálogo de Equipaciones:
+- Se declaran correctamente los estados internos de inventory-v2600.js.
+- Evita ReferenceError en renderKitInventory que detenía renderKits antes de renderClothingCatalog.
+- El catálogo visual vuelve a renderizar las prendas base.
+- No modifica ni borra datos de Supabase.
+- No requiere SQL adicional.

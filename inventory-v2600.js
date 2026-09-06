@@ -3,6 +3,9 @@
   const readStock = () => ({...(window.MULTICLUB_EQUIPMENT_INVENTORY || {})});
 
   let stock = readStock();
+  let rendering = false;
+  let catalogWrapped = false;
+  let kitsWrapped = false;
   const saveStock = () => {
     window.MULTICLUB_EQUIPMENT_INVENTORY = {...stock};
     try { window.saveMulticlubEquipmentState?.(); }
