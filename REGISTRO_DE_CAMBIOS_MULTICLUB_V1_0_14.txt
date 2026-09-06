@@ -1,0 +1,8 @@
+MANAGER MULTICLUB V1.0.14
+- Corrección robusta del PDF de Tallaje cuerpo técnico.
+- El PDF usa un manejador nuevo independiente del anterior.
+- Escudos Bahía/Rinconcillo incrustados directamente en el generador PDF.
+- Corrección singular/plural: 1 miembro / 1 tallaje realizado.
+- Nuevo fichero staff-sizing-multiclub-v1014.js cargado al final para evitar caché o listeners antiguos.
+- Actualización del cache del service worker.
+- No requiere SQL.
