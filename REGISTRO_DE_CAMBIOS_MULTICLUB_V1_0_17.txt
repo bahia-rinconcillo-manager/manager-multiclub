@@ -1,0 +1,8 @@
+MANAGER MULTICLUB V1.0.17
+
+- Corrige la carga de la V1.0.16.
+- Nuevo archivo principal app-multiclub-v1017.js con versionado único.
+- index.html marcado como build 1.0.17.
+- Eliminado el limpiador forzado de caché del navegador para no afectar a la configuración local de Supabase.
+- Service Worker actualizado a versión 117 y caché independiente.
+- Mantiene Pistas sin Montepalma, La Menacha ni tarifas predefinidas: solo registros manuales.
