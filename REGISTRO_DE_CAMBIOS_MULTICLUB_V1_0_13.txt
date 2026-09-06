@@ -1,0 +1,6 @@
+MANAGER MULTICLUB V1.0.13
+
+- Corrige el escudo que no aparecía en el PDF de Tallaje cuerpo técnico al ejecutar el Manager mediante file://.
+- El escudo de cada club se incrusta en el PDF sin depender del canvas del navegador.
+- Corrige singular/plural: 1 miembro / 1 tallaje realizado.
+- No requiere cambios SQL.
