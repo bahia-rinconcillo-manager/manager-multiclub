@@ -1,0 +1,16 @@
+/* Manager Multiclub V1.0.20 · ampliación de Patrocinio */
+.sponsorship-modal{max-width:1120px}
+.sponsorship-status.partial{background:#dbeafe;color:#1d4ed8}
+.sponsorship-contact-small{display:block;margin-top:4px;color:#64748b;font-weight:500;font-size:11px}
+.sponsorship-section-title{margin-top:8px;padding-top:14px;border-top:1px solid #d8e2ee;font-size:13px;font-weight:900;color:#0757a7;text-transform:uppercase;letter-spacing:.05em}
+.sponsorship-table-wrap table{min-width:1120px}
+.sponsorship-accounting-help{line-height:1.45}
+
+/* V1.0.20C · selector de logo desacoplado del label para evitar que Firefox abra el explorador al usar otros controles */
+.sponsorship-file-block{display:grid;gap:7px;text-align:left;font-size:13px;font-weight:800;color:#536174}
+.sponsorship-file-label{display:block}
+.sponsorship-file-control{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px;border:1px solid #dde6ef;border-radius:11px;background:#f8fafc}
+.sponsorship-file-button{flex:0 0 auto;padding:7px 10px;box-shadow:none}
+.sponsorship-file-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#182230;font-weight:700}
+.sponsorship-file-block input[type=file][hidden]{display:none!important;position:static!important;width:0!important;height:0!important;pointer-events:none!important}
+@media(max-width:640px){.sponsorship-file-control{align-items:flex-start;flex-direction:column}.sponsorship-file-name{width:100%;white-space:normal;word-break:break-word}}

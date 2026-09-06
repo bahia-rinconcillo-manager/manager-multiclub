@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="multiclub-build" content="1.0.20">
+  <meta name="multiclub-build" content="1.0.20C">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Manager Multiclub</title>
   <link rel="stylesheet" href="styles-v2600.css?v=107">
   <link rel="stylesheet" href="sponsorship-v27248.css?v=27248">
-  <link rel="stylesheet" href="sponsorship-multiclub-v1020.css?v=1020">
+  <link rel="stylesheet" href="sponsorship-multiclub-v1020c.css?v=1020c">
   <link rel="stylesheet" href="calendar-v27243.css?v=27248">
   <link rel="stylesheet" href="sports-v2702.css?v=27248">
   <link rel="stylesheet" href="cards-v27249.css?v=27249">
@@ -86,7 +86,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo small crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
-        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.20</span></div>
+        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.20C</span></div>
       </div>
       <div class="season season-switcher"><span>Temporada</span><select id="seasonSelector" aria-label="Temporada"><option>2026/27</option></select></div>
       <nav>
@@ -970,7 +970,15 @@
     <input name="logo_path" type="hidden">
     <div class="form-grid">
       <label class="full">Nombre del patrocinador<input name="sponsor_name" required placeholder="Ej.: Empresa patrocinadora"></label>
-      <label class="full sponsorship-logo-field">Logo del patrocinador<input id="sponsorshipLogoFile" name="logo_file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"><span class="field-help">PNG, JPG, WEBP o SVG.</span></label>
+      <div class="full sponsorship-logo-field sponsorship-file-block">
+        <span class="sponsorship-file-label">Logo del patrocinador</span>
+        <div class="sponsorship-file-control">
+          <button id="sponsorshipChooseLogo" class="secondary sponsorship-file-button" type="button">Examinar...</button>
+          <span id="sponsorshipLogoFileName" class="sponsorship-file-name">No se ha seleccionado ningún archivo.</span>
+        </div>
+        <input id="sponsorshipLogoFile" name="logo_file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+        <span class="field-help">PNG, JPG, WEBP o SVG.</span>
+      </div>
       <div id="sponsorshipLogoPreviewWrap" class="full sponsorship-logo-preview hidden"><img id="sponsorshipLogoPreview" alt="Vista previa del logo"></div>
       <label>Tipo de patrocinio<select name="sponsorship_type" required>
         <option>Patrocinador principal</option>
@@ -1238,14 +1246,14 @@
     </div>
   </dialog>
 
-  <script src="app-multiclub-v1020.js?v=1020"></script>
+  <script src="app-multiclub-v1020c.js?v=1020c"></script>
   <script src="calendar-v27247.js?v=104"></script>
   <script src="inventory-v2600.js?v=114"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js?v=1020", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./service-worker.js?v=1020c", { updateViaCache: "none" })
           .then(registration => registration.update())
           .catch(() => {});
       });
