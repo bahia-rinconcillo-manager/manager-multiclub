@@ -1,0 +1,11 @@
+MANAGER MULTICLUB V1.0.16
+
+PISTAS / CAMPOS
+- Eliminados La Menacha y Montepalma como instalaciones predefinidas.
+- Eliminadas las tarifas y horarios fijos heredados del CD San Bernabé.
+- No se crean ni se sugieren equipos ficticios del San Bernabé.
+- El módulo queda en modo manual: solo se registran usos cuando sea necesario.
+- Equipo / entidad admite equipos del club o un tercero escrito manualmente.
+- Importe opcional y sin tarifa automática; si se deja vacío se guarda como 0 €.
+- Campo / pista se introduce manualmente.
+- Se mantienen filtros, edición, anulación y exportación PDF/CSV.

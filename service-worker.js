@@ -1,4 +1,4 @@
-const CACHE = "manager-multiclub-v1-0-15-core-js-nuevo";
+const CACHE = "manager-multiclub-v1-0-16-pistas-manuales";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -13,10 +13,10 @@ const CORE_FILES = [
   "./sports-v2702.css?v=27248",
   "./cards-v27249.css?v=27249",
   "./mobile-v27231.css?v=27248",
-  "./app-multiclub-v1015.js",
+  "./app-multiclub-v1016.js",
   "./sports-v27238.js?v=103",
   "./cards-v27249.js?v=106",
-  "./calendar-v27247.js?v=103",
+  "./calendar-v27247.js?v=104",
   "./inventory-v2600.js?v=114",
   "./public-v27211.js?v=27248",
   "./manifest.webmanifest",

@@ -2,14 +2,9 @@
 (function(){
   "use strict";
 
-  const FIELD_STORAGE_KEY="cdsb_match_fields_v24_5_8";
+  const FIELD_STORAGE_KEY="manager_multiclub_match_fields_v1016";
   const VIEW_STORAGE_KEY="cdsb_team_calendar_view_v27243";
-  const DEFAULT_FIELDS=[
-    "Centro Deportivo Montepalma · Campo 1",
-    "Centro Deportivo Montepalma · Campo 2",
-    "La Menacha",
-    "Ignacio Villaverde"
-  ];
+  const DEFAULT_FIELDS=[];
   const COMPETITION_IMAGES_V258={
     "Liga AAFB":"assets/competitions/liga-aafb.png",
     "Copa Primavera":"assets/competitions/copa-primavera.png",
@@ -37,10 +32,7 @@
       const parsed=JSON.parse(localStorage.getItem(FIELD_STORAGE_KEY)||"[]");
       matchFields=Array.isArray(parsed)?parsed.filter(Boolean):[];
     }catch(_){matchFields=[];}
-    if(!matchFields.length){
-      matchFields=[...DEFAULT_FIELDS];
-      saveFields();
-    }
+    if(!matchFields.length)matchFields=[...DEFAULT_FIELDS];
   }
   function saveFields(){
     matchFields=[...new Set(matchFields.map(x=>String(x||"").trim()).filter(Boolean))]
