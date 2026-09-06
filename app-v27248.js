@@ -122,6 +122,7 @@ async function openClubSelector(){
       if(!club)return;
       currentMulticlubClub=club;window.MULTICLUB_CURRENT_CLUB=club;sessionStorage.setItem("multiclub_current_club",club.id);applyClubBranding(club);
       show("app");await start();
+      document.querySelector('.nav[data-view="dashboard"]')?.click();
     }));
   }
   show("clubSelectScreen");
@@ -1383,6 +1384,30 @@ document.getElementById("clubSelectLogout")?.addEventListener("click",async()=>{
   currentMulticlubClub=null;window.MULTICLUB_CURRENT_CLUB=null;sessionStorage.removeItem("multiclub_current_club");
   await sb.auth.signOut();location.reload();
 });
+
+async function returnToClubSelector(){
+  if(isTechnicalReadOnly())return toast("El acceso del cuerpo técnico está vinculado a un club. Cierra sesión para cambiar de acceso.");
+  try{
+    if(channel){
+      try{await sb.removeChannel(channel)}catch(_){try{channel.unsubscribe()}catch(__){}}
+      channel=null;
+    }
+    currentMulticlubClub=null;
+    window.MULTICLUB_CURRENT_CLUB=null;
+    sessionStorage.removeItem("multiclub_current_club");
+    localStorage.removeItem(SEASON_SELECTED_KEY);
+    clubSeasons=[];activeClubSeason=null;selectedClubSeason=null;
+    players=[];payments=[];documents=[];kits=[];teams=[];staff=[];events=[];playerSizes=[];staffSizes=[];pitchUsage=[];financeMovements=[];sponsorships=[];
+    deletedPlayers=[];deletedTeams=[];activityLogs=[];signedCache={};clothingImages={};sponsorshipLogoUrls={};
+    await openClubSelector();
+  }catch(error){
+    console.error("Cambiar de club",error);
+    toast(error?.message||"No se pudo volver al selector de clubes");
+  }
+}
+
+document.getElementById("switchClub")?.addEventListener("click",returnToClubSelector);
+
 logout.onclick=async()=>{
   const technicalToken=getTechnicalSessionToken();
   if(technicalToken){try{await sb.rpc("technical_logout",{p_token:technicalToken})}catch(_){} }

@@ -24,3 +24,9 @@ V1.0.3
 - Añadida categoría Senior por encima de Juvenil en creación/edición de equipos.
 - Añadida Senior al asistente de cambio de temporada.
 - Reconocimiento automático de categoría Senior en nombres de equipo y edades adultas.
+
+V1.0.4
+- Añadido botón «Cambiar de club» en el menú lateral.
+- Vuelve al selector Bahía/Rinconcillo sin cerrar la sesión de administrador.
+- Al seleccionar el nuevo club se abre siempre el Panel principal.
+- Se cierra el canal realtime del club anterior y se limpia el estado en memoria antes del cambio.
