@@ -67,7 +67,7 @@
     return Array.isArray(rivalTeams)?rivalTeams.find(item=>normalize(item.name)===normalize(name)):null;
   }
   function crest(name,isClub=false,match=null){
-    const source=isClub?"assets/escudo-oficial.png":(opponentRecord(name)?.crest||match?.opponent_crest||"");
+    const source=isClub?(window.multiclubClubCrest?.()||"assets/manager-multiclub.svg"):(opponentRecord(name)?.crest||match?.opponent_crest||"");
     if(source)return `<span class="v258-team-crest"><img src="${source}" alt="Escudo ${safeAttr(name)}"></span>`;
     return `<span class="v258-team-crest fallback">${safeText(String(name||"?").trim().charAt(0).toUpperCase()||"?")}</span>`;
   }
@@ -158,7 +158,7 @@
     if(!content)return;
     content.innerHTML=`<section class="v258-calendar-shell">
       <div class="v258-calendar-hero">
-        <div class="v258-calendar-brand"><img src="assets/escudo-oficial.png" alt="Escudo CD San Bernabé"><div><small>ÁREA DEPORTIVA · ${safeText(team.name)}</small><h3>Calendario de partidos</h3><p>Crea, edita y actualiza todos los encuentros del equipo.</p></div></div>
+        <div class="v258-calendar-brand"><img src="${window.multiclubClubCrest?.()||"assets/manager-multiclub.svg"}" alt="Escudo del club"><div><small>ÁREA DEPORTIVA · ${safeText(team.name)}</small><h3>Calendario de partidos</h3><p>Crea, edita y actualiza todos los encuentros del equipo.</p></div></div>
         <div class="v258-calendar-actions">
           <button type="button" class="v258-hero-btn light" onclick="calendarV258.manage()">Equipos, escudos y campos</button>
           <button type="button" class="v258-hero-btn light" onclick="calendarV258.importPdf()">Importar PDF</button>
@@ -177,7 +177,7 @@
           <button type="button" class="${view==="list"?"active":""}" onclick="calendarV258.setView('list')">☷ Lista</button>
         </div>
       </div>
-      <div class="${view==="list"?"v243-match-list":"v258-match-grid"}">${matches.length?(view==="list"?matches.map(renderListItem).join(""):matches.map(renderCard).join("")):`<div class="v258-empty"><img src="assets/escudo-oficial.png" alt="Escudo"><strong>No hay partidos registrados</strong><p>Pulsa “Nuevo partido” para añadir el primer encuentro de ${safeText(team.name)}.</p><button type="button" onclick="calendarV258.newMatch()">+ Crear partido</button></div>`}</div>
+      <div class="${view==="list"?"v243-match-list":"v258-match-grid"}">${matches.length?(view==="list"?matches.map(renderListItem).join(""):matches.map(renderCard).join("")):`<div class="v258-empty"><img src="${window.multiclubClubCrest?.()||"assets/manager-multiclub.svg"}" alt="Escudo"><strong>No hay partidos registrados</strong><p>Pulsa “Nuevo partido” para añadir el primer encuentro de ${safeText(team.name)}.</p><button type="button" onclick="calendarV258.newMatch()">+ Crear partido</button></div>`}</div>
     </section>`;
   }
 
@@ -436,8 +436,8 @@
   function posterValue(id,fallback=""){const el=document.getElementById(id);return el&&el.value!==""?el.value:fallback;}
   function posterChecked(id,def=true){const el=document.getElementById(id);return el?el.checked:def;}
   function fillPosterEditor(match){
-    const home=match.venue==="away"?(match.opponent||""):(match.team||"CD San Bernabé");
-    const away=match.venue==="away"?(match.team||"CD San Bernabé"):(match.opponent||"");
+    const home=match.venue==="away"?(match.opponent||""):(match.team||(window.multiclubClubName?.()||"Club"));
+    const away=match.venue==="away"?(match.team||(window.multiclubClubName?.()||"Club")):(match.opponent||"");
     const values={posterHeadline:"MATCH DAY",posterSubtitle:"PROHIBIDO RENDIRSE",posterCompetition:match.competition||"",posterRound:match.round||"",posterHome:home,posterAway:away,posterDate:match.match_date||"",posterTime:match.match_time||"",posterField:match.location||""};
     Object.entries(values).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.value=v;});
     const hg=document.getElementById("posterHomeGoals"),ag=document.getElementById("posterAwayGoals");
@@ -472,11 +472,11 @@
     ctx.shadowColor=pal[2];ctx.shadowBlur=25;ctx.strokeStyle=pal[2];ctx.lineWidth=4;ctx.beginPath();ctx.arc(W*.52,H*.25,85,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;
     let centerImg=null,clubImg=null,rivalImg=null,compImg=null;
     try{centerImg=await loadImage("assets/emblema-cartel-san-bernabe.jpg");}catch(_){}
-    try{clubImg=await loadImage("assets/escudo-oficial.png");}catch(_){}
+    try{clubImg=await loadImage(window.multiclubClubCrest?.()||"assets/manager-multiclub.svg");}catch(_){}
     try{compImg=await loadImage(COMPETITION_IMAGES_V258[match.competition]);}catch(_){}
     try{const r=opponentRecord(match.opponent);if(r?.crest)rivalImg=await loadImage(r.crest);}catch(_){}
     const headline=posterValue("posterHeadline","MATCH DAY").toUpperCase();
-    ctx.textAlign="center";ctx.fillStyle="#fff";ctx.font="700 28px Georgia";ctx.letterSpacing="10px";ctx.fillText("CD SAN BERNABÉ",W/2,58);
+    ctx.textAlign="center";ctx.fillStyle="#fff";ctx.font="700 28px Georgia";ctx.letterSpacing="10px";ctx.fillText((window.multiclubClubUpper?.()||"MANAGER MULTICLUB"),W/2,58);
     ctx.fillStyle=pal[2];ctx.font="800 20px Arial";ctx.fillText("TU SEGUNDA PIEL",W/2,90);
     let titleSize=fitText(ctx,headline,W-120,116,54);const titleFamily=posterValue("posterTitleFont","serif")==="sans"?"Arial":posterValue("posterTitleFont","serif")==="impact"?"Impact":"Georgia";ctx.font=`${titleStyleV261.italic?"italic ":""}${titleStyleV261.bold?"900":"700"} ${titleSize}px ${titleFamily}`;ctx.fillStyle=posterValue("posterTitleColor","#dcecff");ctx.strokeStyle="#06111f";ctx.lineWidth=10;ctx.strokeText(headline,W/2,H*.24);ctx.fillText(headline,W/2,H*.24);
     const subtitle=posterValue("posterSubtitle","PROHIBIDO RENDIRSE").toUpperCase();
@@ -485,7 +485,7 @@
     const emblemSize=Math.min(W*.29,H*.22);if(centerImg){ctx.save();ctx.beginPath();ctx.arc(W/2,H*.42,emblemSize/2,0,Math.PI*2);ctx.clip();ctx.drawImage(centerImg,W/2-emblemSize/2,H*.42-emblemSize/2,emblemSize,emblemSize);ctx.restore();}
     // guerreros
     ctx.fillStyle="rgba(0,0,0,.92)";ctx.beginPath();ctx.moveTo(70,H*.67);ctx.lineTo(180,H*.47);ctx.lineTo(300,H*.67);ctx.fill();ctx.beginPath();ctx.moveTo(W-70,H*.67);ctx.lineTo(W-180,H*.47);ctx.lineTo(W-300,H*.67);ctx.fill();
-    const home=posterValue("posterHome",match.team||"CD SAN BERNABÉ"),away=posterValue("posterAway",match.opponent||"RIVAL");
+    const home=posterValue("posterHome",match.team||(window.multiclubClubName?.()||"CLUB")),away=posterValue("posterAway",match.opponent||"RIVAL");
     const barY=H*.67;ctx.fillStyle="rgba(1,9,23,.93)";roundRect(ctx,55,barY,W-110,150,18);
     const cs=105;if(posterChecked("posterShowCrests")){if(clubImg)ctx.drawImage(clubImg,82,barY+22,cs,cs);if(rivalImg)ctx.drawImage(rivalImg,W-187,barY+22,cs,cs);}
     ctx.fillStyle="#fff";ctx.font="900 29px Arial";ctx.textAlign="left";ctx.fillText(home.toUpperCase(),205,barY+88);ctx.textAlign="right";ctx.fillText(away.toUpperCase(),W-205,barY+88);ctx.textAlign="center";ctx.fillStyle=pal[2];ctx.font="900 62px Arial";ctx.fillText("VS",W/2,barY+96);
@@ -569,7 +569,7 @@
     if(templateGrid){
       templateGrid.innerHTML=POSTER_TEMPLATES_V261.map((t,i)=>`<button type="button" class="v261-template-card ${i===0?"active":""}" data-template="${t.id}"><span class="check">✓</span><canvas width="180" height="225"></canvas><strong>${t.name.toUpperCase()}</strong></button>`).join("");
       templateGrid.querySelectorAll(".v261-template-card").forEach((card)=>{
-        const t=POSTER_TEMPLATES_V261.find(x=>x.id===card.dataset.template),c=card.querySelector("canvas"),cx=c.getContext("2d"),gr=cx.createLinearGradient(0,0,c.width,c.height);gr.addColorStop(0,t.colors[0]);gr.addColorStop(.6,t.colors[1]);gr.addColorStop(1,t.colors[0]);cx.fillStyle=gr;cx.fillRect(0,0,c.width,c.height);cx.fillStyle=t.colors[2];cx.globalAlpha=.35;cx.beginPath();cx.arc(90,75,52,0,Math.PI*2);cx.fill();cx.globalAlpha=1;cx.fillStyle="#fff";cx.textAlign="center";cx.font="900 22px Georgia";cx.fillText("MATCH",90,108);cx.fillText("DAY",90,132);cx.fillStyle=t.colors[2];cx.font="900 10px Arial";cx.fillText("CD SAN BERNABÉ",90,198);
+        const t=POSTER_TEMPLATES_V261.find(x=>x.id===card.dataset.template),c=card.querySelector("canvas"),cx=c.getContext("2d"),gr=cx.createLinearGradient(0,0,c.width,c.height);gr.addColorStop(0,t.colors[0]);gr.addColorStop(.6,t.colors[1]);gr.addColorStop(1,t.colors[0]);cx.fillStyle=gr;cx.fillRect(0,0,c.width,c.height);cx.fillStyle=t.colors[2];cx.globalAlpha=.35;cx.beginPath();cx.arc(90,75,52,0,Math.PI*2);cx.fill();cx.globalAlpha=1;cx.fillStyle="#fff";cx.textAlign="center";cx.font="900 22px Georgia";cx.fillText("MATCH",90,108);cx.fillText("DAY",90,132);cx.fillStyle=t.colors[2];cx.font="900 10px Arial";cx.fillText((window.multiclubClubUpper?.()||"MANAGER MULTICLUB"),90,198);
         card.addEventListener("click",()=>{templateGrid.querySelectorAll(".v261-template-card").forEach(x=>x.classList.remove("active"));card.classList.add("active");templateSelect.value=card.dataset.template;templateSelect.dispatchEvent(new Event("change"));});
       });
     }

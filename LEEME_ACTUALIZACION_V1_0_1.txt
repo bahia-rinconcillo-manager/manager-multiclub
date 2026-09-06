@@ -1,0 +1,20 @@
+MANAGER MULTICLUB · V1.0.1 · BRANDING DINÁMICO
+
+CORRIGE:
+- Nombre del club en la cabecera y panel principal.
+- Escudo del club en selector, barra lateral, panel, calendario e informes.
+- Nombre del club en PDF, tallajes, pistas, informes, convocatorias y estadísticas.
+- Credenciales de técnicos y mensajes de WhatsApp con el club correcto.
+- Importador PDF RFAF preparado para Bahía y Rinconcillo.
+- Copias de seguridad identificadas por club.
+- Manifest PWA actualizado a Manager Multiclub.
+
+INSTALACIÓN:
+1. Cierra el Manager en el navegador.
+2. Copia TODO el contenido de esta carpeta sobre la carpeta local manager-multiclub.
+3. Acepta reemplazar los archivos existentes.
+4. Abre GitHub Desktop.
+5. Summary: Manager Multiclub V1.0.1 - Branding dinámico
+6. Commit to main.
+7. Push origin.
+8. Vuelve a abrir index.html.

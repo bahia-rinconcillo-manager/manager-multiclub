@@ -16,6 +16,26 @@ const MULTICLUB_TABLES=new Set([
   "staff_custom_clothing_sizes","public_registration_links","sponsorships"
 ]);
 function activeClubId(){return currentMulticlubClub?.id||""}
+const MULTICLUB_LOCAL_CRESTS=Object.freeze({
+  "cr-bahia-algeciras":"assets/escudo-bahia.png",
+  "cd-rinconcillo":"assets/escudo-rinconcillo.png"
+});
+function currentClubFullName(){
+  return currentMulticlubClub?.nombre||currentMulticlubClub?.nombre_corto||"Manager Multiclub";
+}
+function currentClubShortName(){
+  return currentMulticlubClub?.nombre_corto||currentMulticlubClub?.nombre||"Manager Multiclub";
+}
+function currentClubUpper(){return currentClubFullName().toLocaleUpperCase("es-ES")}
+function currentClubCrest(){
+  if(currentMulticlubClub?.escudo_url)return currentMulticlubClub.escudo_url;
+  return MULTICLUB_LOCAL_CRESTS[currentMulticlubClub?.slug]||"assets/manager-multiclub.svg";
+}
+function currentClubManagerName(){return `${currentClubFullName()} Manager`}
+window.multiclubClubName=currentClubFullName;
+window.multiclubClubShortName=currentClubShortName;
+window.multiclubClubUpper=currentClubUpper;
+window.multiclubClubCrest=currentClubCrest;
 function injectClubId(value){
   const clubId=activeClubId();
   if(!clubId)return value;
@@ -65,11 +85,14 @@ function multiclubStoragePrefix(path){
 }
 function applyClubBranding(club){
   if(!club)return;
-  document.title=`${club.nombre||club.nombre_corto||"Club"} · Manager`;
-  const name=document.getElementById("currentClubName");if(name)name.textContent=club.nombre_corto||club.nombre||"Club";
+  document.title=`${currentClubFullName()} · Manager`;
+  const name=document.getElementById("currentClubName");if(name)name.textContent=currentClubShortName();
+  const top=document.getElementById("currentClubTopbarName");if(top)top.textContent=currentClubUpper();
+  const report=document.getElementById("teamReportClubName");if(report)report.textContent=currentClubUpper();
+  if(typeof dashboardSeasonLabel!=="undefined"&&dashboardSeasonLabel)dashboardSeasonLabel.textContent=`${currentClubUpper()} · TEMPORADA ${currentSeasonLabel?.()||"2026/27"}`;
   document.querySelectorAll("[data-club-crest]").forEach(img=>{
-    if(club.escudo_url){img.src=club.escudo_url;img.alt=`Escudo ${club.nombre||"club"}`}
-    else{img.src="assets/manager-multiclub.svg";img.alt=club.nombre||"Club"}
+    img.src=currentClubCrest();
+    img.alt=`Escudo ${currentClubFullName()}`;
   });
 }
 async function accessibleMulticlubClubs(){
@@ -89,7 +112,11 @@ async function openClubSelector(){
   const clubs=await accessibleMulticlubClubs();
   if(!clubs.length)throw new Error("Este usuario no tiene ningún club asignado.");
   if(choices){
-    choices.innerHTML=clubs.map(c=>`<button type="button" class="club-choice" data-club-id="${c.id}">${c.escudo_url?`<img src="${c.escudo_url}" alt="Escudo ${String(c.nombre||"").replace(/"/g,"&quot;")}">`:`<span class="club-fallback">${String(c.nombre_corto||c.nombre||"C").trim().charAt(0)}</span>`}<span><strong>${c.nombre||c.nombre_corto}</strong><small>${c.rol||""}</small></span></button>`).join("");
+    choices.innerHTML=clubs.map(c=>{
+      const localCrest=MULTICLUB_LOCAL_CRESTS[c.slug]||"";
+      const crest=c.escudo_url||localCrest;
+      return `<button type="button" class="club-choice" data-club-id="${c.id}">${crest?`<img src="${crest}" alt="Escudo ${String(c.nombre||"").replace(/"/g,"&quot;")}">`:`<span class="club-fallback">${String(c.nombre_corto||c.nombre||"C").trim().charAt(0)}</span>`}<span><strong>${c.nombre||c.nombre_corto}</strong><small>${c.rol||""}</small></span></button>`;
+    }).join("");
     choices.querySelectorAll("[data-club-id]").forEach(btn=>btn.addEventListener("click",async()=>{
       const club=clubs.find(c=>String(c.id)===String(btn.dataset.clubId));
       if(!club)return;
@@ -552,7 +579,7 @@ function setSeasonState(season){
   window.CDSB_SEASON_STATE={id:selectedClubSeason?.id||null,label:currentSeasonLabel(),historical,active:!historical};
   document.body.classList.toggle("season-history-mode",historical);
   historicalSeasonBanner?.classList.toggle("hidden",!historical);
-  if(dashboardSeasonLabel)dashboardSeasonLabel.textContent=`CD SAN BERNABÉ · TEMPORADA ${currentSeasonLabel()}`;
+  if(dashboardSeasonLabel)dashboardSeasonLabel.textContent=`${currentClubUpper()} · TEMPORADA ${currentSeasonLabel()}`;
   const sidebar=document.querySelector(".season-switcher");
   if(sidebar)sidebar.dataset.historical=historical?"true":"false";
   const posterSeason=document.getElementById("posterSeason");if(posterSeason)posterSeason.value=currentSeasonLabel();
@@ -603,7 +630,7 @@ async function buildSeasonSnapshot(){
   // atómico y no dependa del tamaño de una descarga/subida desde el navegador.
   // Aquí solo enviamos la pequeña parte que vive en este dispositivo.
   return {
-    application:"CD San Bernabé Manager",
+    application:currentClubManagerName(),
     version:"V27.2.10",
     season:currentSeasonLabel(),
     archived_at:new Date().toISOString(),
@@ -955,7 +982,7 @@ async function fetchSeasonBackupTable(table,{optional=false}={}){
 async function createSeasonRolloverSafetyBackup(){
   const d=seasonRolloverDraft;if(!d)throw new Error("No existe un plan de cambio de temporada");
   const backup={
-    application:"CD San Bernabé Manager",
+    application:currentClubManagerName(),
     version:"V27.2.10",
     created_at:new Date().toISOString(),
     reason:"automatic_pre_season_rollover",
@@ -1982,7 +2009,7 @@ function printKitOrderReport(){
   const team=document.getElementById("kitOrderTeam")?.value||"Todos los equipos",scope=document.getElementById("kitOrderScope")?.selectedOptions?.[0]?.textContent||"Jugadores";
   const summary=kitOrderSummary();if(!summary.length)return toast("No hay datos para imprimir");
   const total=summary.reduce((n,r)=>n+r.Unidades,0),w=window.open("","_blank","width=1000,height=800");if(!w)return toast("El navegador ha bloqueado la ventana de impresión");
-  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Pedido de ropa</title><style>body{font-family:Arial,sans-serif;color:#14213d;padding:32px}header{display:flex;align-items:center;gap:18px;border-bottom:3px solid #0757c7;padding-bottom:18px;margin-bottom:24px}header img{width:70px;height:70px;object-fit:contain}h1{margin:0;font-size:26px}p{margin:5px 0;color:#556}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:11px;border-bottom:1px solid #dce3ee;text-align:left}th{background:#eef4ff}.total{margin-top:18px;text-align:right;font-size:18px;font-weight:bold}@media print{button{display:none}}</style></head><body><header><img src="assets/escudo-oficial.png"><div><h1>CD San Bernabé · Pedido de ropa</h1><p>${esc(team)} · ${esc(scope)}</p><p>Generado el ${new Date().toLocaleDateString("es-ES")}</p></div></header><table><thead><tr><th>Prenda</th><th>Talla</th><th>Unidades</th></tr></thead><tbody>${summary.map(r=>`<tr><td>${esc(r.Prenda)}</td><td>${esc(r.Talla)}</td><td>${r.Unidades}</td></tr>`).join("")}</tbody></table><div class="total">Total de prendas: ${total}</div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);w.document.close();
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Pedido de ropa</title><style>body{font-family:Arial,sans-serif;color:#14213d;padding:32px}header{display:flex;align-items:center;gap:18px;border-bottom:3px solid #0757c7;padding-bottom:18px;margin-bottom:24px}header img{width:70px;height:70px;object-fit:contain}h1{margin:0;font-size:26px}p{margin:5px 0;color:#556}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{padding:11px;border-bottom:1px solid #dce3ee;text-align:left}th{background:#eef4ff}.total{margin-top:18px;text-align:right;font-size:18px;font-weight:bold}@media print{button{display:none}}</style></head><body><header><img src="${esc(currentClubCrest())}"><div><h1>${esc(currentClubFullName())} · Pedido de ropa</h1><p>${esc(team)} · ${esc(scope)}</p><p>Generado el ${new Date().toLocaleDateString("es-ES")}</p></div></header><table><thead><tr><th>Prenda</th><th>Talla</th><th>Unidades</th></tr></thead><tbody>${summary.map(r=>`<tr><td>${esc(r.Prenda)}</td><td>${esc(r.Talla)}</td><td>${r.Unidades}</td></tr>`).join("")}</tbody></table><div class="total">Total de prendas: ${total}</div><script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></body></html>`);w.document.close();
 }
 function setupKitOrder(){
   ["kitOrderTeam","kitOrderScope","kitOrderOnlySized"].forEach(id=>document.getElementById(id)?.addEventListener("change",renderKitOrder));
@@ -2079,7 +2106,7 @@ function openStaffSizingPdf(){
   const viewer=window.open("about:blank","_blank");
   if(viewer){
     try{
-      viewer.document.title="Tallaje cuerpo técnico · CD San Bernabé";
+      viewer.document.title=`Tallaje cuerpo técnico · ${currentClubFullName()}`;
       viewer.document.body.innerHTML='<div style="font:16px Arial,sans-serif;padding:32px;color:#123">Generando PDF del tallaje técnico…</div>';
     }catch(_){ }
   }
@@ -2093,9 +2120,9 @@ function openStaffSizingPdf(){
 
     doc.setProperties({
       title:`Tallaje cuerpo técnico · ${team}`,
-      subject:"Tallaje del cuerpo técnico · CD San Bernabé",
-      author:"CD San Bernabé Manager",
-      creator:"CD San Bernabé Manager"
+      subject:`Tallaje del cuerpo técnico · ${currentClubFullName()}`,
+      author:currentClubManagerName(),
+      creator:currentClubManagerName()
     });
 
     doc.setFillColor(8,42,78);
@@ -2115,7 +2142,7 @@ function openStaffSizingPdf(){
 
     doc.setTextColor(255,255,255);
     doc.setFont(undefined,"bold");doc.setFontSize(15);
-    doc.text("CD SAN BERNABÉ",36,11);
+    doc.text(currentClubUpper(),36,11);
     doc.setFont(undefined,"normal");doc.setFontSize(11);
     doc.text("Tallaje exclusivo del cuerpo técnico",36,19);
     doc.setFontSize(8);
@@ -2133,7 +2160,7 @@ function openStaffSizingPdf(){
       didDrawPage:()=>{
         const current=doc.internal.getCurrentPageInfo().pageNumber;
         doc.setTextColor(90);doc.setFontSize(7);
-        doc.text("CD San Bernabé · Tallaje del cuerpo técnico",7,pageHeight-5);
+        doc.text(`${currentClubFullName()} · Tallaje del cuerpo técnico`,7,pageHeight-5);
         doc.text(`Página ${current}`,pageWidth-22,pageHeight-5);
       }
     });
@@ -2301,7 +2328,7 @@ async function exportPitchesPDF(){
   const doc=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
   const width=doc.internal.pageSize.getWidth();
   doc.setFillColor(8,42,78);doc.rect(0,0,width,30,"F");
-  doc.setTextColor(255,255,255);doc.setFont(undefined,"bold");doc.setFontSize(16);doc.text("CD SAN BERNABÉ · PISTAS Y CAMPOS",10,12);
+  doc.setTextColor(255,255,255);doc.setFont(undefined,"bold");doc.setFontSize(16);doc.text(`${currentClubUpper()} · PISTAS Y CAMPOS`,10,12);
   doc.setFont(undefined,"normal");doc.setFontSize(9);doc.text(`Temporada ${activeClubSeason?.name||"2026/27"} · ${new Date().toLocaleDateString("es-ES")}`,10,20);
   const filters=[];
   if(pitchMonth?.value)filters.push(`Mes: ${pitchMonth.value}`);else filters.push("Todos los meses");
@@ -2748,7 +2775,7 @@ async function createFullBackup(){
   createBackup.disabled=true;createBackup.textContent="Preparando copia...";
   try{
     const tables=["players","teams","payments","documents","kits","player_sizes","staff","staff_sizes","events","pitch_usage","finance_movements","sponsorships","activity_logs","sports_training_sessions","sports_training_attendance","sports_matches","sports_match_player_stats","team_player_cards","club_seasons","season_team_player_cards"];
-    const backup={application:"CD San Bernabé Manager",version:"V27.2.10",created_at:new Date().toISOString(),tables:{}};
+    const backup={application:currentClubManagerName(),version:"V27.2.10",created_at:new Date().toISOString(),tables:{}};
     for(const table of tables){
       const {data,error}=await sb.from(table).select("*");
       if(error)throw new Error(`${table}: ${supabaseErrorText(error)}`);
@@ -3259,7 +3286,7 @@ async function exportTeamReportPDF(){
   doc.setFillColor(8,42,78);doc.rect(0,0,width,31,"F");
   const logo=await reportLogoData();if(logo)doc.addImage(logo,"PNG",10,4,23,23);
   doc.setTextColor(255,255,255);doc.setFontSize(15);doc.setFont(undefined,"bold");
-  doc.text("CD SAN BERNABÉ",38,12);
+  doc.text(currentClubUpper(),38,12);
   doc.setFontSize(11);doc.setFont(undefined,"normal");
   doc.text(`${reportTypeName(cfg.type)} · ${cfg.teamName}`,38,20);
   doc.setFontSize(8);doc.text(`Temporada ${reportSeason()} · ${new Date().toLocaleDateString("es-ES")}`,38,26);
@@ -3895,8 +3922,13 @@ function normalizePdfTeamName(value){
 function pdfNameMatchesSelectedTeam(pdfName,selectedTeam){
   const pdf=normalizePdfTeamName(pdfName),team=normalizePdfTeamName(selectedTeam);
   if(!pdf||!team)return false;
-  if(team.includes("CDSB")||team.includes("SAN BERNABE"))return pdf.includes("SAN BERNABE");
-  const genericTeam=team.replace(/\b(CD|C D|CF|C F|UD|U D)\b/g," ").replace(/\b(CADETE|INFANTIL|ALEVIN|BENJAMIN|PREBENJAMIN|ESCUELA)\b.*$/g," ").replace(/\s+/g," ").trim();
+  const clubAliases=currentMulticlubClub?.slug==="cr-bahia-algeciras"
+    ?["BAHIA DE ALGECIRAS","CLUB RVO BAHIA DE ALGECIRAS","CLUB RCTVO BAHIA DE ALGECIRAS","CR BAHIA","C R BAHIA"]
+    :currentMulticlubClub?.slug==="cd-rinconcillo"
+      ?["CD RINCONCILLO","C D RINCONCILLO","RINCONCILLO"]
+      :[];
+  if(clubAliases.some(alias=>pdf.includes(normalizePdfTeamName(alias))))return true;
+  const genericTeam=team.replace(/\b(CD|C D|CF|C F|UD|U D)\b/g," ").replace(/\b(SENIOR|JUVENIL|CADETE|INFANTIL|ALEVIN|BENJAMIN|PREBENJAMIN|BEBE|ESCUELA)\b.*$/g," ").replace(/\s+/g," ").trim();
   return Boolean(genericTeam)&&(pdf.includes(genericTeam)||genericTeam.includes(pdf));
 }
 function pdfIsByeTeam(value){return normalizePdfTeamName(value).includes("DESCANSA")}
@@ -4045,7 +4077,7 @@ async function handlePdfFile(){
       if(!competition){competition="Liga RFAF";if(competitionInput)competitionInput.value=competition}
       pdfParsedMatches=parseRfafCompetitionCalendar(documentData,team,competition);
       const duplicates=pdfParsedMatches.filter(m=>m.duplicate).length,newMatches=pdfParsedMatches.length-duplicates;
-      status.textContent=pdfParsedMatches.length?`Modelo RFAF reconocido${documentData.season?` · Temporada ${documentData.season}`:""}. ${pdfParsedMatches.length} partido(s) del CD San Bernabé detectado(s): ${newMatches} nuevo(s)${duplicates?` y ${duplicates} ya existente(s)`:""}. Las jornadas y fechas se han rellenado automáticamente; la hora queda pendiente hasta que se fije.`:"Modelo RFAF reconocido, pero no se encontró ningún partido del equipo seleccionado. Comprueba que has elegido el equipo correcto.";
+      status.textContent=pdfParsedMatches.length?`Modelo RFAF reconocido${documentData.season?` · Temporada ${documentData.season}`:""}. ${pdfParsedMatches.length} partido(s) de ${currentClubFullName()} detectado(s): ${newMatches} nuevo(s)${duplicates?` y ${duplicates} ya existente(s)`:""}. Las jornadas y fechas se han rellenado automáticamente; la hora queda pendiente hasta que se fije.`:"Modelo RFAF reconocido, pero no se encontró ningún partido del equipo seleccionado. Comprueba que has elegido el equipo correcto.";
     }else{
       pdfParsedMatches=parsePdfLines(documentData.lines,team,competition);
       pdfParsedMatches.forEach(m=>{m.duplicate=pdfMatchDuplicate(m);m.selected=!m.duplicate});
@@ -4202,7 +4234,7 @@ function updateRivalTeamsCount(){
   if(el)el.textContent=`${rivalTeams.length} equipo${rivalTeams.length===1?"":"s"} rival${rivalTeams.length===1?"":"es"}`;
 }
 function rivalByName(name){return rivalTeams.find(r=>String(r.name).trim().toLowerCase()===String(name||"").trim().toLowerCase())}
-function crestHTML(name,club=false,match=null){const r=rivalByName(name),src=club?"assets/escudo-oficial.png":(r?.crest||match?.opponent_crest||"");return src?`<span class="match-team-crest"><img src="${src}" alt="Escudo ${esc(name)}"></span>`:`<span class="match-team-crest fallback">${esc(String(name||"?").trim().charAt(0).toUpperCase())}</span>`}
+function crestHTML(name,club=false,match=null){const r=rivalByName(name),src=club?currentClubCrest():(r?.crest||match?.opponent_crest||"");return src?`<span class="match-team-crest"><img src="${src}" alt="Escudo ${esc(name)}"></span>`:`<span class="match-team-crest fallback">${esc(String(name||"?").trim().charAt(0).toUpperCase())}</span>`}
 const COMPETITION_IMAGES={"Liga AAFB":"assets/competitions/liga-aafb.png","Copa Primavera":"assets/competitions/copa-primavera.png","Liga RFAF":"assets/competitions/liga-rfaf.png"};
 competitionLogoHTML=function(name,compact=false){const src=COMPETITION_IMAGES[name],m=COMPETITION_META[name]||{abbr:"?",label:name||"Sin competición",className:"other"},label=m.label;return src?`<span class="competition-logo official ${compact?"compact":""}"><img src="${src}" alt="${esc(label)}"><small>${esc(label)}</small></span>`:`<span class="competition-logo ${m.className} ${compact?"compact":""}"><b>${esc(m.abbr)}</b><small>${esc(label)}</small></span>`};
 knownOpponents=function(){return [...new Set([...rivalTeams.map(r=>r.name),...clubMatches.map(m=>String(m.opponent||"").trim())].filter(Boolean))].sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}))};
@@ -4547,7 +4579,7 @@ function generatedUsername(){
 function generatedPassword(){
   const chars="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
   const bytes=crypto.getRandomValues(new Uint8Array(10));
-  return "SB!"+Array.from(bytes,b=>chars[b%chars.length]).join("");
+  return "MC!"+Array.from(bytes,b=>chars[b%chars.length]).join("");
 }
 document.getElementById("generateUsername")?.addEventListener("click",()=>{teamUserForm.elements.username.value=generatedUsername()});
 document.getElementById("generatePassword")?.addEventListener("click",()=>{teamUserForm.elements.password.value=generatedPassword()});
@@ -4583,18 +4615,18 @@ window.resetTeamUserPassword=async id=>{
 function getCredentialUser(id){return teamUserProfiles.find(x=>String(x.id)===String(id))}
 function credentialText(u){
   const names=teamNamesForUser(u);
-  return `CD SAN BERNABÉ MANAGER\n\nEquipos: ${names.join(", ")||"Sin equipo"}\nCargo: ${u.role_label||"Cuerpo técnico"}\nUsuario: ${u.username}\nContraseña: ${u.initial_password||"Restablecer desde el panel"}\n\nAcceso: ${location.origin}`;
+  return `${currentClubUpper()} MANAGER\n\nEquipos: ${names.join(", ")||"Sin equipo"}\nCargo: ${u.role_label||"Cuerpo técnico"}\nUsuario: ${u.username}\nContraseña: ${u.initial_password||"Restablecer desde el panel"}\n\nAcceso: ${location.origin}`;
 }
 window.printTeamUserCredentials=id=>{
   const u=getCredentialUser(id);if(!u)return;
   const names=teamNamesForUser(u);
   const w=window.open("","_blank","noopener,noreferrer");if(!w)return toast("El navegador ha bloqueado la impresión");
-  w.document.write(`<html><head><title>Credenciales ${esc(u.display_name)}</title><style>body{font-family:Arial;padding:45px;color:#102a43}.card{border:3px solid #0b4da2;border-radius:18px;padding:35px;max-width:560px;margin:auto}h1{color:#0b4da2}.row{padding:12px 0;border-bottom:1px solid #ddd}.label{font-size:12px;color:#667;text-transform:uppercase}.value{font-size:22px;font-weight:700;margin-top:4px}.note{margin-top:25px;font-size:12px;color:#667}</style></head><body><div class="card"><h1>CD SAN BERNABÉ</h1><h2>Credenciales de acceso</h2><div class="row"><div class="label">Nombre</div><div class="value">${esc(u.display_name)}</div></div><div class="row"><div class="label">Equipos</div><div class="value">${esc(names.join(", ")||"Sin equipo")}</div></div><div class="row"><div class="label">Cargo</div><div class="value">${esc(u.role_label||"Cuerpo técnico")}</div></div><div class="row"><div class="label">Usuario</div><div class="value">${esc(u.username)}</div></div><div class="row"><div class="label">Contraseña</div><div class="value">${esc(u.initial_password||"Restablecer desde el panel")}</div></div><div class="row"><div class="label">Dirección de acceso</div><div class="value" style="font-size:15px">${esc(location.origin)}</div></div><p class="note">Si tienes varios equipos, al acceder podrás elegir cuál quieres abrir en este dispositivo.</p></div><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();
+  w.document.write(`<html><head><title>Credenciales ${esc(u.display_name)}</title><style>body{font-family:Arial;padding:45px;color:#102a43}.card{border:3px solid #0b4da2;border-radius:18px;padding:35px;max-width:560px;margin:auto}h1{color:#0b4da2}.row{padding:12px 0;border-bottom:1px solid #ddd}.label{font-size:12px;color:#667;text-transform:uppercase}.value{font-size:22px;font-weight:700;margin-top:4px}.note{margin-top:25px;font-size:12px;color:#667}</style></head><body><div class="card"><h1>${esc(currentClubUpper())}</h1><h2>Credenciales de acceso</h2><div class="row"><div class="label">Nombre</div><div class="value">${esc(u.display_name)}</div></div><div class="row"><div class="label">Equipos</div><div class="value">${esc(names.join(", ")||"Sin equipo")}</div></div><div class="row"><div class="label">Cargo</div><div class="value">${esc(u.role_label||"Cuerpo técnico")}</div></div><div class="row"><div class="label">Usuario</div><div class="value">${esc(u.username)}</div></div><div class="row"><div class="label">Contraseña</div><div class="value">${esc(u.initial_password||"Restablecer desde el panel")}</div></div><div class="row"><div class="label">Dirección de acceso</div><div class="value" style="font-size:15px">${esc(location.origin)}</div></div><p class="note">Si tienes varios equipos, al acceder podrás elegir cuál quieres abrir en este dispositivo.</p></div><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close();
 };
 window.shareTeamUserCredentials=id=>{
   const u=getCredentialUser(id);if(!u)return;
   if(!u.initial_password)return toast("Restablece primero la contraseña para poder enviarla");
-  window.open(`https://wa.me/?text=${encodeURIComponent("Hola. Estas son tus credenciales de acceso al CD San Bernabé Manager:\n\n"+credentialText(u))}`,"_blank","noopener");
+  window.open(`https://wa.me/?text=${encodeURIComponent(`Hola. Estas son tus credenciales de acceso a ${currentClubManagerName()}:\n\n`+credentialText(u))}`,"_blank","noopener");
 };
 function fillTeamUserTeams(selected=[]){
   if(!teamUserForm)return;

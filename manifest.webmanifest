@@ -1,7 +1,7 @@
 {
-  "name": "CD San Bernabé Manager",
-  "short_name": "San Bernabé",
-  "description": "Gestión integral del CD San Bernabé con seguimiento deportivo integrado dentro de cada equipo.",
+  "name": "Manager Multiclub · Bahía / Rinconcillo",
+  "short_name": "Manager Multiclub",
+  "description": "Gestión integral multiclub para C.R. Bahía de Algeciras y C.D. Rinconcillo.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

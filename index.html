@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="sports-v2702.css?v=27248">
   <link rel="stylesheet" href="cards-v27249.css?v=27249">
   <link rel="stylesheet" href="mobile-v27231.css?v=27248">
-  <link rel="stylesheet" href="multiclub-v100.css?v=100">
+  <link rel="stylesheet" href="multiclub-v100.css?v=101">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -131,14 +131,14 @@
 
     <main>
       <header class="topbar">
-        <div><span>CD SAN BERNABÉ</span><h1 id="pageTitle">Panel principal</h1><p id="pageSub">Resumen actualizado del club</p></div>
+        <div><span id="currentClubTopbarName">MANAGER MULTICLUB</span><h1 id="pageTitle">Panel principal</h1><p id="pageSub">Resumen actualizado del club</p></div>
         <div id="historicalSeasonBanner" class="historical-season-banner hidden">HISTÓRICO · SOLO LECTURA</div><div class="header-actions"><label class="global-list-sort"><span>Orden de listas</span><select id="globalListSort" aria-label="Orden alfabético de las listas"><option value="az">Nombre A–Z</option><option value="za">Nombre Z–A</option></select></label><button id="switchTechnicalTeam" class="secondary hidden" type="button">⇄ Cambiar equipo</button><button id="installApp" class="install-btn hidden">Instalar aplicación</button><button id="headerAddPlayer" class="primary">+ Nuevo jugador</button></div>
       </header>
 
       <section id="dashboard" class="view active">
         <div class="dashboard-welcome">
           <div>
-            <small id="dashboardSeasonLabel">CD SAN BERNABÉ · TEMPORADA 2026/27</small>
+            <small id="dashboardSeasonLabel">MANAGER MULTICLUB · TEMPORADA 2026/27</small>
             <h2>Panel de gestión del club</h2>
             <p id="dashboardDate">Resumen actualizado de jugadores, cobros, documentos y equipaciones.</p>
           </div>
@@ -608,7 +608,7 @@
             <div class="report-document-header">
               <img src="assets/manager-multiclub.svg" alt="Escudo del club" data-club-crest>
               <div>
-                <small>CD SAN BERNABÉ</small>
+                <small id="teamReportClubName">MANAGER MULTICLUB</small>
                 <h2 id="teamReportTitle">Informe del equipo</h2>
                 <p id="teamReportMeta"></p>
               </div>
@@ -1167,7 +1167,7 @@
   <div id="toast" class="toast"></div>
   <script src="config.js?v=27246"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="sports-v27238.js?v=27246"></script>
+  <script src="sports-v27238.js?v=101"></script>
   <script src="cards-v27249.js?v=27249"></script>
 
   <dialog id="posterDialog" class="v261-poster-dialog">
@@ -1216,14 +1216,14 @@
     </div>
   </dialog>
 
-  <script src="app-v27248.js?v=27248"></script>
-  <script src="calendar-v27247.js?v=27247"></script>
+  <script src="app-v27248.js?v=101"></script>
+  <script src="calendar-v27247.js?v=101"></script>
   <script src="inventory-v2600.js?v=27246"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js?v=27249", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./service-worker.js?v=101", { updateViaCache: "none" })
           .then(registration => registration.update())
           .catch(() => {});
       });

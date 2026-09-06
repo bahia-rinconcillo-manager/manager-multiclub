@@ -359,7 +359,7 @@
     const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
     const pageWidth=doc.internal.pageSize.getWidth();
     doc.setFillColor(7,17,31);doc.rect(0,0,pageWidth,31,"F");
-    doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(17);doc.text("CD SAN BERNABÉ · CONVOCATORIA",14,13);
+    doc.setTextColor(255,255,255);doc.setFont("helvetica","bold");doc.setFontSize(17);doc.text(`${window.multiclubClubUpper?.()||"MANAGER MULTICLUB"} · CONVOCATORIA`,14,13);
     doc.setFont("helvetica","normal");doc.setFontSize(10);doc.text(`${teamLabel} · ${condition} vs ${opponent}`,14,21);doc.text(`${dateLabel(date)} · ${timeLabel(time)} · ${competition}`,14,27);
     doc.setTextColor(24,34,48);doc.setFont("helvetica","bold");doc.setFontSize(11);doc.text(`Campo: ${venue}`,14,39);doc.text(`Convocados: ${rows.length}`,145,39);
     const body=rows.map(({item,player})=>["",playerName(player.id),item.participation_status]);
@@ -591,7 +591,7 @@
   function printTeamStats(teamId){
     const table=$("teamSportsStatsTable"),team=teamById(teamId);if(!table)return;
     const w=window.open("","_blank");if(!w)return notify("El navegador ha bloqueado la ventana de impresión");
-    w.document.write(`<html><head><title>Estadísticas ${safe(team?.name||"")}</title><style>body{font-family:Arial;padding:25px;color:#102a43}h1{color:#0b4da2;margin-bottom:4px}p{color:#667}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #ccd6e0;padding:6px;text-align:left}th{background:#eaf2fb}small{display:block;color:#667}</style></head><body><h1>CD San Bernabé · ${safe(team?.name||"Equipo")}</h1><p>Estadísticas deportivas · ${new Date().toLocaleString("es-ES")}</p>${table.outerHTML}</body></html>`);w.document.close();w.focus();w.print();
+    w.document.write(`<html><head><title>Estadísticas ${safe(team?.name||"")}</title><style>body{font-family:Arial;padding:25px;color:#102a43}h1{color:#0b4da2;margin-bottom:4px}p{color:#667}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #ccd6e0;padding:6px;text-align:left}th{background:#eaf2fb}small{display:block;color:#667}</style></head><body><h1>${safe(window.multiclubClubName?.()||"Club")} · ${safe(team?.name||"Equipo")}</h1><p>Estadísticas deportivas · ${new Date().toLocaleString("es-ES")}</p>${table.outerHTML}</body></html>`);w.document.close();w.focus();w.print();
   }
 
   function render(){
@@ -611,7 +611,7 @@
   function printStats(){
     const table=$("sportsStatsTable");if(!table)return;
     const w=window.open("","_blank");if(!w)return notify("El navegador ha bloqueado la ventana de impresión");
-    w.document.write(`<html><head><title>Estadísticas deportivas</title><style>body{font-family:Arial;padding:25px;color:#102a43}h1{color:#0b4da2}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #ccd6e0;padding:6px;text-align:left}th{background:#eaf2fb}small{display:block;color:#667}</style></head><body><h1>CD San Bernabé · Estadísticas deportivas</h1><p>Generado el ${new Date().toLocaleString("es-ES")}</p>${table.outerHTML}</body></html>`);
+    w.document.write(`<html><head><title>Estadísticas deportivas</title><style>body{font-family:Arial;padding:25px;color:#102a43}h1{color:#0b4da2}table{border-collapse:collapse;width:100%;font-size:11px}th,td{border:1px solid #ccd6e0;padding:6px;text-align:left}th{background:#eaf2fb}small{display:block;color:#667}</style></head><body><h1>${safe(window.multiclubClubName?.()||"Club")} · Estadísticas deportivas</h1><p>Generado el ${new Date().toLocaleString("es-ES")}</p>${table.outerHTML}</body></html>`);
     w.document.close();w.focus();w.print();
   }
 

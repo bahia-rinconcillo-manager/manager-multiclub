@@ -1,4 +1,4 @@
-const CACHE = "cdsb-manager-v27-2-49-traspaso-fichas";
+const CACHE = "manager-multiclub-v1-0-1-branding";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -13,14 +13,17 @@ const CORE_FILES = [
   "./sports-v2702.css?v=27248",
   "./cards-v27249.css?v=27249",
   "./mobile-v27231.css?v=27248",
-  "./app-v27248.js?v=27248",
-  "./sports-v27238.js?v=27248",
+  "./app-v27248.js?v=101",
+  "./sports-v27238.js?v=101",
   "./cards-v27249.js?v=27249",
-  "./calendar-v27247.js?v=27248",
+  "./calendar-v27247.js?v=101",
   "./inventory-v2600.js?v=27248",
   "./public-v27211.js?v=27248",
   "./manifest.webmanifest",
   "./assets/escudo-oficial.png",
+  "./assets/escudo-bahia.png",
+  "./assets/escudo-rinconcillo.png",
+  "./assets/manager-multiclub.svg",
   "./assets/avatar-jugador.svg",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
@@ -42,7 +45,7 @@ self.addEventListener("install", event => {
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys => Promise.all(
-      keys.filter(key => key.startsWith("cdsb-manager-") && key !== CACHE).map(key => caches.delete(key))
+      keys.filter(key => (key.startsWith("cdsb-manager-")||key.startsWith("manager-multiclub-")) && key !== CACHE).map(key => caches.delete(key))
     ))
   );
   self.clients.claim();
