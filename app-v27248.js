@@ -271,18 +271,19 @@ function normalizeEquipmentJson(value,fallback){
   if(typeof value==="object")return value;
   try{return JSON.parse(value)}catch(_){return fallback}
 }
-function equipmentCustomItemsPayload(){
-  return (CLOTHING_ITEMS||[]).filter(item=>item?.custom).map(item=>({
+function equipmentCatalogItemsPayload(){
+  const source=Array.isArray(CLOTHING_ITEMS)&&CLOTHING_ITEMS.length?CLOTHING_ITEMS:BASE_CLOTHING_ITEMS;
+  return source.filter(item=>item&&item.key).map(item=>({
     key:String(item.key),label:String(item.label||"Prenda"),icon:item.icon||"👕",
     category:CLOTHING_CATEGORIES.includes(item.category)?item.category:"Complementos",
     audience:["players","staff","both"].includes(item.audience)?item.audience:"both",
-    custom:true,noSize:!!item.noSize,defaultForPlayer:!!item.defaultForPlayer,defaultForStaff:!!item.defaultForStaff
+    custom:item.custom===true,noSize:!!item.noSize,defaultForPlayer:!!item.defaultForPlayer,defaultForStaff:!!item.defaultForStaff
   }));
 }
 function equipmentStatePayload(){
   return {
     club_id:activeClubId(),
-    catalog_items:equipmentCustomItemsPayload(),
+    catalog_items:equipmentCatalogItemsPayload(),
     catalog_config:clothingCatalogConfig||{},
     inventory:window.MULTICLUB_EQUIPMENT_INVENTORY||{},
     custom_player_sizes:customPlayerClothingSizes||{},
@@ -321,10 +322,19 @@ async function loadMulticlubEquipmentState(){
     key:String(item.key),label:String(item.label),icon:item.icon||"👕",
     category:CLOTHING_CATEGORIES.includes(item.category)?item.category:"Complementos",
     audience:["players","staff","both"].includes(item.audience)?item.audience:"both",
-    custom:true,noSize:!!item.noSize,defaultForPlayer:!!item.defaultForPlayer,defaultForStaff:!!item.defaultForStaff
+    custom:item.custom===true,noSize:!!item.noSize,defaultForPlayer:!!item.defaultForPlayer,defaultForStaff:!!item.defaultForStaff
   }));
-  CLOTHING_ITEMS=[...BASE_CLOTHING_ITEMS,...valid.filter(item=>!BASE_CLOTHING_ITEMS.some(base=>base.key===item.key))];
+  const merged=new Map(BASE_CLOTHING_ITEMS.map(item=>[item.key,{...item}]));
+  valid.forEach(item=>merged.set(item.key,{...(merged.get(item.key)||{}),...item}));
+  CLOTHING_ITEMS=[...merged.values()];
+  if(!CLOTHING_ITEMS.length)CLOTHING_ITEMS=BASE_CLOTHING_ITEMS.map(item=>({...item}));
   clothingCatalogConfig=normalizeEquipmentJson(data.catalog_config,{})||{};
+  for(const item of CLOTHING_ITEMS){
+    const cfg=clothingCatalogConfig[item.key];
+    if(!cfg||typeof cfg!=="object")continue;
+    if(!CLOTHING_CATEGORIES.includes(cfg.category))delete cfg.category;
+    if(!String(cfg.label||"").trim())delete cfg.label;
+  }
   customPlayerClothingSizes=normalizeEquipmentJson(data.custom_player_sizes,{})||{};
   customStaffClothingSizes=normalizeEquipmentJson(data.custom_staff_sizes,{})||{};
   staffKitStatus=normalizeEquipmentJson(data.staff_kit_status,{})||{};
@@ -332,6 +342,11 @@ async function loadMulticlubEquipmentState(){
   if(typeof kitInventoryStock!=="undefined")kitInventoryStock={...window.MULTICLUB_EQUIPMENT_INVENTORY};
   multiclubEquipmentStateReady=true;
   window.multiclubInventoryLoad?.(window.MULTICLUB_EQUIPMENT_INVENTORY);
+  // Si el registro del club se creó vacío en V1.0.9, persistimos ahora el catálogo base
+  // para que nunca vuelva a aparecer Equipaciones sin prendas al cambiar de equipo/PC.
+  if(!Array.isArray(savedItems)||savedItems.length===0){
+    try{await saveMulticlubEquipmentStateNow()}catch(error){console.warn("No se pudo inicializar el catálogo base de equipaciones",error)}
+  }
 }
 function loadCustomClothingItems(){
   if(!multiclubEquipmentStateReady)CLOTHING_ITEMS=[...BASE_CLOTHING_ITEMS];
@@ -417,6 +432,13 @@ async function loadClothingImages(){
 function renderClothingCatalog(){
   const grid=document.getElementById("clothingCatalogGrid");if(!grid)return;
   if(!(typeof isHistoricalSeason==="function"&&isHistoricalSeason()))loadClothingCatalogConfig();
+  if(!Array.isArray(CLOTHING_ITEMS)||CLOTHING_ITEMS.length===0)CLOTHING_ITEMS=BASE_CLOTHING_ITEMS.map(item=>({...item}));
+  const visibleByCategory=CLOTHING_CATEGORIES.some(category=>CLOTHING_ITEMS.some(item=>clothingConfig(item).category===category));
+  if(!visibleByCategory){
+    CLOTHING_ITEMS=BASE_CLOTHING_ITEMS.map(item=>({...item}));
+    clothingCatalogConfig={};
+    scheduleMulticlubEquipmentSave();
+  }
   grid.innerHTML=CLOTHING_CATEGORIES.map(category=>{
     const items=CLOTHING_ITEMS.filter(item=>clothingConfig(item).category===category);
     if(!items.length)return "";

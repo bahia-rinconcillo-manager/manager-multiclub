@@ -40,3 +40,5 @@ V1.0.9
 - Equipaciones e inventario sincronizados por club en Supabase mediante club_equipment_state.
 - Eliminado el estado compartido de catálogo/inventario entre Bahía y Rinconcillo.
 - Fotos de prendas aisladas por club en Storage.
+
+V1.0.11: restaura automáticamente el catálogo base de Equipaciones si el estado de Supabase está vacío y lo persiste por club.
