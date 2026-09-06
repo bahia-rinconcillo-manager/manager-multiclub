@@ -1,0 +1,14 @@
+MANAGER MULTICLUB V1.0.18B - HOTFIX DE CARGA
+
+Este paquete contiene SOLO los archivos que deben sustituirse en la raíz del repositorio:
+- index.html
+- app-multiclub-v1018b.js
+- sports-v27238-multiclub.js
+- service-worker.js
+
+Motivo:
+- La captura mostraba que seguía abierto V1.0.17, por lo que el index.html de V1.0.18 no se había sustituido.
+- El aviso sports_snapshot pertenece al antiguo seguimiento deportivo monoclub de San Bernabé. Se oculta hasta migrar ese módulo con club_id, para no mezclar datos entre clubes.
+
+No borra datos ni configuración de Supabase.
+Si el SQL V1.0.18 ya se ejecutó correctamente, NO hay que repetirlo.
