@@ -18,3 +18,9 @@ Esta es la primera adaptación del frontend al nuevo backend multiclub.
 Los módulos que en el San Bernabé dependían de RPC antiguas (acceso técnico,
 calendario sincronizado, cierre anual, etc.) se conectarán a las RPC multiclub
 en los siguientes bloques.
+
+
+V1.0.3
+- Añadida categoría Senior por encima de Juvenil en creación/edición de equipos.
+- Añadida Senior al asistente de cambio de temporada.
+- Reconocimiento automático de categoría Senior en nombres de equipo y edades adultas.

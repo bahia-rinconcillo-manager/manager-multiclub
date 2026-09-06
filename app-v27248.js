@@ -751,6 +751,7 @@ function normalizeSeasonCategory(value){
   if(text.includes("alevin"))return "Alevín";
   if(text.includes("infantil"))return "Infantil";
   if(text.includes("cadete"))return "Cadete";
+  if(text.includes("senior")||text.includes("sénior"))return "Senior";
   if(text.includes("juvenil"))return "Juvenil";
   if(text.includes("bebe"))return "Bebé";
   return "";
@@ -771,6 +772,7 @@ function suggestedSeasonCategory(birthDate,seasonName){
   if(age>=12&&age<=13)return "Infantil";
   if(age>=14&&age<=15)return "Cadete";
   if(age>=16&&age<=18)return "Juvenil";
+  if(age>=19)return "Senior";
   return "";
 }
 function seasonTeamCategory(teamName){
@@ -1037,7 +1039,7 @@ function renderSeasonNewTeams(){
     ${(d.newTeams||[]).map((team,index)=>`<article class="season-new-team-card">
       <div class="season-new-team-number">${index+1}</div>
       <label>Nombre del equipo<input data-season-new-team-name="${esc(team.draftId)}" value="${esc(team.name)}" placeholder="Ej. CDSB Infantil A"></label>
-      <label>Categoría de edad<select data-season-new-team-age-category="${esc(team.draftId)}"><option value="">Seleccionar</option>${["Bebé","Prebenjamín","Benjamín","Alevín","Infantil","Cadete","Juvenil"].map(c=>`<option value="${c}" ${c===team.age_category?"selected":""}>${c}</option>`).join("")}</select></label>
+      <label>Categoría de edad<select data-season-new-team-age-category="${esc(team.draftId)}"><option value="">Seleccionar</option>${["Senior","Juvenil","Cadete","Infantil","Alevín","Benjamín","Prebenjamín","Bebé"].map(c=>`<option value="${c}" ${c===team.age_category?"selected":""}>${c}</option>`).join("")}</select></label>
       <label>Modalidad<input data-season-new-team-category="${esc(team.draftId)}" value="${esc(team.category)}" placeholder="Fútbol 7 / Fútbol 11"></label>
       <label>Horario<input data-season-new-team-schedule="${esc(team.draftId)}" value="${esc(team.training_schedule)}" placeholder="Opcional"></label>
       <label>Campo<input data-season-new-team-field="${esc(team.draftId)}" value="${esc(team.field)}" placeholder="Opcional"></label>

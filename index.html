@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="sports-v2702.css?v=27248">
   <link rel="stylesheet" href="cards-v27249.css?v=27249">
   <link rel="stylesheet" href="mobile-v27231.css?v=27248">
-  <link rel="stylesheet" href="multiclub-v100.css?v=101">
+  <link rel="stylesheet" href="multiclub-v100.css?v=103">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
@@ -881,7 +881,7 @@
     <input name="id" type="hidden">
     <div class="form-grid">
       <label>Nombre del equipo<input name="name" required></label>
-      <label>Categoría de edad<select name="age_category"><option value="">Seleccionar</option><option>Bebé</option><option>Prebenjamín</option><option>Benjamín</option><option>Alevín</option><option>Infantil</option><option>Cadete</option><option>Juvenil</option></select></label>
+      <label>Categoría de edad<select name="age_category"><option value="">Seleccionar</option><option>Senior</option><option>Juvenil</option><option>Cadete</option><option>Infantil</option><option>Alevín</option><option>Benjamín</option><option>Prebenjamín</option><option>Bebé</option></select></label>
       <label>Modalidad<input name="category" placeholder="Fútbol 7 / Fútbol 11"></label>
       <label>Entrenador<select name="coach_id"><option value="">Sin asignar</option></select></label>
       <label>Delegado<input name="delegate_name"></label>
@@ -1167,7 +1167,7 @@
   <div id="toast" class="toast"></div>
   <script src="config.js?v=27246"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="sports-v27238.js?v=101"></script>
+  <script src="sports-v27238.js?v=103"></script>
   <script src="cards-v27249.js?v=27249"></script>
 
   <dialog id="posterDialog" class="v261-poster-dialog">
@@ -1216,14 +1216,14 @@
     </div>
   </dialog>
 
-  <script src="app-v27248.js?v=101"></script>
-  <script src="calendar-v27247.js?v=101"></script>
+  <script src="app-v27248.js?v=103"></script>
+  <script src="calendar-v27247.js?v=103"></script>
   <script src="inventory-v2600.js?v=27246"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js?v=101", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./service-worker.js?v=103", { updateViaCache: "none" })
           .then(registration => registration.update())
           .catch(() => {});
       });

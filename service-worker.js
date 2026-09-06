@@ -1,4 +1,4 @@
-const CACHE = "manager-multiclub-v1-0-1-branding";
+const CACHE = "manager-multiclub-v1-0-3-senior";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -13,10 +13,10 @@ const CORE_FILES = [
   "./sports-v2702.css?v=27248",
   "./cards-v27249.css?v=27249",
   "./mobile-v27231.css?v=27248",
-  "./app-v27248.js?v=101",
-  "./sports-v27238.js?v=101",
+  "./app-v27248.js?v=103",
+  "./sports-v27238.js?v=103",
   "./cards-v27249.js?v=27249",
-  "./calendar-v27247.js?v=101",
+  "./calendar-v27247.js?v=103",
   "./inventory-v2600.js?v=27248",
   "./public-v27211.js?v=27248",
   "./manifest.webmanifest",
