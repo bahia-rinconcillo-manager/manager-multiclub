@@ -1,0 +1,6 @@
+MANAGER MULTICLUB V1.0.10
+
+- Corrige pantalla en blanco introducida en V1.0.9.
+- Causa: inicialización de estado de equipaciones antes de declarar la variable de control.
+- Mantiene Equipaciones e inventario separados por club en Supabase.
+- Fuerza renovación de caché y service worker.

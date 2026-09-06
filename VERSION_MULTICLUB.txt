@@ -1,1 +1,2 @@
-V1.0.9
+Manager Multiclub V1.0.10
+Hotfix pantalla en blanco + Equipaciones por club en Supabase

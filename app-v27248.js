@@ -239,6 +239,9 @@ const STAFF_KIT_STATUS_KEY="cdsb_staff_kit_status_v24_4_7";
 function seasonStorageSuffix(){const season=String(window.CDSB_SEASON_STATE?.label||"2026/27").replace(/[^0-9A-Za-z]+/g,"_");const club=String(activeClubId()||"sin_club").replace(/[^0-9A-Za-z]+/g,"_");return `${club}_${season}`}
 function staffKitSeasonKey(){return `${STAFF_KIT_STATUS_KEY}_${seasonStorageSuffix()}`}
 let customPlayerClothingSizes={},customStaffClothingSizes={},staffKitStatus={};
+let multiclubEquipmentStateReady=false;
+let multiclubEquipmentSaveTimer=null;
+window.MULTICLUB_EQUIPMENT_INVENTORY={};
 function loadStaffKitStatus(){
   if(!multiclubEquipmentStateReady)staffKitStatus={};
 }
@@ -263,9 +266,6 @@ loadCustomClothingSizes();
 loadStaffKitStatus();
 let CLOTHING_ITEMS=[...BASE_CLOTHING_ITEMS];
 let clothingCatalogConfig={};
-let multiclubEquipmentStateReady=false;
-let multiclubEquipmentSaveTimer=null;
-window.MULTICLUB_EQUIPMENT_INVENTORY={};
 function normalizeEquipmentJson(value,fallback){
   if(value==null)return fallback;
   if(typeof value==="object")return value;
