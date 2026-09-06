@@ -1,2 +1,2 @@
-Manager Multiclub V1.0.10
-Hotfix pantalla en blanco + Equipaciones por club en Supabase
+Manager Multiclub V1.0.15
+Tallaje técnicos: núcleo JS con nombre nuevo, singular/plural y escudo PDF embebido

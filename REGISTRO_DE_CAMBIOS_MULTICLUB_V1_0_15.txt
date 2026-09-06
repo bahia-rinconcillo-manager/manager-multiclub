@@ -1,0 +1,8 @@
+MANAGER MULTICLUB V1.0.15
+- El archivo principal de la aplicación cambia físicamente a app-multiclub-v1015.js.
+- index.html ya no carga app-v27248.js ni el parche V1.0.14.
+- Esto impide reutilizar una copia antigua del JavaScript en caché.
+- Tallaje técnicos: singular/plural corregido en el núcleo.
+- PDF Tallaje técnicos: escudos Bahía/Rinconcillo embebidos como JPEG sobre la cabecera azul.
+- Indicador visible en barra lateral: Manager Online · Multiclub V1.0.15.
+- No requiere SQL y no modifica datos.
