@@ -1,0 +1,14 @@
+MANAGER MULTICLUB V1.0.18
+
+PISTAS / INSTALACIONES
+- Añadidos tipos: Alquiler a terceros y Otro.
+- Pistas sigue sin horarios, campos ni tarifas predefinidos.
+- Equipo / entidad permanece como texto libre.
+- Estadísticas: usos activos, alquileres activos, anulados y total filtrado.
+- Los alquileres a terceros con importe positivo se sincronizan automáticamente con Ingresos y gastos mediante la migración SQL V1.0.18.
+- Al anular, poner a 0 o cambiar el tipo de un alquiler, desaparece solo su ingreso automático.
+- Al reactivar o modificar el alquiler, el mismo ingreso se recrea/actualiza sin duplicarse.
+- Los movimientos automáticos de alquiler no son editables directamente desde Contabilidad.
+
+VERSIONADO
+- Nuevo archivo físico app-multiclub-v1018.js para evitar caché de versiones anteriores.
