@@ -1458,11 +1458,18 @@ function totalPaid(id){
   // Conserva también los cobros históricos de conceptos que después se desactiven.
   return payments.filter(x=>String(x.player_id)===String(id)).reduce((sum,x)=>sum+Number(x.amount||0),0);
 }
+function conceptPendingAmount(playerId,concept){
+  if(!concept||concept.active===false||concept.required===false)return 0;
+  const record=paymentRecord(playerId,concept.concept_key);
+  if(record?.status==="Exento")return 0;
+  const expected=Math.max(0,Number(concept.default_amount||0));
+  const paid=Math.max(0,Number(record?.amount||0));
+  return Math.max(0,expected-paid);
+}
 function pending(id){
-  return requiredPaymentConcepts().reduce((sum,c)=>{
-    const expected=paymentExpected(id,c),record=paymentRecord(id,c),paid=Number(record?.amount||0);
-    return sum+Math.max(0,expected-paid);
-  },0);
+  // La deuda es exclusivamente la suma de lo que falta de cada concepto
+  // obligatorio activo. Un concepto pagado por completo aporta 0 € pendiente.
+  return requiredPaymentConcepts().reduce((sum,c)=>sum+conceptPendingAmount(id,c),0);
 }
 function docs(id){return documents.find(x=>x.player_id===id)||{}}
 function kit(id){return kits.find(x=>x.player_id===id)||{}}

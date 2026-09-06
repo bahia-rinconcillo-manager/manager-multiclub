@@ -6,12 +6,12 @@
   <title>Manager Multiclub</title>
   <script>
     (() => {
-      const version = "27.2.29";
+      const version = "multiclub-1.0.8";
       const key = "cdsb_forced_asset_version";
       if (localStorage.getItem(key) === version) return;
       localStorage.setItem(key, version);
       const clearCaches = ("caches" in window)
-        ? caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith("cdsb-manager-")).map(k => caches.delete(k))))
+        ? caches.keys().then(keys => Promise.all(keys.filter(k => k.startsWith("cdsb-manager-") || k.startsWith("manager-multiclub-")).map(k => caches.delete(k))))
         : Promise.resolve();
       const clearWorkers = ("serviceWorker" in navigator)
         ? navigator.serviceWorker.getRegistrations().then(regs => Promise.all(regs.map(r => r.unregister())))
@@ -1242,14 +1242,14 @@
     </div>
   </dialog>
 
-  <script src="app-v27248.js?v=107"></script>
+  <script src="app-v27248.js?v=108"></script>
   <script src="calendar-v27247.js?v=103"></script>
   <script src="inventory-v2600.js?v=27246"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js?v=106", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./service-worker.js?v=108", { updateViaCache: "none" })
           .then(registration => registration.update())
           .catch(() => {});
       });

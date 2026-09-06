@@ -1,0 +1,7 @@
+MANAGER MULTICLUB V1.0.8
+
+- Corrige el cálculo de importe pendiente en Cobros.
+- Un concepto pagado por completo ya no vuelve a sumarse como deuda.
+- La deuda se calcula por cada concepto obligatorio activo: importe previsto menos importe cobrado.
+- Fuerza renovación de caché y Service Worker para evitar ejecutar JavaScript antiguo tras una actualización.
+- No requiere cambios SQL adicionales.
