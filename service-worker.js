@@ -1,4 +1,4 @@
-const CACHE = "manager-multiclub-v1-0-6-upsert-multiclub";
+const CACHE = "manager-multiclub-v1-0-7-conceptos-cobro";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -7,13 +7,13 @@ const CORE_FILES = [
   "./wix-calendar.html",
   "./wix-public-v27247.css?v=27248",
   "./wix-public-v27247.js?v=27248",
-  "./styles-v2600.css?v=27248",
+  "./styles-v2600.css?v=107",
   "./sponsorship-v27248.css?v=27248",
   "./calendar-v27243.css?v=27248",
   "./sports-v2702.css?v=27248",
   "./cards-v27249.css?v=27249",
   "./mobile-v27231.css?v=27248",
-  "./app-v27248.js?v=106",
+  "./app-v27248.js?v=107",
   "./sports-v27238.js?v=103",
   "./cards-v27249.js?v=106",
   "./calendar-v27247.js?v=103",

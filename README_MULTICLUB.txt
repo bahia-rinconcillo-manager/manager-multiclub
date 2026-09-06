@@ -30,3 +30,7 @@ V1.0.4
 - Vuelve al selector Bahía/Rinconcillo sin cerrar la sesión de administrador.
 - Al seleccionar el nuevo club se abre siempre el Panel principal.
 - Se cierra el canal realtime del club anterior y se limpia el estado en memoria antes del cambio.
+
+V1.0.7
+- Cobros configurables por club mediante la tabla payment_concepts.
+- Ejecutar EJECUTAR_ACTUALIZACION_MULTICLUB_V1_0_7_CONCEPTOS_COBRO.sql antes de usar esta versión.

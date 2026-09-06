@@ -19,7 +19,7 @@
       Promise.all([clearCaches, clearWorkers]).finally(() => location.reload());
     })();
   </script>
-  <link rel="stylesheet" href="styles-v2600.css?v=27248">
+  <link rel="stylesheet" href="styles-v2600.css?v=107">
   <link rel="stylesheet" href="sponsorship-v27248.css?v=27248">
   <link rel="stylesheet" href="calendar-v27243.css?v=27248">
   <link rel="stylesheet" href="sports-v2702.css?v=27248">
@@ -296,14 +296,18 @@
       </section>
 
       <section id="payments" class="view">
-        <div class="panel"><div class="panel-title"><small>TESORERÍA</small><h3>Control de cobros</h3><p>50 € inscripción · 50 € tallaje · 100 € recogida de ropa</p></div>
+        <div class="panel">
+          <div class="panel-title payments-title-row">
+            <div><small>TESORERÍA</small><h3>Control de cobros</h3><p id="paymentsConceptSummary">Conceptos e importes configurables por club</p></div>
+            <button id="managePaymentConcepts" class="primary" type="button">⚙ Configurar conceptos</button>
+          </div>
           <div class="payments-filter-bar">
             <label for="paymentsTeamFilter"><span>Filtrar por equipo</span>
               <select id="paymentsTeamFilter"><option value="">Todos los equipos</option></select>
             </label>
             <button id="clearPaymentsTeamFilter" class="mini" type="button">Mostrar todos</button>
           </div>
-          <div class="table-wrap"><table><thead><tr><th>Jugador</th><th>Equipo</th><th>Inscripción</th><th>Tallaje</th><th>Ropa</th><th>Pagado</th><th>Pendiente</th><th></th></tr></thead><tbody id="paymentsBody"></tbody></table></div>
+          <div class="table-wrap"><table><thead><tr id="paymentsTableHead"><th>Jugador</th><th>Equipo</th><th>Pagado</th><th>Pendiente</th><th></th></tr></thead><tbody id="paymentsBody"></tbody></table></div>
         </div>
       </section>
 
@@ -816,13 +820,34 @@
     <div class="modal-head"><div><small>TESORERÍA</small><h2>Registrar cobro</h2></div><button type="button" data-close="paymentDialog">×</button></div>
     <input name="player_id" type="hidden">
     <div class="form-grid">
-      <label>Concepto<select name="concept"><option value="registration">Inscripción</option><option value="sizing">Tallaje</option><option value="clothing">Recogida de ropa</option></select></label>
+      <label>Concepto<select name="concept"></select></label>
       <label>Estado<select name="status"><option>Pendiente</option><option>Pagado</option><option>Parcial</option><option>Exento</option></select></label>
-      <label>Importe<input name="amount" type="number" min="0" step=".01" inputmode="decimal" title="Se completa automáticamente según el concepto"></label><label>Fecha<input name="paid_at" type="date"></label>
+      <label>Importe<input name="amount" type="number" min="0" step=".01" inputmode="decimal" title="Se completa automáticamente según la configuración del concepto"></label><label>Fecha<input name="paid_at" type="date"></label>
       <label>Forma de pago<select name="method"><option>Efectivo</option><option>Transferencia</option><option>Bizum</option><option>Tarjeta</option><option>Otro</option></select></label>
       <label>Nº recibo<input name="receipt"></label><label class="full">Justificante de pago<input name="receipt_file" type="file" accept=".pdf,.jpg,.jpeg,.png"></label><div id="existingReceipt" class="full existing-file hidden"></div>
     </div>
-    <p class="payment-income-note">El importe se completa automáticamente: <strong>50 € inscripción</strong>, <strong>50 € tallaje</strong> o <strong>100 € recogida de ropa</strong>. Solo se escribe manualmente cuando el pago es parcial. El cobro se registrará como <strong>Ingreso</strong>.</p><div class="modal-actions"><button type="button" class="secondary" data-close="paymentDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+    <p id="paymentIncomeNote" class="payment-income-note">El importe se toma de la configuración del club. Los conceptos con importe 0 € permiten introducir una cantidad manual. El cobro se registrará como <strong>Ingreso</strong>.</p><div class="modal-actions"><button type="button" class="secondary" data-close="paymentDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+  </form></dialog>
+
+  <dialog id="paymentConceptsDialog"><form id="paymentConceptForm" class="modal payment-concepts-modal">
+    <div class="modal-head"><div><small>TESORERÍA</small><h2>Configurar conceptos de cobro</h2></div><button type="button" data-close="paymentConceptsDialog">×</button></div>
+    <p class="payment-concepts-help">Esta configuración pertenece únicamente al club seleccionado. Los conceptos obligatorios cuentan para el pendiente de cada jugador; los opcionales solo se contabilizan cuando se registra un cobro.</p>
+    <div id="paymentConceptsList" class="payment-concepts-list"></div>
+    <div class="payment-concept-editor">
+      <input name="id" type="hidden">
+      <input name="concept_key" type="hidden">
+      <div class="form-grid">
+        <label>Nombre del concepto<input name="name" required placeholder="Ej. Cuota temporada"></label>
+        <label>Importe previsto (€)<input name="default_amount" type="number" min="0" step=".01" value="0" required></label>
+        <label>Obligatorio<select name="required"><option value="true">Sí</option><option value="false">No</option></select></label>
+        <label>Activo<select name="active"><option value="true">Sí</option><option value="false">No</option></select></label>
+        <label>Orden<input name="sort_order" type="number" step="1" value="10"></label>
+      </div>
+      <div class="modal-actions modal-actions-split">
+        <button id="newPaymentConcept" class="secondary" type="button">+ Nuevo concepto</button>
+        <div class="modal-actions-right"><button type="button" class="secondary" data-close="paymentConceptsDialog">Cerrar</button><button class="primary" type="submit">Guardar concepto</button></div>
+      </div>
+    </div>
   </form></dialog>
 
   <dialog id="documentDialog"><form id="documentForm" class="modal">
@@ -1217,7 +1242,7 @@
     </div>
   </dialog>
 
-  <script src="app-v27248.js?v=106"></script>
+  <script src="app-v27248.js?v=107"></script>
   <script src="calendar-v27247.js?v=103"></script>
   <script src="inventory-v2600.js?v=27246"></script>
 

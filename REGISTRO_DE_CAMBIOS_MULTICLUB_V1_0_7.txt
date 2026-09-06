@@ -1,0 +1,12 @@
+MANAGER MULTICLUB · V1.0.7 · CONCEPTOS DE COBRO CONFIGURABLES
+
+- Nuevo catálogo de conceptos de cobro independiente por club.
+- Crear, editar, ordenar, activar/desactivar y eliminar conceptos sin historial.
+- Importe previsto editable por concepto.
+- Conceptos obligatorios u opcionales.
+- Tabla de Cobros con columnas dinámicas según la configuración del club.
+- Pendientes y totales dejan de asumir 50 + 50 + 100 = 200 €.
+- Informes y ficha económica del equipo usan los conceptos configurados.
+- Los conceptos obligatorios nuevos se asignan automáticamente a jugadores existentes.
+- Las copias de seguridad incluyen payment_concepts.
+- Compatibilidad con los conceptos heredados Inscripción / Tallaje / Recogida de ropa.

@@ -1,5 +1,5 @@
 // CD San Bernabé Manager · V27.2.48 · módulo de Patrocinio con ingreso automático
-let sb, players=[], payments=[], documents=[], kits=[], teams=[], staff=[], events=[], playerSizes=[], staffSizes=[], pitchUsage=[], financeMovements=[], sponsorships=[], deletedPlayers=[], deletedTeams=[], activityLogs=[], channel;let signedCache={}, clothingImages={}, sponsorshipLogoUrls={};
+let sb, players=[], payments=[], paymentConcepts=[], documents=[], kits=[], teams=[], staff=[], events=[], playerSizes=[], staffSizes=[], pitchUsage=[], financeMovements=[], sponsorships=[], deletedPlayers=[], deletedTeams=[], activityLogs=[], channel;let signedCache={}, clothingImages={}, sponsorshipLogoUrls={};
 let lastLoadErrorSignature="";
 // ============================================================================
 // MANAGER MULTICLUB · V1.0.0
@@ -7,7 +7,7 @@ let lastLoadErrorSignature="";
 // ============================================================================
 let currentMulticlubClub=null;
 const MULTICLUB_TABLES=new Set([
-  "club_seasons","season_archives","staff","teams","players","payments","documents",
+  "club_seasons","season_archives","staff","teams","players","payments","payment_concepts","documents",
   "player_sizes","kits","staff_sizes","events","pitch_usage","finance_movements",
   "activity_logs","sports_training_sessions","sports_training_attendance","sports_matches",
   "sports_match_player_stats","club_calendar_matches","team_player_cards",
@@ -140,31 +140,59 @@ const cfg=()=>{
   return {url:localStorage.getItem("sb_url")||"",key:localStorage.getItem("sb_key")||""};
 };
 const euro=n=>new Intl.NumberFormat("es-ES",{style:"currency",currency:"EUR"}).format(Number(n||0));
-const PAYMENT_STANDARD_AMOUNTS=Object.freeze({registration:50,sizing:50,clothing:100});
-function standardPaymentAmount(concept){return Number(PAYMENT_STANDARD_AMOUNTS[concept]||0)}
+const LEGACY_PAYMENT_CONCEPTS=Object.freeze([
+  {concept_key:"registration",name:"Inscripción",default_amount:50,required:true,active:true,sort_order:10},
+  {concept_key:"sizing",name:"Tallaje",default_amount:50,required:true,active:true,sort_order:20},
+  {concept_key:"clothing",name:"Recogida de ropa",default_amount:100,required:true,active:true,sort_order:30}
+]);
+function configuredPaymentConcepts(){
+  const source=Array.isArray(paymentConcepts)&&paymentConcepts.length?paymentConcepts:LEGACY_PAYMENT_CONCEPTS;
+  return [...source].sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)||String(a.name||a.concept_key||"").localeCompare(String(b.name||b.concept_key||""),"es",{sensitivity:"base"}));
+}
+function activePaymentConcepts(){return configuredPaymentConcepts().filter(c=>c.active!==false)}
+function requiredPaymentConcepts(){return activePaymentConcepts().filter(c=>c.required!==false)}
+function paymentConcept(conceptKey){return configuredPaymentConcepts().find(c=>String(c.concept_key)===String(conceptKey))||null}
+function standardPaymentAmount(conceptKey){return Number(paymentConcept(conceptKey)?.default_amount||0)}
+function paymentConceptLabel(conceptKey){return paymentConcept(conceptKey)?.name||String(conceptKey||"Concepto")}
+function paymentRecord(playerId,conceptKey){return payments.find(x=>String(x.player_id)===String(playerId)&&String(x.concept)===String(conceptKey))||null}
+function paymentExpected(playerId,concept){
+  if(!concept||concept.active===false||concept.required===false)return 0;
+  const record=paymentRecord(playerId,concept.concept_key);
+  if(record?.status==="Exento")return 0;
+  return Number(concept.default_amount||0);
+}
+function playerExpectedTotal(playerId){return requiredPaymentConcepts().reduce((sum,c)=>sum+paymentExpected(playerId,c),0)}
+function populatePaymentConceptSelect(selected=""){
+  if(!paymentForm?.elements?.concept)return;
+  const concepts=activePaymentConcepts();
+  paymentForm.elements.concept.innerHTML=concepts.map(c=>`<option value="${esc(c.concept_key)}">${esc(c.name)}${c.required===false?" · opcional":""}</option>`).join("");
+  const desired=concepts.some(c=>String(c.concept_key)===String(selected))?selected:(concepts[0]?.concept_key||"");
+  paymentForm.elements.concept.value=desired;
+}
 function syncPaymentAmount(){
   if(!paymentForm)return;
-  const concept=paymentForm.elements.concept?.value||"registration";
+  const concept=paymentForm.elements.concept?.value||activePaymentConcepts()[0]?.concept_key||"";
   const status=paymentForm.elements.status?.value||"Pagado";
   const amountInput=paymentForm.elements.amount;
   if(!amountInput)return;
   const standard=standardPaymentAmount(concept);
-  amountInput.max=standard||"";
-  amountInput.placeholder=standard?`${standard.toFixed(2)} €`:"0.00 €";
+  amountInput.max=standard>0?String(standard):"";
+  amountInput.placeholder=standard>0?`${standard.toFixed(2)} €`:"Importe manual";
   if(status==="Pagado"){
-    amountInput.value=standard.toFixed(2);
-    amountInput.readOnly=true;
-    amountInput.title="Importe automático según el concepto elegido";
+    if(standard>0){amountInput.value=standard.toFixed(2);amountInput.readOnly=true;amountInput.title="Importe automático según la configuración del concepto"}
+    else{amountInput.readOnly=false;if(Number(amountInput.value||0)===0)amountInput.value="";amountInput.title="Este concepto tiene importe previsto 0 €. Introduce el importe cobrado."}
   }else if(status==="Parcial"){
     amountInput.readOnly=false;
     const current=Number(amountInput.value||0);
-    if(!current||current>=standard)amountInput.value="";
-    amountInput.title=`Introduce el importe parcial (máximo ${standard.toFixed(2)} €)`;
+    if(standard>0&&(!current||current>=standard))amountInput.value="";
+    amountInput.title=standard>0?`Introduce el importe parcial (máximo ${standard.toFixed(2)} €)`:"Introduce el importe parcial";
   }else{
     amountInput.value="0.00";
     amountInput.readOnly=true;
-    amountInput.title=status==="Exento"?"Los cobros exentos no tienen importe":"Los cobros pendientes no se contabilizan como pagados";
+    amountInput.title=status==="Exento"?"Los cobros exentos no generan pendiente":"Los cobros pendientes no se contabilizan como pagados";
   }
+  const note=document.getElementById("paymentIncomeNote");
+  if(note){const c=paymentConcept(concept);note.innerHTML=c?`<strong>${esc(c.name)}</strong>: importe previsto <strong>${euro(c.default_amount)}</strong>${c.required===false?" · concepto opcional":""}. El cobro se registrará como <strong>Ingreso</strong>.`:"El cobro se registrará como ingreso."}
 }
 const cleanName=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9._-]/g,"_");
 const LIST_SORT_KEY="cdsb_list_sort_direction_v2712";
@@ -471,6 +499,13 @@ const password=getEl("password");
 const paymentDialog=getEl("paymentDialog");
 const paymentForm=getEl("paymentForm");
 const paymentsBody=getEl("paymentsBody");
+const paymentsTableHead=getEl("paymentsTableHead");
+const paymentsConceptSummary=getEl("paymentsConceptSummary");
+const managePaymentConcepts=getEl("managePaymentConcepts");
+const paymentConceptsDialog=getEl("paymentConceptsDialog");
+const paymentConceptForm=getEl("paymentConceptForm");
+const paymentConceptsList=getEl("paymentConceptsList");
+const newPaymentConcept=getEl("newPaymentConcept");
 const paymentsTeamFilter=getEl("paymentsTeamFilter");
 const clearPaymentsTeamFilter=getEl("clearPaymentsTeamFilter");
 const pitchDialog=getEl("pitchDialog");
@@ -969,7 +1004,7 @@ async function simulateSeasonRolloverWizard(){
     showOperationError("La simulación detectó un problema.",error);
   }finally{d.simulating=false;renderSeasonWizard()}
 }
-const SEASON_SAFETY_BACKUP_TABLES=["players","teams","payments","documents","kits","player_sizes","staff","staff_sizes","events","pitch_usage","finance_movements","sponsorships","activity_logs","sports_training_sessions","sports_training_attendance","sports_matches","sports_match_player_stats","team_player_cards","club_seasons","season_team_player_cards","user_profiles"];
+const SEASON_SAFETY_BACKUP_TABLES=["players","teams","payments","payment_concepts","documents","kits","player_sizes","staff","staff_sizes","events","pitch_usage","finance_movements","sponsorships","activity_logs","sports_training_sessions","sports_training_attendance","sports_matches","sports_match_player_stats","team_player_cards","club_seasons","season_team_player_cards","user_profiles"];
 async function fetchSeasonBackupTable(table,{optional=false}={}){
   const pageSize=500;let from=0;const rows=[];
   while(true){
@@ -1397,7 +1432,7 @@ async function returnToClubSelector(){
     sessionStorage.removeItem("multiclub_current_club");
     localStorage.removeItem(SEASON_SELECTED_KEY);
     clubSeasons=[];activeClubSeason=null;selectedClubSeason=null;
-    players=[];payments=[];documents=[];kits=[];teams=[];staff=[];events=[];playerSizes=[];staffSizes=[];pitchUsage=[];financeMovements=[];sponsorships=[];
+    players=[];payments=[];paymentConcepts=[];documents=[];kits=[];teams=[];staff=[];events=[];playerSizes=[];staffSizes=[];pitchUsage=[];financeMovements=[];sponsorships=[];
     deletedPlayers=[];deletedTeams=[];activityLogs=[];signedCache={};clothingImages={};sponsorshipLogoUrls={};
     await openClubSelector();
   }catch(error){
@@ -1417,10 +1452,18 @@ logout.onclick=async()=>{
   location.reload();
 };
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>document.getElementById(b.dataset.close).close());
-document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.view).classList.add("active");const names={dashboard:["Panel principal","Resumen actualizado del club"],players:["Jugadores","Gestión de jugadores y familias"],payments:["Cobros","Control de los tres pagos"],documents:["Documentos","Seguimiento de expedientes"],kits:["Equipaciones","Tallajes y entregas"],teams:["Equipos","Plantillas, categorías y responsables"],staff:["Cuerpo técnico","Entrenadores, delegados y coordinación"],staffSizing:["Tallaje cuerpo técnico","Listado independiente para descargar e imprimir"],calendar:["Calendario","Entrenamientos, partidos y eventos"],sportsAttendance:["Asistencia","Control de asistencia a entrenamientos"],sportsMatches:["Partidos","Convocatorias, minutos y tarjetas"],sportsStats:["Estadísticas","Resumen deportivo de jugadores y equipos"],pitches:["Pistas","Control mensual de entrenamientos y partidos"],finance:["Ingresos y gastos","Tesorería general del club"],sponsorships:["Patrocinio","Patrocinadores, acuerdos e ingresos"],reports:["Informes","Listados para imprimir y exportar"],trash:["Papelera","Recuperación de jugadores y equipos"],activity:["Registro de actividad","Historial de cambios del programa"],backup:["Copias de seguridad","Protección y exportación de datos"],users:["Usuarios","Accesos del cuerpo técnico a uno o varios equipos"],seasons:["Temporadas","Histórico y cambio anual del club"],publicForm:["Inscripción pública","Enlace para las familias"]};pageTitle.textContent=names[b.dataset.view][0];pageSub.textContent=names[b.dataset.view][1]});
-function pay(id,c){return payments.find(x=>x.player_id===id&&x.concept===c)||{status:"Pendiente",amount:0}}
-function totalPaid(id){return ["registration","sizing","clothing"].reduce((s,c)=>s+Number(pay(id,c).amount||0),0)}
-function pending(id){return Math.max(0,200-totalPaid(id))}
+document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.view).classList.add("active");const names={dashboard:["Panel principal","Resumen actualizado del club"],players:["Jugadores","Gestión de jugadores y familias"],payments:["Cobros","Conceptos e importes configurables por club"],documents:["Documentos","Seguimiento de expedientes"],kits:["Equipaciones","Tallajes y entregas"],teams:["Equipos","Plantillas, categorías y responsables"],staff:["Cuerpo técnico","Entrenadores, delegados y coordinación"],staffSizing:["Tallaje cuerpo técnico","Listado independiente para descargar e imprimir"],calendar:["Calendario","Entrenamientos, partidos y eventos"],sportsAttendance:["Asistencia","Control de asistencia a entrenamientos"],sportsMatches:["Partidos","Convocatorias, minutos y tarjetas"],sportsStats:["Estadísticas","Resumen deportivo de jugadores y equipos"],pitches:["Pistas","Control mensual de entrenamientos y partidos"],finance:["Ingresos y gastos","Tesorería general del club"],sponsorships:["Patrocinio","Patrocinadores, acuerdos e ingresos"],reports:["Informes","Listados para imprimir y exportar"],trash:["Papelera","Recuperación de jugadores y equipos"],activity:["Registro de actividad","Historial de cambios del programa"],backup:["Copias de seguridad","Protección y exportación de datos"],users:["Usuarios","Accesos del cuerpo técnico a uno o varios equipos"],seasons:["Temporadas","Histórico y cambio anual del club"],publicForm:["Inscripción pública","Enlace para las familias"]};pageTitle.textContent=names[b.dataset.view][0];pageSub.textContent=names[b.dataset.view][1]});
+function pay(id,c){return paymentRecord(id,c)||{status:"Pendiente",amount:0,concept:c,_missing:true}}
+function totalPaid(id){
+  // Conserva también los cobros históricos de conceptos que después se desactiven.
+  return payments.filter(x=>String(x.player_id)===String(id)).reduce((sum,x)=>sum+Number(x.amount||0),0);
+}
+function pending(id){
+  return requiredPaymentConcepts().reduce((sum,c)=>{
+    const expected=paymentExpected(id,c),record=paymentRecord(id,c),paid=Number(record?.amount||0);
+    return sum+Math.max(0,expected-paid);
+  },0);
+}
 function docs(id){return documents.find(x=>x.player_id===id)||{}}
 function kit(id){return kits.find(x=>x.player_id===id)||{}}
 function docState(id){const d=docs(id);return ["player_dni_status","photo_status","medical_status"].every(k=>["Recibido","No requerido"].includes(d[k]))?"Completa":"Incompleta"}
@@ -1527,6 +1570,7 @@ async function loadAll(){
   const queries=await Promise.allSettled([
     sb.from("players").select("*").is("deleted_at",null).order("created_at",{ascending:false}),
     sb.from("payments").select("*"),
+    sb.from("payment_concepts").select("*").order("sort_order").order("name"),
     sb.from("documents").select("*"),
     sb.from("kits").select("*"),
     sb.from("teams").select("*").eq("season_id",activeClubSeason.id).is("deleted_at",null).order("name"),
@@ -1549,9 +1593,9 @@ async function loadAll(){
     }
     return q.value.data||[];
   };
-  players=get(0,"players"); payments=get(1,"payments"); documents=get(2,"documents"); kits=get(3,"kits");
-  teams=get(4,"teams"); staff=get(5,"staff"); events=get(6,"events"); playerSizes=get(7,"player_sizes");
-  staffSizes=get(8,"staff_sizes"); pitchUsage=get(9,"pitch_usage"); financeMovements=get(10,"finance_movements"); sponsorships=get(11,"sponsorships");
+  players=get(0,"players"); payments=get(1,"payments"); paymentConcepts=get(2,"payment_concepts"); documents=get(3,"documents"); kits=get(4,"kits");
+  teams=get(5,"teams"); staff=get(6,"staff"); events=get(7,"events"); playerSizes=get(8,"player_sizes");
+  staffSizes=get(9,"staff_sizes"); pitchUsage=get(10,"pitch_usage"); financeMovements=get(11,"finance_movements"); sponsorships=get(12,"sponsorships");
   sponsorshipLogoUrls={};
   await Promise.all((sponsorships||[]).map(async sponsor=>{
     if(sponsor.logo_path){
@@ -1599,21 +1643,86 @@ function renderPaymentsTeamFilter(){
   paymentsTeamFilter.innerHTML='<option value="">Todos los equipos</option>'+names.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join("");
   paymentsTeamFilter.value=names.includes(selected)?selected:"";
 }
+function paymentCellMarkup(playerId,concept){
+  const record=paymentRecord(playerId,concept.concept_key);
+  if(!record&&concept.required===false)return `${badge("Opcional")}<br><small>${euro(concept.default_amount)}</small>`;
+  const status=record?.status||"Pendiente";
+  const amount=Number(record?.amount||0);
+  const expected=paymentExpected(playerId,concept);
+  const detail=status==="Exento"?"Exento":`${euro(amount)}${concept.required!==false&&expected>amount?` / ${euro(expected)}`:""}`;
+  return `${badge(status)}<br><small>${detail}</small>`;
+}
 function renderPayments(){
   renderPaymentsTeamFilter();
+  const concepts=activePaymentConcepts();
+  if(paymentsConceptSummary){
+    paymentsConceptSummary.textContent=concepts.length?concepts.map(c=>`${c.name}: ${euro(c.default_amount)}${c.required===false?" · opcional":""}`).join(" · "):"No hay conceptos de cobro activos. Pulsa Configurar conceptos.";
+  }
+  if(paymentsTableHead){
+    paymentsTableHead.innerHTML=`<th>Jugador</th><th>Equipo</th>${concepts.map(c=>`<th>${esc(c.name)}<br><small>${euro(c.default_amount)}${c.required===false?" · opcional":""}</small></th>`).join("")}<th>Pagado</th><th>Pendiente</th><th></th>`;
+  }
   const selectedTeam=paymentsTeamFilter?.value||"";
   const list=sortPlayersAlpha(selectedTeam?players.filter(p=>String(p.team||"").trim()===selectedTeam):players);
+  const colspan=concepts.length+5;
   paymentsBody.innerHTML=list.length?list.map(p=>`<tr>
     <td><strong>${esc(p.name||"")} ${esc(p.surname||"")}</strong></td>
     <td><span class="payment-team-badge">${esc(p.team||"Sin equipo")}</span></td>
-    <td>${badge(pay(p.id,"registration").status)}<br><small>${euro(pay(p.id,"registration").amount)}</small></td>
-    <td>${badge(pay(p.id,"sizing").status)}<br><small>${euro(pay(p.id,"sizing").amount)}</small></td>
-    <td>${badge(pay(p.id,"clothing").status)}<br><small>${euro(pay(p.id,"clothing").amount)}</small></td>
+    ${concepts.map(c=>`<td>${paymentCellMarkup(p.id,c)}</td>`).join("")}
     <td><strong>${euro(totalPaid(p.id))}</strong></td>
     <td><strong>${euro(pending(p.id))}</strong></td>
     <td><button class="mini" onclick="openPayment('${p.id}')">Registrar</button></td>
-  </tr>`).join(""):`<tr><td colspan="8">${players.length?"No hay jugadores en el equipo seleccionado.":"No hay jugadores."}</td></tr>`;
+  </tr>`).join(""):`<tr><td colspan="${colspan}">${players.length?"No hay jugadores en el equipo seleccionado.":"No hay jugadores."}</td></tr>`;
 }
+function paymentConceptNextOrder(){return Math.max(0,...configuredPaymentConcepts().map(c=>Number(c.sort_order||0)))+10}
+function resetPaymentConceptForm(){
+  if(!paymentConceptForm)return;
+  paymentConceptForm.reset();
+  paymentConceptForm.elements.id.value="";
+  paymentConceptForm.elements.concept_key.value="";
+  paymentConceptForm.elements.default_amount.value="0";
+  paymentConceptForm.elements.required.value="true";
+  paymentConceptForm.elements.active.value="true";
+  paymentConceptForm.elements.sort_order.value=String(paymentConceptNextOrder());
+}
+function renderPaymentConceptManager(){
+  if(!paymentConceptsList)return;
+  const concepts=configuredPaymentConcepts();
+  paymentConceptsList.innerHTML=concepts.length?concepts.map(c=>`<article class="payment-concept-row ${c.active===false?"is-inactive":""}">
+    <div class="payment-concept-main"><strong>${esc(c.name)}</strong><small>${esc(c.concept_key)} · orden ${Number(c.sort_order||0)}</small></div>
+    <div><span class="payment-concept-pill">${euro(c.default_amount)}</span></div>
+    <div>${c.required===false?"Opcional":"Obligatorio"}</div>
+    <div>${c.active===false?"Inactivo":"Activo"}</div>
+    <div>${payments.filter(p=>String(p.concept)===String(c.concept_key)).length} registros</div>
+    <div class="payment-concept-actions"><button class="mini" type="button" onclick="editPaymentConcept('${c.id||""}','${String(c.concept_key).replace(/'/g,"\'")}')">Editar</button><button class="mini danger-mini" type="button" onclick="removePaymentConcept('${c.id||""}','${String(c.concept_key).replace(/'/g,"\'")}')">${payments.some(p=>String(p.concept)===String(c.concept_key))?"Desactivar":"Eliminar"}</button></div>
+  </article>`).join(""):'<div class="empty-state">No hay conceptos configurados.</div>';
+}
+window.editPaymentConcept=(id,key)=>{
+  const c=configuredPaymentConcepts().find(x=>(id&&String(x.id)===String(id))||String(x.concept_key)===String(key));
+  if(!c||!paymentConceptForm)return;
+  paymentConceptForm.elements.id.value=c.id||"";
+  paymentConceptForm.elements.concept_key.value=c.concept_key||"";
+  paymentConceptForm.elements.name.value=c.name||"";
+  paymentConceptForm.elements.default_amount.value=Number(c.default_amount||0);
+  paymentConceptForm.elements.required.value=c.required===false?"false":"true";
+  paymentConceptForm.elements.active.value=c.active===false?"false":"true";
+  paymentConceptForm.elements.sort_order.value=Number(c.sort_order||0);
+  paymentConceptForm.elements.name.focus();
+};
+window.removePaymentConcept=async(id,key)=>{
+  const c=configuredPaymentConcepts().find(x=>(id&&String(x.id)===String(id))||String(x.concept_key)===String(key));
+  if(!c?.id)return toast("Este concepto de compatibilidad todavía no puede eliminarse. Ejecuta la actualización SQL.");
+  const used=payments.some(p=>String(p.concept)===String(c.concept_key));
+  if(used){
+    if(!confirm(`${c.name} tiene cobros asociados. No se borrará el historial; se marcará como inactivo. ¿Continuar?`))return;
+    const {error}=await sb.from("payment_concepts").update({active:false}).eq("id",c.id);if(error)return showOperationError("No se pudo desactivar el concepto.",error);
+    await logActivity("actualizar","concepto_cobro",c.id,`Concepto de cobro desactivado: ${c.name}`);
+  }else{
+    if(!confirm(`¿Eliminar definitivamente el concepto ${c.name}?`))return;
+    const {error}=await sb.from("payment_concepts").delete().eq("id",c.id);if(error)return showOperationError("No se pudo eliminar el concepto.",error);
+    await logActivity("eliminar","concepto_cobro",c.id,`Concepto de cobro eliminado: ${c.name}`);
+  }
+  await loadAll();renderPaymentConceptManager();
+};
 
 function renderDocumentsTeamFilter(){
   if(!documentsTeamFilter)return;
@@ -2551,7 +2660,7 @@ movementForm.onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(ne
 
 function downloadCSV(name,rows){if(!rows.length)return toast("No hay datos");const h=Object.keys(rows[0]),q=v=>`"${String(v??"").replaceAll('"','""')}"`;const csv=[h.join(";"),...rows.map(r=>h.map(k=>q(r[k])).join(";"))].join("\n");const b=new Blob(["\ufeff"+csv],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();URL.revokeObjectURL(a.href)}
 rPlayers.onclick=()=>downloadCSV("jugadores.csv",sortPlayersAlpha(players).map(p=>({Jugador:`${p.name} ${p.surname}`,Equipo:p.team,Tutor:p.guardian,Telefono:p.phone,Email:p.email,Estado:p.status})));
-rPayments.onclick=()=>downloadCSV("cobros_pendientes.csv",sortPlayersAlpha(players.filter(p=>pending(p.id)>0)).map(p=>({Jugador:`${p.name} ${p.surname}`,Equipo:p.team,Pagado:totalPaid(p.id),Pendiente:pending(p.id)})));
+rPayments.onclick=()=>downloadCSV("cobros_pendientes.csv",sortPlayersAlpha(players.filter(p=>pending(p.id)>0)).map(p=>{const row={Jugador:`${p.name} ${p.surname}`,Equipo:p.team};activePaymentConcepts().forEach(c=>{const r=paymentRecord(p.id,c.concept_key);row[c.name]=`${r?.status||(c.required===false?"Opcional":"Pendiente")} · ${Number(r?.amount||0)}`});row.Pagado=totalPaid(p.id);row.Pendiente=pending(p.id);return row}));
 rSizes.onclick=()=>downloadCSV("tallajes_jugadores.csv",sortPlayersAlpha(players).map(p=>{const s=sizeFor(p.id);return {Jugador:`${p.name} ${p.surname}`,Equipo:p.team,CamisetaPrimeraJugador:s.game_shirt,CamisetaPrimeraPortero:s.game_shirt_goalkeeper,PantalonEquipacionJugador:s.game_shorts,PantalonEquipacionPortero:s.game_shorts_goalkeeper,CamisetaSegundaJugador:s.second_shirt_player,MediasJugador:s.socks,MediasPortero:s.socks_goalkeeper,CamisetaEntrenoJugador:s.training_shirt,CamisetaEntrenoPortero:s.training_shirt_goalkeeper,PantalonEntrenoJugador:s.training_shorts,PantalonEntrenoPortero:s.training_shorts_goalkeeper,Sudadera:s.training_sweatshirt,ChaquetaChandal:s.tracksuit_jacket,PantalonChandal:s.tracksuit_trousers,Mochila:"Incluida"}}));
 if(window.rStaffSizes)rStaffSizes.onclick=()=>downloadCSV("tallajes_cuerpo_tecnico.csv",sortStaffAlpha(staff).map(s=>{const z=staffSizeFor(s.id);return {Nombre:s.name,Cargo:s.role,Equipo:s.team_name,CamisetaEntreno:z.training_shirt,PantalonEntreno:z.training_shorts,Sudadera:z.training_sweatshirt,ChaquetaChandal:z.tracksuit_jacket,PantalonChandal:z.tracksuit_trousers,Polo:z.polo,Mochila:"Incluida"}}));
 rDocs.onclick=()=>downloadCSV("documentacion_pendiente.csv",sortPlayersAlpha(players.filter(p=>docState(p.id)==="Incompleta")).map(p=>{const d=docs(p.id);return {Jugador:`${p.name} ${p.surname}`,Equipo:p.team||"Sin equipo",DNIJugador:d.player_dni_status,Foto:d.photo_status,Reconocimiento:d.medical_status}}));
@@ -2683,15 +2792,16 @@ if(playerFormEl)playerFormEl.onsubmit=async e=>{
       if(kres.error)throw kres.error;
     }catch(auxErr){warnings.push("Equipación: "+supabaseErrorText(auxErr))}
 
-    // Garantiza los tres conceptos básicos también al editar un jugador antiguo.
-    // ignoreDuplicates evita sobrescribir cobros que ya tengan importes/estados reales.
+    // Garantiza los conceptos obligatorios activos configurados por el club.
+    // Los opcionales no generan deuda hasta que se registre un cobro.
     try{
-      const pres=await sb.from("payments").upsert([
-        {player_id:playerId,concept:"registration",status:"Pendiente",amount:0},
-        {player_id:playerId,concept:"sizing",status:"Pendiente",amount:0},
-        {player_id:playerId,concept:"clothing",status:"Pendiente",amount:0}
-      ],{onConflict:"club_id,player_id,concept",ignoreDuplicates:true});
-      if(pres.error)throw pres.error;
+      const requiredConcepts=requiredPaymentConcepts();
+      if(requiredConcepts.length){
+        const pres=await sb.from("payments").upsert(requiredConcepts.map(c=>({
+          player_id:playerId,concept:c.concept_key,status:"Pendiente",amount:0
+        })),{onConflict:"club_id,player_id,concept",ignoreDuplicates:true});
+        if(pres.error)throw pres.error;
+      }
     }catch(auxErr){warnings.push("Pagos: "+supabaseErrorText(auxErr))}
 
     await logActivity(editingId?"actualizar":"crear","jugador",playerId,`${editingId?"Jugador actualizado":"Jugador creado"}: ${playerData.name} ${playerData.surname}`);
@@ -2709,12 +2819,50 @@ if(playerFormEl)playerFormEl.onsubmit=async e=>{
     if(submit){submit.disabled=false;submit.textContent=original}
   }
 };
+managePaymentConcepts?.addEventListener("click",()=>{
+  if(isHistoricalSeason())return toast("La temporada histórica es de solo lectura");
+  renderPaymentConceptManager();resetPaymentConceptForm();paymentConceptsDialog?.showModal();
+});
+newPaymentConcept?.addEventListener("click",()=>{resetPaymentConceptForm();paymentConceptForm?.elements?.name?.focus()});
+paymentConceptForm?.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const raw=Object.fromEntries(new FormData(paymentConceptForm));
+  const id=raw.id||null;
+  const name=String(raw.name||"").trim();
+  if(!name)return;
+  const payload={
+    name,
+    default_amount:Math.max(0,Number(raw.default_amount||0)),
+    required:String(raw.required)!=="false",
+    active:String(raw.active)!=="false",
+    sort_order:Number(raw.sort_order||0)
+  };
+  try{
+    let result;
+    if(id){
+      result=await sb.from("payment_concepts").update(payload).eq("id",id).select("*").single();
+    }else{
+      const concept_key=`concept_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,7)}`;
+      result=await sb.from("payment_concepts").insert({...payload,concept_key}).select("*").single();
+    }
+    if(result.error)throw result.error;
+    await logActivity(id?"actualizar":"crear","concepto_cobro",result.data?.id||id,`${id?"Concepto de cobro actualizado":"Concepto de cobro creado"}: ${name}`);
+    await loadAll();
+    renderPaymentConceptManager();resetPaymentConceptForm();
+    toast("Configuración de cobros guardada");
+  }catch(error){showOperationError("No se pudo guardar el concepto de cobro.",error)}
+});
 paymentForm.elements.concept?.addEventListener("change",syncPaymentAmount);
 paymentForm.elements.status?.addEventListener("change",syncPaymentAmount);
 window.openPayment=id=>{
+  const concepts=activePaymentConcepts();
+  if(!concepts.length){
+    alert("Este club no tiene conceptos de cobro activos. Configúralos primero desde Cobros → Configurar conceptos.");
+    return;
+  }
   paymentForm.reset();
   paymentForm.player_id.value=id;
-  paymentForm.elements.concept.value="registration";
+  populatePaymentConceptSelect(concepts[0].concept_key);
   paymentForm.elements.status.value="Pagado";
   paymentForm.paid_at.value=new Date().toISOString().slice(0,10);
   existingReceipt.classList.add("hidden");
@@ -2728,8 +2876,11 @@ paymentForm.onsubmit=async e=>{
   delete d.receipt_file;
   d.amount=Number(d.amount||0);
   const standard=standardPaymentAmount(d.concept);
-  if(d.status==="Parcial"&&(d.amount<=0||d.amount>=standard)){
-    alert(`Para un cobro parcial introduce una cantidad mayor que 0 € y menor que ${standard.toFixed(2)} €.`);
+  if((d.status==="Pagado"||d.status==="Parcial")&&d.amount<=0){
+    alert("Introduce un importe mayor que 0 €.");paymentForm.elements.amount.focus();return;
+  }
+  if(d.status==="Parcial"&&standard>0&&d.amount>=standard){
+    alert(`Para un cobro parcial introduce una cantidad menor que ${standard.toFixed(2)} €.`);
     paymentForm.elements.amount.focus();
     return;
   }
@@ -2801,7 +2952,7 @@ async function createFullBackup(){
   const original=createBackup.textContent;
   createBackup.disabled=true;createBackup.textContent="Preparando copia...";
   try{
-    const tables=["players","teams","payments","documents","kits","player_sizes","staff","staff_sizes","events","pitch_usage","finance_movements","sponsorships","activity_logs","sports_training_sessions","sports_training_attendance","sports_matches","sports_match_player_stats","team_player_cards","club_seasons","season_team_player_cards"];
+    const tables=["players","teams","payments","payment_concepts","documents","kits","player_sizes","staff","staff_sizes","events","pitch_usage","finance_movements","sponsorships","activity_logs","sports_training_sessions","sports_training_attendance","sports_matches","sports_match_player_stats","team_player_cards","club_seasons","season_team_player_cards"];
     const backup={application:currentClubManagerName(),version:"V27.2.10",created_at:new Date().toISOString(),tables:{}};
     for(const table of tables){
       const {data,error}=await sb.from(table).select("*");
@@ -3049,7 +3200,12 @@ window.renderTeamDetailTab=function(tab){
         <p class="team-accidents-note">Los archivos son de consulta y descarga. La documentación original permanece sin modificar.</p>
       </section>`:`<div class="team-tab-empty">Este equipo no tiene documentación de accidentes asignada.</div>`;
   }
-  if(tab==="payments") body=`<div class="team-payment-summary"><strong>Total pendiente del equipo: ${euro(totalPending)}</strong></div><div class="table-wrap team-detail-table"><table><thead><tr><th>Jugador</th><th>Matrícula</th><th>Tallaje</th><th>Equipación</th><th>Pagado</th><th>Pendiente</th></tr></thead><tbody>${roster.map(p=>`<tr><td><strong>${esc(p.surname)}, ${esc(p.name)}</strong></td><td>${esc(pay(p.id,"registration").status)}</td><td>${esc(pay(p.id,"sizing").status)}</td><td>${esc(pay(p.id,"clothing").status)}</td><td>${euro(totalPaid(p.id))}</td><td><strong>${euro(pending(p.id))}</strong></td></tr>`).join("")||'<tr><td colspan="6">Sin jugadores</td></tr>'}</tbody></table></div>`;
+  if(tab==="payments"){
+    const payConcepts=activePaymentConcepts();
+    const payHeaders=payConcepts.map(c=>`<th>${esc(c.name)}</th>`).join("");
+    const payRows=roster.map(p=>`<tr><td><strong>${esc(p.surname)}, ${esc(p.name)}</strong></td>${payConcepts.map(c=>`<td>${esc(paymentRecord(p.id,c.concept_key)?.status||(c.required===false?"Opcional":"Pendiente"))}</td>`).join("")}<td>${euro(totalPaid(p.id))}</td><td><strong>${euro(pending(p.id))}</strong></td></tr>`).join("");
+    body=`<div class="team-payment-summary"><strong>Total pendiente del equipo: ${euro(totalPending)}</strong></div><div class="table-wrap team-detail-table"><table><thead><tr><th>Jugador</th>${payHeaders}<th>Pagado</th><th>Pendiente</th></tr></thead><tbody>${payRows||`<tr><td colspan="${payConcepts.length+3}">Sin jugadores</td></tr>`}</tbody></table></div>`;
+  }
   if(tab==="sizes"){
     const sizeItems=activeClothingItemsFor("players");
     const sizeHeaders=sizeItems.map(item=>`<th>${esc(clothingConfig(item).label)}</th>`).join("");
@@ -3193,13 +3349,12 @@ function teamReportRows(){
   }
 
   if(cfg.type==="payments"){
-    headers=["Jugador","Matrícula 50 €","Tallaje 50 €","Equipación 100 €","Pagado","Pendiente"];
+    const payConcepts=activePaymentConcepts();
+    headers=["Jugador",...payConcepts.map(c=>`${c.name}${c.default_amount>0?` ${euro(c.default_amount)}`:""}${c.required===false?" (opcional)":""}`),"Pagado","Pendiente"];
     list=list.filter(p=>!cfg.onlyPending||pending(p.id)>0);
     list.forEach(p=>rows.push([
       `${p.surname||""}, ${p.name||""}`.replace(/^, /,""),
-      `${pay(p.id,"registration").status} · ${euro(pay(p.id,"registration").amount)}`,
-      `${pay(p.id,"sizing").status} · ${euro(pay(p.id,"sizing").amount)}`,
-      `${pay(p.id,"clothing").status} · ${euro(pay(p.id,"clothing").amount)}`,
+      ...payConcepts.map(c=>{const r=paymentRecord(p.id,c.concept_key);return `${r?.status||(c.required===false?"Opcional":"Pendiente")} · ${euro(r?.amount||0)}`}),
       euro(totalPaid(p.id)),
       euro(pending(p.id))
     ]));
@@ -3218,18 +3373,19 @@ function teamReportRows(){
   }
 
   if(cfg.type==="full"){
-    headers=["Jugador","Nacimiento","Estado","Tutor","Documentación","Matrícula","Tallaje","Equipación","Pagado","Pendiente","Tallas juego","Tallas entreno","Chándal","Entregado"];
+    const payConcepts=activePaymentConcepts();
+    headers=["Jugador","Nacimiento","Estado","Tutor","Documentación",...payConcepts.map(c=>c.name),"Pagado","Pendiente","Tallas juego","Tallas entreno","Chándal","Entregado"];
     if(cfg.sensitive)headers.push("Teléfono","Email","DNI jugador");
     if(cfg.notes)headers.push("Observaciones");
     list=list.filter(p=>!cfg.onlyPending||docState(p.id)==="Incompleta"||pending(p.id)>0||kit(p.id).delivered!=="Sí");
-    list.forEach(p=>{const s=sizeFor(p.id),k=kit(p.id);const row=[
+    list.forEach(p=>{const sz=sizeFor(p.id),k=kit(p.id);const row=[
       `${p.surname||""}, ${p.name||""}`.replace(/^, /,""),
       reportDate(p.birth_date),reportText(p.status),reportText(p.guardian),docState(p.id),
-      pay(p.id,"registration").status,pay(p.id,"sizing").status,pay(p.id,"clothing").status,
+      ...payConcepts.map(c=>paymentRecord(p.id,c.concept_key)?.status||(c.required===false?"Opcional":"Pendiente")),
       euro(totalPaid(p.id)),euro(pending(p.id)),
-      [s.game_shirt,s.game_shirt_goalkeeper,s.game_shorts,s.game_shorts_goalkeeper,s.second_shirt_player,s.socks,s.socks_goalkeeper].filter(Boolean).join(" / ")||"-",
-      [s.training_shirt,s.training_shirt_goalkeeper,s.training_shorts,s.training_shorts_goalkeeper,s.training_sweatshirt].filter(Boolean).join(" / ")||"-",
-      [s.tracksuit_jacket,s.tracksuit_trousers].filter(Boolean).join(" / ")||"-",
+      [sz.game_shirt,sz.game_shirt_goalkeeper,sz.game_shorts,sz.game_shorts_goalkeeper,sz.second_shirt_player,sz.socks,sz.socks_goalkeeper].filter(Boolean).join(" / ")||"-",
+      [sz.training_shirt,sz.training_shirt_goalkeeper,sz.training_shorts,sz.training_shorts_goalkeeper,sz.training_sweatshirt].filter(Boolean).join(" / ")||"-",
+      [sz.tracksuit_jacket,sz.tracksuit_trousers].filter(Boolean).join(" / ")||"-",
       reportText(k.delivered||"No")
     ];if(cfg.sensitive)row.push(reportText(p.phone),reportText(p.email),reportText(p.player_dni));if(cfg.notes)row.push(reportText(p.notes));rows.push(row)});
   }
@@ -3403,7 +3559,7 @@ function renderDashboard(){
   }).length;
   const missingSizing=players.filter(p=>sizeFor(p.id).sized!=="Sí").length;
   const totalPaidAmount=players.reduce((sum,p)=>sum+totalPaid(p.id),0);
-  const totalExpected=players.length*200;
+  const totalExpected=players.reduce((sum,p)=>sum+playerExpectedTotal(p.id),0);
   const pendingAmount=players.reduce((sum,p)=>sum+pending(p.id),0);
 
   stPlayers.textContent=players.length;
