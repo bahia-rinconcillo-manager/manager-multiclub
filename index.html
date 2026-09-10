@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="multiclub-build" content="1.0.27G">
+  <meta name="multiclub-build" content="1.0.27I">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Manager Multiclub</title>
   <link rel="stylesheet" href="styles-v2600.css?v=107">
@@ -62,6 +62,121 @@
     body.season-history-mode a[data-season-readonly-allow="true"]{pointer-events:auto!important;opacity:1!important;cursor:pointer!important;text-decoration:none}
     @media(max-width:700px){#historicalPlayerOverlayV1027G{padding:8px}.histg-shell{max-height:96vh}.histg-summary{grid-template-columns:1fr}.histg-photo{margin:auto}.histg-grid{grid-template-columns:1fr}.histg-wide{grid-column:auto}.histg-payments>div{grid-template-columns:1fr}.histg-totals{flex-direction:column;gap:6px}}
   </style>
+
+  <style id="club-theme-blue-yellow-v1027i">
+    :root{
+      --club-blue:#0b3f75;
+      --club-blue-dark:#072c53;
+      --club-blue-soft:#eaf3ff;
+      --club-yellow:#f2c94c;
+      --club-yellow-strong:#ffd84d;
+      --club-yellow-soft:#fff4bf;
+      --club-ink:#102a45;
+      --club-border:#cfe0f2;
+      --club-surface:#ffffff;
+      --club-page:#eef4fa;
+    }
+    body{background:var(--club-page)!important;color:var(--club-ink)}
+    .sidebar{background:linear-gradient(180deg,var(--club-blue-dark) 0%, #082543 55%, #061d36 100%)!important;color:#fff}
+    .sidebar .brand strong,.sidebar .brand span,.sidebar .season span,.sidebar .sync,.sidebar nav .nav,.sidebar .bottom .side-btn{color:#fff!important}
+    .sidebar .brand{border-bottom:1px solid rgba(255,255,255,.10)}
+    .sidebar .season select{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.16)!important;color:#fff!important}
+    .sidebar .season select option{color:#102a45}
+    .sidebar nav .nav{border:1px solid transparent!important;background:transparent!important}
+    .sidebar nav .nav.active,
+    .sidebar nav .nav:hover{background:linear-gradient(90deg, rgba(242,201,76,.18), rgba(242,201,76,.06))!important;border-color:rgba(242,201,76,.45)!important;box-shadow:inset 3px 0 0 var(--club-yellow)}
+    .sidebar nav .nav b{color:var(--club-yellow)!important}
+    .sidebar .bottom .side-btn{background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.14)!important}
+    .sidebar .bottom .side-btn:hover{background:rgba(242,201,76,.14)!important;border-color:rgba(242,201,76,.45)!important}
+    .sidebar .sync{color:#cfe9ff!important}
+
+    main,.view{background:transparent!important}
+    .topbar h1,.topbar span,#pageTitle,#currentClubTopbarName,.panel-title h3,.panel-title small,.view h2,.view h3{color:var(--club-ink)}
+    .topbar .header-actions,.panel,.dashboard-kpi,.club-card,.auth-card,.season-card,.team-card,.player-card,.staff-card,.payment-card,.document-card,.kit-card,.activity-card,.report-card{border-color:var(--club-border)!important}
+    .panel,.dashboard-kpi,.auth-card,#historicalPlayerViewer,.histg-shell{box-shadow:0 14px 34px rgba(8,40,75,.08)!important}
+    .panel,.dashboard-kpi,.auth-card{background:var(--club-surface)!important}
+
+    .dashboard-welcome,
+    .players-hero,
+    .teams-hero,
+    .staff-hero,
+    .payments-hero,
+    .documents-hero,
+    .kits-hero,
+    .calendar-hero,
+    .seasons-hero,
+    .reports-hero,
+    .finance-hero,
+    .sponsorships-hero,
+    .view > .hero,
+    .view > .section-hero,
+    .view .dashboard-welcome{background:linear-gradient(135deg,var(--club-blue-dark), var(--club-blue) 58%, #0e7db0 100%)!important;color:#fff!important;border:1px solid rgba(255,255,255,.06)!important}
+    .dashboard-welcome *, .view .dashboard-welcome *, .view > .hero *, .view > .section-hero *{color:inherit!important}
+    .dashboard-welcome img{filter:drop-shadow(0 8px 18px rgba(0,0,0,.18))}
+
+    .historical-season-banner{background:var(--club-yellow-soft)!important;color:var(--club-blue-dark)!important;border:1px solid #d8aa17!important;font-weight:800}
+    .screen{background:radial-gradient(circle at top, rgba(255,216,77,.18), transparent 38%), linear-gradient(180deg,#eef4fa 0%,#e4eef8 100%)!important}
+    .auth-card .step-label,.multiclub-card .step-label,.setup-card .step-label{color:var(--club-blue)!important}
+    .auth-card h1,.multiclub-card h1,.setup-card h1{color:var(--club-blue-dark)!important}
+
+    .primary,
+    button.primary,
+    #headerAddPlayer,
+    #dashboardAddPlayer,
+    .primary-action,
+    .install-btn,
+    .club-choice,
+    .technical-entry-team-choice.primary{background:linear-gradient(135deg,var(--club-yellow),var(--club-yellow-strong))!important;color:var(--club-blue-dark)!important;border:1px solid #d7aa22!important;box-shadow:0 10px 22px rgba(242,201,76,.28)!important;font-weight:800}
+    .primary:hover,
+    button.primary:hover,
+    #headerAddPlayer:hover,
+    #dashboardAddPlayer:hover,
+    .primary-action:hover{filter:brightness(.98);transform:translateY(-1px)}
+    .secondary,
+    button.secondary,
+    .mini,
+    .link-btn,
+    .dashboard-action,
+    .side-btn,
+    .technical-entry-team-choice,
+    button[data-dashboard-go]{border:1px solid var(--club-border)!important;background:#fff!important;color:var(--club-blue)!important}
+    .secondary:hover,
+    button.secondary:hover,
+    .mini:hover,
+    .dashboard-action:hover,
+    .side-btn:hover{border-color:#9dbde0!important;background:var(--club-blue-soft)!important}
+
+    input,select,textarea{border:1px solid var(--club-border)!important;background:#fff!important;color:var(--club-ink)!important}
+    input:focus,select:focus,textarea:focus{outline:none!important;border-color:#5f92c9!important;box-shadow:0 0 0 3px rgba(11,63,117,.10)!important}
+    .global-list-sort span,.season-switcher span,label span,.filter-bar label{color:var(--club-blue)!important}
+
+    .dashboard-kpi{border:1px solid var(--club-border)!important;background:#fff!important}
+    .dashboard-kpi small{color:#6f86a0!important}
+    .dashboard-kpi strong{color:var(--club-blue-dark)!important}
+    .dashboard-kpi-icon{background:var(--club-blue-soft)!important;border:1px solid #d7e6f5;color:var(--club-blue)!important}
+    .dashboard-kpi.warning{background:linear-gradient(180deg,#fffdfa,#fff8dd)!important;border-color:#f2df8a!important}
+    .dashboard-kpi.warning .dashboard-kpi-icon{background:#fff3c7!important;color:#9a6f00!important;border-color:#f3df8a!important}
+
+    .panel-title small,.section-label,.step-label{letter-spacing:.11em;font-weight:800}
+    .panel-title h3,.view h2,.view h3{color:var(--club-blue-dark)!important}
+    .count-chip,.status-chip,.chip,.tag,.badge,.pill{border:1px solid transparent}
+    .status-approved,.chip-approved,.tag-approved,.badge-approved{background:#edf9ef!important;color:#1f7a34!important}
+    .status-pending,.chip-pending,.tag-pending,.badge-pending{background:#fff7dd!important;color:#9b6b00!important}
+
+    .table-wrap table thead th,
+    table thead th{background:#f4f8fd!important;color:var(--club-blue)!important}
+    .table-wrap table tbody tr:hover,
+    table tbody tr:hover{background:#f8fbff!important}
+
+    .histg-head,.historical-player-viewer-head{background:linear-gradient(135deg,var(--club-blue-dark),var(--club-blue) 58%,#0e7db0)!important}
+    .histg-foot,.historical-player-viewer-actions{background:#fff!important}
+
+    .dashboard-action.primary-action b,
+    #headerAddPlayer,
+    #dashboardAddPlayer{color:var(--club-blue-dark)!important}
+    .brand img,.dashboard-welcome img,[data-club-crest]{border-radius:50%}
+  </style>
+
 </head>
 <body>
   <div id="setupScreen" class="screen hidden">
@@ -124,7 +239,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo small crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
-        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.27G</span></div>
+        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.27I</span></div>
       </div>
       <div class="season season-switcher"><span>Temporada</span><select id="seasonSelector" aria-label="Temporada"><option>2026/27</option></select></div>
       <nav>
@@ -1341,7 +1456,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js?v=1027g", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./service-worker.js?v=1027i", { updateViaCache: "none" })
           .then(registration => registration.update())
           .catch(() => {});
       });
