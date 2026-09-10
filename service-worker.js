@@ -1,4 +1,4 @@
-const CACHE = "manager-multiclub-v1-0-27d-historico-abre-correctamente";
+const CACHE = "manager-multiclub-v1-0-27e-ficha-jugador-historico";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -14,7 +14,7 @@ const CORE_FILES = [
   "./sports-v2702.css?v=27248",
   "./cards-v27249.css?v=27249",
   "./mobile-v27231.css?v=27248",
-  "./app-multiclub-v1027d.js?v=1027d",
+  "./app-multiclub-v1027e.js?v=1027e",
   "./sports-v27238-multiclub.js?v=103",
   "./cards-v27249.js?v=106",
   "./calendar-v27247.js?v=104",

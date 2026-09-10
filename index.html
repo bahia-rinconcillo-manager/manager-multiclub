@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="multiclub-build" content="1.0.27D">
+  <meta name="multiclub-build" content="1.0.27E">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Manager Multiclub</title>
   <link rel="stylesheet" href="styles-v2600.css?v=107">
@@ -30,6 +30,19 @@
     #reports .report-action-chip{display:inline-flex;align-items:center;justify-content:center;min-width:46px;padding:6px 9px;border-radius:9px;background:#eef6ff;border:1px solid #c9e1f7;color:#075c9c;font-weight:900;font-size:11px;line-height:1}
     #reports .report-pdf-chip{background:#fff3f2;border-color:#ffc9c5;color:#b42318}
     #reports .report-pdf-chip:hover{background:#ffe5e2}
+  </style>
+
+  <style id="historical-player-record-v1027e">
+    body.season-history-mode main .view button[data-season-readonly-allow="true"]{opacity:1!important;cursor:pointer!important;pointer-events:auto!important}
+    .historical-player-record-notice{margin:0 0 14px;padding:12px 14px;border:1px solid #f0b429;background:#fff7df;color:#714500;border-radius:12px;display:flex;gap:6px;flex-direction:column}
+    .historical-player-record-notice strong{font-size:12px;letter-spacing:.04em}
+    .historical-player-record-notice span{font-size:12px}
+    #playerDialog.historical-player-record input[readonly],
+    #playerDialog.historical-player-record textarea[readonly],
+    #playerDialog.historical-player-record select:disabled{opacity:1!important;color:#172b45!important;-webkit-text-fill-color:#172b45!important;background:#f5f8fb!important;cursor:default!important}
+    #playerDialog.historical-player-record input[type="file"]{display:none!important}
+    #playerDialog.historical-player-record .file-upload-card{cursor:default!important}
+    body.season-history-mode #playerDialog [data-close="playerDialog"]{opacity:1!important;cursor:pointer!important;pointer-events:auto!important}
   </style>
 </head>
 <body>
@@ -1292,14 +1305,14 @@
     </div>
   </dialog>
 
-  <script src="app-multiclub-v1027d.js?v=1027d"></script>
+  <script src="app-multiclub-v1027e.js?v=1027e"></script>
   <script src="calendar-v27247.js?v=104"></script>
   <script src="inventory-v2600.js?v=114"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js?v=1026", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./service-worker.js?v=1027e", { updateViaCache: "none" })
           .then(registration => registration.update())
           .catch(() => {});
       });
