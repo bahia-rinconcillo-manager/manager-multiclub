@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="multiclub-build" content="1.0.27F">
+  <meta name="multiclub-build" content="1.0.27G">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Manager Multiclub</title>
   <link rel="stylesheet" href="styles-v2600.css?v=107">
@@ -44,6 +44,23 @@
     .historical-viewer-summary{display:grid;grid-template-columns:118px 1fr;gap:18px;background:#fff;border:1px solid #dce8f2;border-radius:16px;padding:16px;margin-bottom:14px}.historical-viewer-summary img{width:118px;height:138px;object-fit:cover;border-radius:12px;background:#eef3f7}.historical-viewer-summary-data,.historical-viewer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}.historical-viewer-summary-data div,.historical-viewer-grid div{background:#f7fafc;border:1px solid #e3ebf2;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}.historical-viewer-summary-data span,.historical-viewer-grid span{font-size:11px;color:#718197;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.historical-viewer-summary-data strong,.historical-viewer-grid strong{color:#102a45}.historical-viewer-grid .wide{grid-column:1/-1}
     .historical-viewer-section{background:#fff;border:1px solid #dce8f2;border-radius:16px;padding:16px;margin-bottom:14px}.historical-viewer-section h3{margin:0 0 12px;color:#0b3a67}.historical-viewer-docs{display:grid;gap:8px;margin-top:12px}.historical-viewer-doc{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;border:1px solid #e2eaf1;border-radius:10px}.historical-viewer-doc-actions{display:flex;gap:7px;flex-wrap:wrap}.historical-viewer-table{display:grid;gap:7px}.historical-viewer-table-row{display:grid;grid-template-columns:1fr 140px 120px;gap:12px;align-items:center;padding:10px 12px;background:#f7fafc;border:1px solid #e3ebf2;border-radius:10px}.historical-viewer-total{display:grid;grid-template-columns:1fr auto 1fr auto;gap:10px;align-items:center;margin-top:12px;padding:12px;background:#edf6fd;border-radius:10px}.historical-viewer-empty{padding:12px;border:1px dashed #cbd9e5;border-radius:10px;color:#64788d}.historical-player-viewer-actions{display:flex;justify-content:flex-end;padding:14px 22px;border-top:1px solid #dce8f2;background:#fff}
     @media(max-width:700px){#historicalPlayerViewer{width:96vw}.historical-player-viewer-body{padding:14px}.historical-viewer-summary{grid-template-columns:1fr}.historical-viewer-summary img{margin:auto}.historical-viewer-summary-data,.historical-viewer-grid{grid-template-columns:1fr}.historical-viewer-table-row{grid-template-columns:1fr}.historical-viewer-total{grid-template-columns:1fr auto}.historical-viewer-doc{align-items:flex-start;flex-direction:column}}
+  </style>
+
+  <style id="historical-player-overlay-v1027g">
+    body.historical-player-overlay-open-v1027g{overflow:hidden!important}
+    #historicalPlayerOverlayV1027G[hidden]{display:none!important}
+    #historicalPlayerOverlayV1027G{position:fixed;inset:0;z-index:2147483647;background:rgba(4,17,32,.66);display:flex;align-items:center;justify-content:center;padding:24px}
+    .histg-shell{width:min(1000px,96vw);max-height:92vh;display:flex;flex-direction:column;background:#f4f8fc;border-radius:18px;overflow:hidden;box-shadow:0 26px 80px rgba(0,0,0,.38)}
+    .histg-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding:20px 22px;background:linear-gradient(135deg,#073a69,#0e90c3);color:#fff}
+    .histg-head small{display:block;font-weight:900;letter-spacing:.11em;color:#bcecff}.histg-head h2{margin:5px 0 2px;font-size:26px}.histg-head p{margin:0;color:#dcf5ff;font-weight:700}
+    .histg-close{appearance:none;border:0!important;background:rgba(255,255,255,.16)!important;color:#fff!important;width:40px;height:40px;border-radius:10px;font-size:27px;line-height:1;cursor:pointer!important;opacity:1!important;pointer-events:auto!important}
+    #historicalPlayerOverlayBodyV1027G{overflow:auto;padding:18px 20px}
+    .histg-card{background:#fff;border:1px solid #dce8f2;border-radius:15px;padding:15px;margin-bottom:13px}.histg-card h3{margin:0 0 12px;color:#0b3a67}
+    .histg-summary{display:grid;grid-template-columns:120px 1fr;gap:18px}.histg-photo{width:120px;height:140px;object-fit:cover;border-radius:12px;background:#eef3f7}
+    .histg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}.histg-grid>div{display:flex;flex-direction:column;gap:4px;padding:9px 11px;background:#f7fafc;border:1px solid #e4ecf3;border-radius:9px}.histg-grid span{font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:800;color:#718197}.histg-grid strong{color:#102a45;overflow-wrap:anywhere}.histg-wide{grid-column:1/-1}
+    .histg-payments{display:grid;gap:7px}.histg-payments>div{display:grid;grid-template-columns:1fr 140px 120px;gap:12px;align-items:center;padding:10px 12px;background:#f7fafc;border:1px solid #e3ebf2;border-radius:9px}.histg-totals{display:flex;justify-content:flex-end;gap:22px;margin-top:12px;padding:11px;background:#edf6fd;border-radius:9px}.histg-empty{margin:0;color:#64788d}.histg-foot{display:flex;justify-content:flex-end;padding:13px 20px;background:#fff;border-top:1px solid #dce8f2}.histg-foot button{pointer-events:auto!important;opacity:1!important}
+    body.season-history-mode a[data-season-readonly-allow="true"]{pointer-events:auto!important;opacity:1!important;cursor:pointer!important;text-decoration:none}
+    @media(max-width:700px){#historicalPlayerOverlayV1027G{padding:8px}.histg-shell{max-height:96vh}.histg-summary{grid-template-columns:1fr}.histg-photo{margin:auto}.histg-grid{grid-template-columns:1fr}.histg-wide{grid-column:auto}.histg-payments>div{grid-template-columns:1fr}.histg-totals{flex-direction:column;gap:6px}}
   </style>
 </head>
 <body>
@@ -107,7 +124,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo small crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
-        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.27D</span></div>
+        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.27G</span></div>
       </div>
       <div class="season season-switcher"><span>Temporada</span><select id="seasonSelector" aria-label="Temporada"><option>2026/27</option></select></div>
       <nav>
@@ -1254,6 +1271,17 @@
     </form>
   </dialog>
 
+
+  <div id="historicalPlayerOverlayV1027G" hidden aria-modal="true" role="dialog" aria-labelledby="historicalPlayerOverlayTitleV1027G">
+    <div class="histg-shell">
+      <header class="histg-head">
+        <div><small>JUGADORES · HISTÓRICO</small><h2 id="historicalPlayerOverlayTitleV1027G">Ficha del jugador</h2><p id="historicalPlayerOverlaySeasonV1027G">SOLO LECTURA</p></div>
+        <button type="button" class="histg-close" data-history-overlay-close-v1027g aria-label="Cerrar">×</button>
+      </header>
+      <div id="historicalPlayerOverlayBodyV1027G"></div>
+      <footer class="histg-foot"><button type="button" class="secondary" data-history-overlay-close-v1027g>Cerrar</button></footer>
+    </div>
+  </div>
   <div id="toast" class="toast"></div>
   <script src="config.js?v=27246"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -1306,14 +1334,14 @@
     </div>
   </dialog>
 
-  <script src="app-multiclub-v1027f.js?v=1027f"></script>
+  <script src="app-multiclub-v1027g.js?v=1027g"></script>
   <script src="calendar-v27247.js?v=104"></script>
   <script src="inventory-v2600.js?v=114"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js?v=1027e", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./service-worker.js?v=1027g", { updateViaCache: "none" })
           .then(registration => registration.update())
           .catch(() => {});
       });
