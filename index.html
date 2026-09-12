@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="multiclub-build" content="1.0.28">
+  <meta name="multiclub-build" content="1.0.29">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Manager Multiclub</title>
   <link rel="stylesheet" href="styles-v2600.css?v=107">
@@ -63,7 +63,7 @@
     @media(max-width:700px){#historicalPlayerOverlayV1027G{padding:8px}.histg-shell{max-height:96vh}.histg-summary{grid-template-columns:1fr}.histg-photo{margin:auto}.histg-grid{grid-template-columns:1fr}.histg-wide{grid-column:auto}.histg-payments>div{grid-template-columns:1fr}.histg-totals{flex-direction:column;gap:6px}}
   </style>
 
-  <style id="club-theme-blue-yellow-v1028">
+  <style id="club-theme-blue-yellow-v1029">
     :root{--club-blue:#0b3f75;--club-blue-dark:#072c53;--club-blue-soft:#eaf3ff;--club-yellow:#f2c94c;--club-yellow-strong:#ffd84d;--club-yellow-soft:#fff4bf;--club-ink:#102a45;--club-border:#cfe0f2;--club-surface:#fff;--club-page:#eef4fa}
     body{background:var(--club-page)!important;color:var(--club-ink)}
     .sidebar{background:linear-gradient(180deg,var(--club-blue-dark),#082543 55%,#061d36)!important;color:#fff}
@@ -103,6 +103,13 @@
     @media(max-width:700px){#playerDialog,#staffDialog{width:97vw;max-height:95vh}#playerDialog .form-grid,#staffDialog .form-grid{grid-template-columns:1fr;padding:12px}.profile-photo-card{grid-template-columns:1fr}.profile-photo-card img{margin:auto}.profile-payment-row{grid-template-columns:1fr}.profile-payment-total{flex-direction:column;gap:5px}.dashboard-panel-title{align-items:flex-start;gap:10px;flex-wrap:wrap}}
   </style>
 
+
+  <style id="trash-permanent-delete-v1029">
+    .trash-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .trash-actions .danger-mini{background:#fff1f0!important;border:1px solid #f1aaa4!important;color:#a61b14!important;font-weight:800}
+    .trash-actions .danger-mini:hover{background:#ffe2df!important;border-color:#df766e!important}
+    @media(max-width:700px){.trash-item{align-items:flex-start!important}.trash-actions{width:100%;justify-content:flex-start}}
+  </style>
 </head>
 <body>
   <div id="setupScreen" class="screen hidden">
@@ -165,7 +172,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo small crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
-        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.28</span></div>
+        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.29</span></div>
       </div>
       <div class="season season-switcher"><span>Temporada</span><select id="seasonSelector" aria-label="Temporada"><option>2026/27</option></select></div>
       <nav>
@@ -767,7 +774,7 @@
       
       <section id="trash" class="view">
         <div class="section-head">
-          <div><h2>Papelera</h2><p>Jugadores y equipos eliminados que todavía pueden recuperarse.</p></div>
+          <div><h2>Papelera</h2><p>Jugadores y equipos eliminados. Puedes restaurarlos o eliminarlos definitivamente.</p></div>
           <button id="refreshTrash" class="secondary">Actualizar</button>
         </div>
         <div class="trash-grid">
@@ -1379,14 +1386,14 @@
     </div>
   </dialog>
 
-  <script src="app-multiclub-v1028.js?v=1028"></script>
+  <script src="app-multiclub-v1029.js?v=1029"></script>
   <script src="calendar-v27247.js?v=104"></script>
   <script src="inventory-v2600.js?v=114"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js?v=1028", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./service-worker.js?v=1029", { updateViaCache: "none" })
           .then(registration => registration.update())
           .catch(() => {});
       });
