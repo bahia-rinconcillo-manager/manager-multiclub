@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="multiclub-build" content="1.0.27I">
+  <meta name="multiclub-build" content="1.0.27J">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Manager Multiclub</title>
   <link rel="stylesheet" href="styles-v2600.css?v=107">
@@ -177,6 +177,68 @@
     .brand img,.dashboard-welcome img,[data-club-crest]{border-radius:50%}
   </style>
 
+
+  <style id="profile-sheet-design-v1027j">
+    .profile-sheet-dialog{border:0!important;padding:0!important;width:min(1040px,96vw)!important;max-width:none!important;max-height:94vh!important;border-radius:20px!important;background:#eef4fa!important;overflow:hidden!important;box-shadow:0 28px 90px rgba(4,24,47,.34)!important}
+    .profile-sheet-dialog::backdrop{background:rgba(4,17,32,.66)!important}
+    .profile-sheet-form{display:flex!important;flex-direction:column!important;width:100%!important;max-width:none!important;max-height:94vh!important;margin:0!important;padding:0!important;background:#eef4fa!important}
+    .profile-sheet-head{flex:0 0 auto!important;padding:20px 24px 18px!important;background:linear-gradient(135deg,var(--club-blue-dark,#073a69),var(--club-blue,#0b3f75) 60%,#0e90c3)!important;color:#fff!important;border:0!important}
+    .profile-sheet-head small{display:block!important;color:#d7f2ff!important;letter-spacing:.12em!important;font-weight:900!important}
+    .profile-sheet-head h2{margin:5px 0 3px!important;color:#fff!important;font-size:26px!important;line-height:1.1!important}
+    .profile-sheet-head p{margin:0!important;color:#dff5ff!important;font-weight:700!important}
+    .profile-sheet-head>button{width:40px!important;height:40px!important;border-radius:11px!important;border:0!important;background:rgba(255,255,255,.15)!important;color:#fff!important;font-size:26px!important;cursor:pointer!important}
+    .profile-sheet-scroll{flex:1 1 auto!important;overflow:auto!important;padding:18px 20px 8px!important;min-height:0!important}
+    .profile-sheet-card{background:#fff!important;border:1px solid #d5e3ef!important;border-radius:17px!important;padding:15px!important;margin:0 0 13px!important;box-shadow:0 4px 14px rgba(7,42,77,.04)!important}
+    .profile-summary-card{display:grid!important;grid-template-columns:125px 1fr!important;gap:18px!important;align-items:start!important}
+    .profile-avatar-column{display:flex!important;flex-direction:column!important;align-items:center!important;gap:8px!important}
+    .profile-avatar-image{width:120px!important;height:140px!important;object-fit:cover!important;border-radius:13px!important;background:#e8f0f6!important;border:1px solid #d8e5ef!important}
+    .profile-avatar-caption{font-size:11px!important;text-transform:uppercase!important;letter-spacing:.05em!important;font-weight:800!important;color:#718197!important;text-align:center!important}
+    .profile-section-title{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:12px!important;margin-bottom:12px!important;padding:0 1px!important}
+    .profile-section-title h3{margin:0!important;color:var(--club-blue-dark,#0b3a67)!important;font-size:19px!important}
+    .profile-section-title small{color:#718197!important;font-weight:700!important;text-align:right!important}
+    .profile-field-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px 14px!important}
+    .profile-main-grid{align-self:stretch!important}
+    .profile-field{display:flex!important;flex-direction:column!important;gap:4px!important;padding:9px 11px!important;background:#f6f9fc!important;border:1px solid #dce7f0!important;border-radius:10px!important;min-width:0!important}
+    .profile-field>span{font-size:11px!important;text-transform:uppercase!important;letter-spacing:.045em!important;font-weight:900!important;color:#718197!important}
+    .profile-field input,.profile-field select,.profile-field textarea{width:100%!important;min-height:28px!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;color:#102a45!important;font-size:15px!important;font-weight:750!important;outline:none!important}
+    .profile-field select{cursor:pointer!important}
+    .profile-field textarea{min-height:54px!important;resize:vertical!important;line-height:1.35!important}
+    .profile-field:focus-within{border-color:#7da9d4!important;box-shadow:0 0 0 3px rgba(11,63,117,.08)!important;background:#fff!important}
+    .profile-field-wide{grid-column:1/-1!important}
+    .profile-document-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+    .profile-document-card{display:flex!important;flex-direction:column!important;gap:8px!important;padding:12px!important;background:#f6f9fc!important;border:1px solid #dce7f0!important;border-radius:11px!important;color:#102a45!important}
+    .profile-document-card>span{font-size:12px!important;text-transform:uppercase!important;letter-spacing:.045em!important;font-weight:900!important;color:#718197!important}
+    .profile-document-card input[type=file]{width:100%!important;font-size:12px!important;color:#425b73!important;background:#fff!important;border:1px solid #d6e3ee!important;border-radius:8px!important;padding:7px!important}
+    .profile-document-card em{font-style:normal!important;color:#526a82!important;font-size:12px!important;font-weight:700!important;overflow-wrap:anywhere!important}
+    .profile-size-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+
+    .profile-payment-summary{display:grid!important;gap:7px!important}
+    .profile-payment-row{display:grid!important;grid-template-columns:minmax(0,1fr) 150px 120px!important;gap:12px!important;align-items:center!important;padding:10px 12px!important;background:#f6f9fc!important;border:1px solid #dce7f0!important;border-radius:10px!important;color:#102a45!important}
+    .profile-payment-row strong{font-weight:800!important}.profile-payment-row b{text-align:right!important}.profile-payment-empty{padding:12px!important;border:1px dashed #c8d8e6!important;border-radius:10px!important;color:#667d94!important;background:#fbfdff!important}
+    .profile-payment-total{display:flex!important;justify-content:flex-end!important;gap:22px!important;margin-top:4px!important;padding:11px 12px!important;background:#eaf3ff!important;border-radius:10px!important;color:#173d63!important}
+    .profile-sheet-actions{flex:0 0 auto!important;margin:0!important;padding:13px 20px!important;background:#fff!important;border-top:1px solid #d5e3ef!important;box-shadow:0 -8px 20px rgba(7,42,77,.04)!important}
+    .profile-sheet-actions .primary,.profile-sheet-actions .secondary,.profile-sheet-actions .danger-action{min-height:42px!important}
+    .profile-sheet-dialog.profile-readonly .profile-field{background:#f4f7fa!important}
+    .profile-sheet-dialog.profile-readonly .profile-field input,.profile-sheet-dialog.profile-readonly .profile-field select,.profile-sheet-dialog.profile-readonly .profile-field textarea{color:#102a45!important;opacity:1!important;-webkit-text-fill-color:#102a45!important;cursor:default!important}
+    .profile-sheet-dialog.profile-readonly .profile-document-card input[type=file]{display:none!important}
+    .profile-sheet-dialog.profile-readonly .profile-sheet-actions button[type=submit],.profile-sheet-dialog.profile-readonly .danger-action{display:none!important}
+    .profile-sheet-dialog.profile-readonly .profile-sheet-head p::after{content:" · SOLO LECTURA";font-weight:900!important}
+    @media(max-width:800px){
+      .profile-sheet-dialog{width:98vw!important;max-height:96vh!important;border-radius:15px!important}
+      .profile-sheet-form{max-height:96vh!important}
+      .profile-sheet-scroll{padding:12px 10px 4px!important}
+      .profile-summary-card{grid-template-columns:1fr!important}
+      .profile-avatar-image{width:110px!important;height:128px!important}
+      .profile-field-grid,.profile-size-grid,.profile-document-grid{grid-template-columns:1fr!important}
+      .profile-payment-row{grid-template-columns:1fr!important}.profile-payment-row b{text-align:left!important}.profile-payment-total{flex-direction:column!important;gap:5px!important}
+      .profile-field-wide{grid-column:auto!important}
+      .profile-section-title{align-items:flex-start!important;flex-direction:column!important}
+      .profile-section-title small{text-align:left!important}
+      .profile-sheet-head{padding:16px!important}
+      .profile-sheet-head h2{font-size:22px!important}
+    }
+  </style>
+
 </head>
 <body>
   <div id="setupScreen" class="screen hidden">
@@ -239,7 +301,7 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo small crest-logo"><img src="assets/manager-multiclub.svg" alt="Manager Multiclub" data-club-crest></div>
-        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.27I</span></div>
+        <div><strong id="currentClubName">Manager Multiclub</strong><span>Manager Online · Multiclub V1.0.27J</span></div>
       </div>
       <div class="season season-switcher"><span>Temporada</span><select id="seasonSelector" aria-label="Temporada"><option>2026/27</option></select></div>
       <nav>
@@ -920,41 +982,72 @@
     </main>
   </div>
 
-  <dialog id="playerDialog"><form id="playerForm" class="modal">
-    <div class="modal-head"><div><small>JUGADORES</small><h2>Ficha del jugador</h2></div><button type="button" data-close="playerDialog">×</button></div>
+  <dialog id="playerDialog" class="profile-sheet-dialog"><form id="playerForm" class="modal profile-sheet-form player-profile-sheet">
+    <div class="modal-head profile-sheet-head"><div><small>JUGADORES</small><h2 id="playerDialogTitle">Ficha del jugador</h2><p id="playerDialogSubtitle">Datos personales, documentación y equipación</p></div><button type="button" data-close="playerDialog">×</button></div>
     <input name="id" type="hidden">
-    <div class="form-grid">
-      <div class="full player-form-section"><strong>Datos del jugador</strong><small>Información personal y deportiva</small></div>
-      <label>Nombre<input name="name" required></label><label>Apellidos<input name="surname" required></label>
-      <label>Fecha nacimiento<input name="birth_date" type="date"></label><label>DNI/NIE jugador<input name="player_dni"></label>
-      <label>Equipo<select name="team" id="playerTeamSelect"><option value="">Sin equipo / seleccionar después</option></select></label><label>Estado<select name="status"><option>Pendiente revisión</option><option>Aprobada</option><option>Rechazada</option><option>Baja</option></select></label>
-      <label>Tutor<input name="guardian"></label><label>Teléfono<input name="phone"></label>
-      <label>Email<input name="email" type="email"></label>
-      <label class="full">Dirección<textarea name="address"></textarea></label><label class="full">Observaciones<textarea name="notes"></textarea></label>
+    <div class="profile-sheet-scroll">
+      <section class="profile-sheet-card profile-summary-card">
+        <div class="profile-avatar-column">
+          <img id="playerFormPhotoPreview" class="profile-avatar-image" src="assets/avatar-jugador.svg" alt="Fotografía del jugador">
+          <span class="profile-avatar-caption">Fotografía del jugador</span>
+        </div>
+        <div class="profile-field-grid profile-main-grid">
+          <label class="profile-field"><span>Nombre</span><input name="name" required></label>
+          <label class="profile-field"><span>Apellidos</span><input name="surname" required></label>
+          <label class="profile-field"><span>Fecha de nacimiento</span><input name="birth_date" type="date"></label>
+          <label class="profile-field"><span>DNI/NIE</span><input name="player_dni"></label>
+          <label class="profile-field"><span>Equipo</span><select name="team" id="playerTeamSelect"><option value="">Sin equipo / seleccionar después</option></select></label>
+          <label class="profile-field"><span>Estado</span><select name="status"><option>Pendiente revisión</option><option>Aprobada</option><option>Rechazada</option><option>Baja</option></select></label>
+        </div>
+      </section>
 
-      <div class="full player-form-section"><strong>Documentación adjunta</strong><small>PDF, JPG o PNG. Máximo recomendado: 10 MB por archivo</small></div>
-      <label class="file-upload-card">Fotografía del jugador<input name="photo_file" type="file" accept=".jpg,.jpeg,.png,.webp"><span id="currentPhotoFile"></span></label>
-      <label class="file-upload-card">DNI o libro de familia<input name="player_dni_file" type="file" accept=".pdf,.jpg,.jpeg,.png"><span id="currentPlayerDniFile"></span></label>
-      <label class="file-upload-card">Reconocimiento médico<input name="medical_file" type="file" accept=".pdf,.jpg,.jpeg,.png"><span id="currentMedicalFile"></span></label>
+      <section class="profile-sheet-card">
+        <div class="profile-section-title"><h3>Familia y contacto</h3><small>Datos de contacto y observaciones del jugador</small></div>
+        <div class="profile-field-grid">
+          <label class="profile-field"><span>Tutor</span><input name="guardian"></label>
+          <label class="profile-field"><span>Teléfono</span><input name="phone"></label>
+          <label class="profile-field"><span>Email</span><input name="email" type="email"></label>
+          <label class="profile-field"><span>Dirección</span><textarea name="address"></textarea></label>
+          <label class="profile-field profile-field-wide"><span>Observaciones</span><textarea name="notes"></textarea></label>
+        </div>
+      </section>
 
-      <div class="full player-form-section"><strong>Ropa y tallaje</strong><small>Jugador y portero quedan diferenciados. La mochila se añade automáticamente a todos los jugadores.</small></div>
-      <label>Camiseta primera equipación jugador<select name="game_shirt"></select></label>
-      <label>Camiseta primera equipación portero<select name="game_shirt_goalkeeper"></select></label>
-      <label>Pantalón equipación jugador<select name="game_shorts"></select></label>
-      <label>Pantalón equipación portero<select name="game_shorts_goalkeeper"></select></label>
-      <label>Camiseta segunda equipación jugador<select name="second_shirt_player"></select></label>
-      <label>Medias jugador<select name="socks"></select></label>
-      <label>Medias portero<select name="socks_goalkeeper"></select></label>
-      <label>Camiseta entrenamiento jugador<select name="training_shirt"></select></label>
-      <label>Camiseta entrenamiento portero<select name="training_shirt_goalkeeper"></select></label>
-      <label>Pantalón entrenamiento jugador<select name="training_shorts"></select></label>
-      <label>Pantalón entrenamiento portero<select name="training_shorts_goalkeeper"></select></label>
-      <label>Sudadera entrenamiento<select name="training_sweatshirt"></select></label>
-      <label>Chaqueta chándal<select name="tracksuit_jacket"></select></label>
-      <label>Pantalón chándal<select name="tracksuit_trousers"></select></label>
-      <label>Mochila<input value="Incluida por defecto" disabled></label>
+      <section class="profile-sheet-card">
+        <div class="profile-section-title"><h3>Documentación</h3><small>PDF, JPG o PNG. Máximo recomendado: 10 MB por archivo</small></div>
+        <div class="profile-document-grid">
+          <label class="profile-document-card"><span>Fotografía</span><input name="photo_file" type="file" accept=".jpg,.jpeg,.png,.webp"><em id="currentPhotoFile">Sin archivo nuevo</em></label>
+          <label class="profile-document-card"><span>DNI / libro de familia</span><input name="player_dni_file" type="file" accept=".pdf,.jpg,.jpeg,.png"><em id="currentPlayerDniFile">Sin archivo nuevo</em></label>
+          <label class="profile-document-card"><span>Reconocimiento médico</span><input name="medical_file" type="file" accept=".pdf,.jpg,.jpeg,.png"><em id="currentMedicalFile">Sin archivo nuevo</em></label>
+        </div>
+      </section>
+
+      <section class="profile-sheet-card">
+        <div class="profile-section-title"><h3>Cobros</h3><small>Resumen económico del jugador en la temporada actual</small></div>
+        <div id="playerFormPaymentSummary" class="profile-payment-summary"></div>
+      </section>
+
+      <section class="profile-sheet-card">
+        <div class="profile-section-title"><h3>Tallaje y equipación</h3><small>Jugador y portero quedan diferenciados. La mochila se añade automáticamente.</small></div>
+        <div class="profile-field-grid profile-size-grid">
+          <label class="profile-field"><span>Camiseta 1ª jugador</span><select name="game_shirt"></select></label>
+          <label class="profile-field"><span>Camiseta 1ª portero</span><select name="game_shirt_goalkeeper"></select></label>
+          <label class="profile-field"><span>Pantalón jugador</span><select name="game_shorts"></select></label>
+          <label class="profile-field"><span>Pantalón portero</span><select name="game_shorts_goalkeeper"></select></label>
+          <label class="profile-field"><span>Camiseta 2ª jugador</span><select name="second_shirt_player"></select></label>
+          <label class="profile-field"><span>Medias jugador</span><select name="socks"></select></label>
+          <label class="profile-field"><span>Medias portero</span><select name="socks_goalkeeper"></select></label>
+          <label class="profile-field"><span>Camiseta entrenamiento jugador</span><select name="training_shirt"></select></label>
+          <label class="profile-field"><span>Camiseta entrenamiento portero</span><select name="training_shirt_goalkeeper"></select></label>
+          <label class="profile-field"><span>Pantalón entrenamiento jugador</span><select name="training_shorts"></select></label>
+          <label class="profile-field"><span>Pantalón entrenamiento portero</span><select name="training_shorts_goalkeeper"></select></label>
+          <label class="profile-field"><span>Sudadera entrenamiento</span><select name="training_sweatshirt"></select></label>
+          <label class="profile-field"><span>Chaqueta chándal</span><select name="tracksuit_jacket"></select></label>
+          <label class="profile-field"><span>Pantalón chándal</span><select name="tracksuit_trousers"></select></label>
+          <label class="profile-field"><span>Mochila</span><input value="Incluida por defecto" disabled></label>
+        </div>
+      </section>
     </div>
-    <div class="modal-actions modal-actions-split">
+    <div class="modal-actions modal-actions-split profile-sheet-actions">
       <button id="deletePlayerFromForm" type="button" class="danger-action hidden">Eliminar jugador</button>
       <div class="modal-actions-right">
         <button type="button" class="secondary" data-close="playerDialog">Cancelar</button>
@@ -1071,29 +1164,60 @@
     </div>
   </form></dialog>
 
-  <dialog id="staffDialog"><form id="staffForm" class="modal">
-    <div class="modal-head"><div><small>CUERPO TÉCNICO</small><h2 id="staffDialogTitle">Nuevo miembro</h2></div><button type="button" data-close="staffDialog">×</button></div>
+  <dialog id="staffDialog" class="profile-sheet-dialog"><form id="staffForm" class="modal profile-sheet-form staff-profile-sheet">
+    <div class="modal-head profile-sheet-head"><div><small>CUERPO TÉCNICO</small><h2 id="staffDialogTitle">Ficha del técnico</h2><p id="staffDialogSubtitle">Datos profesionales, contacto y equipación</p></div><button type="button" data-close="staffDialog">×</button></div>
     <input name="id" type="hidden">
-    <div class="form-grid">
-      <label>Nombre y apellidos<input name="name" required></label>
-      <label>Cargo<select name="role" required><option value="">Seleccionar cargo</option><option>Entrenador</option><option>Segundo entrenador</option><option>Delegado</option><option>Encargado del material</option></select></label>
-      <label>Equipo<select name="team_name"><option value="">Sin asignar</option></select></label>
-      <label>Teléfono<input name="phone"></label>
-      <label>Email<input name="email" type="email"></label>
-      <label class="full">Observaciones<textarea name="notes"></textarea></label>
-      <div class="full staff-size-title">Tallaje del cuerpo técnico</div>
-      <label>Camiseta entrenamiento<select name="training_shirt"></select></label>
-      <label>Pantalón entrenamiento cuerpo técnico<select name="training_shorts"></select></label>
-      <label>Sudadera entrenamiento<select name="training_sweatshirt"></select></label>
-      <label>Chaqueta chándal<select name="tracksuit_jacket"></select></label>
-      <label>Pantalón chándal<select name="tracksuit_trousers"></select></label>
-      <label>Polo de paseo<select name="polo"></select></label>
-      <label>Mochila<input value="Incluida por defecto" disabled></label>
-      <label>Tallaje realizado<select name="sized"><option>No</option><option>Sí</option></select></label>
-      <label>Ropa entregada<select name="delivered"><option>No</option><option>Sí</option></select></label>
-      <div id="staffCustomClothingFields" class="full custom-clothing-fields"></div>
+    <div class="profile-sheet-scroll">
+      <section class="profile-sheet-card profile-summary-card">
+        <div class="profile-avatar-column">
+          <img id="staffFormPhotoPreview" class="profile-avatar-image" src="assets/avatar-jugador.svg" alt="Fotografía del técnico">
+          <span class="profile-avatar-caption">Fotografía del técnico</span>
+        </div>
+        <div class="profile-field-grid profile-main-grid">
+          <label class="profile-field profile-field-wide"><span>Nombre y apellidos</span><input name="name" required></label>
+          <label class="profile-field"><span>Cargo</span><select name="role" required><option value="">Seleccionar cargo</option><option>Entrenador</option><option>Segundo entrenador</option><option>Delegado</option><option>Encargado del material</option></select></label>
+          <label class="profile-field"><span>Equipo</span><select name="team_name"><option value="">Sin asignar</option></select></label>
+          <label class="profile-field"><span>Fecha de nacimiento</span><input name="birth_date" type="date"></label>
+          <label class="profile-field"><span>DNI/NIE</span><input name="dni"></label>
+        </div>
+      </section>
+
+      <section class="profile-sheet-card">
+        <div class="profile-section-title"><h3>Contacto</h3><small>Información de contacto del miembro del cuerpo técnico</small></div>
+        <div class="profile-field-grid">
+          <label class="profile-field"><span>Teléfono</span><input name="phone"></label>
+          <label class="profile-field"><span>Email</span><input name="email" type="email"></label>
+          <label class="profile-field profile-field-wide"><span>Observaciones</span><textarea name="notes"></textarea></label>
+        </div>
+      </section>
+
+      <section class="profile-sheet-card">
+        <div class="profile-section-title"><h3>Documentación</h3><small>Fotografía identificativa del técnico</small></div>
+        <div class="profile-document-grid">
+          <label class="profile-document-card"><span>Fotografía</span><input name="photo_file" type="file" accept=".jpg,.jpeg,.png,.webp"><em id="currentStaffPhotoFile">Sin archivo nuevo</em></label>
+        </div>
+      </section>
+
+      <section class="profile-sheet-card">
+        <div class="profile-section-title"><h3>Tallaje y equipación</h3><small>Prendas asignadas al cuerpo técnico</small></div>
+        <div class="profile-field-grid profile-size-grid">
+          <label class="profile-field"><span>Camiseta entrenamiento</span><select name="training_shirt"></select></label>
+          <label class="profile-field"><span>Pantalón entrenamiento</span><select name="training_shorts"></select></label>
+          <label class="profile-field"><span>Sudadera entrenamiento</span><select name="training_sweatshirt"></select></label>
+          <label class="profile-field"><span>Chaqueta chándal</span><select name="tracksuit_jacket"></select></label>
+          <label class="profile-field"><span>Pantalón chándal</span><select name="tracksuit_trousers"></select></label>
+          <label class="profile-field"><span>Polo de paseo</span><select name="polo"></select></label>
+          <label class="profile-field"><span>Mochila</span><input value="Incluida por defecto" disabled></label>
+          <label class="profile-field"><span>Tallaje realizado</span><select name="sized"><option>No</option><option>Sí</option></select></label>
+          <label class="profile-field"><span>Ropa entregada</span><select name="delivered"><option>No</option><option>Sí</option></select></label>
+          <div id="staffCustomClothingFields" class="profile-field-wide custom-clothing-fields"></div>
+        </div>
+      </section>
     </div>
-    <div class="modal-actions"><button type="button" class="secondary" data-close="staffDialog">Cancelar</button><button class="primary" type="submit">Guardar miembro</button></div>
+    <div class="modal-actions profile-sheet-actions">
+      <button type="button" class="secondary" data-close="staffDialog">Cancelar</button>
+      <button class="primary" type="submit">Guardar miembro</button>
+    </div>
   </form></dialog>
 
   <dialog id="eventDialog"><form id="eventForm" class="modal">
@@ -1449,14 +1573,14 @@
     </div>
   </dialog>
 
-  <script src="app-multiclub-v1027g.js?v=1027g"></script>
+  <script src="app-multiclub-v1027j.js?v=1027j"></script>
   <script src="calendar-v27247.js?v=104"></script>
   <script src="inventory-v2600.js?v=114"></script>
 
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./service-worker.js?v=1027i", { updateViaCache: "none" })
+        navigator.serviceWorker.register("./service-worker.js?v=1027j", { updateViaCache: "none" })
           .then(registration => registration.update())
           .catch(() => {});
       });
