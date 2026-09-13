@@ -1,4 +1,4 @@
-const CACHE = "manager-multiclub-v1-0-30-mobile-scroll-global";
+const CACHE = "manager-multiclub-v1-0-31-staff-delete-safe";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -14,7 +14,7 @@ const CORE_FILES = [
   "./sports-v2702.css?v=27248",
   "./cards-v27249.css?v=27249",
   "./mobile-v1030.css?v=1030",
-  "./app-multiclub-v1029.js?v=1029",
+  "./app-multiclub-v1031.js?v=1031",
   "./sports-v27238-multiclub.js?v=103",
   "./cards-v27249.js?v=106",
   "./calendar-v27247.js?v=104",
