@@ -1,4 +1,5 @@
-const CACHE = "manager-multiclub-v1-0-31-staff-delete-safe";
+const APP_CACHE = "manager-multiclub-app-v1-0-32";
+const ASSET_CACHE = "manager-multiclub-static-v1";
 const CORE_FILES = [
   "./",
   "./index.html",
@@ -14,78 +15,55 @@ const CORE_FILES = [
   "./sports-v2702.css?v=27248",
   "./cards-v27249.css?v=27249",
   "./mobile-v1030.css?v=1030",
-  "./app-multiclub-v1031.js?v=1031",
-  "./sports-v27238-multiclub.js?v=103",
+  "./app-multiclub-v1032.js?v=1032",
+  "./multiclub-v1032-modernization.js?v=1032",
+  "./sports-v27238-multiclub.js?v=118b",
   "./cards-v27249.js?v=106",
   "./calendar-v27247.js?v=104",
   "./inventory-v2600.js?v=114",
   "./public-v27211.js?v=27248",
   "./manifest.webmanifest",
-  "./assets/escudo-oficial.png",
-  "./assets/escudo-bahia.png",
-  "./assets/escudo-rinconcillo.png",
-  "./assets/manager-multiclub.svg",
-  "./assets/avatar-jugador.svg",
-  "./assets/icon-192.png",
-  "./assets/icon-512.png",
-  "./assets/apple-touch-icon.png",
-  "./assets/favicon.png",
-  "./assets/competitions/liga-aafb.png",
-  "./assets/competitions/copa-primavera.png",
-  "./assets/competitions/liga-rfaf.png",
-  "./assets/accidentes/parte-lesiones-rfaf.pdf",
-  "./assets/accidentes/parte-accidentes-aafb.pdf",
-  "./assets/accidentes/protocolo-accidentes-aafb-algeciras.pdf"
+  "./assets/escudo-bahia.png","./assets/escudo-rinconcillo.png","./assets/manager-multiclub.svg",
+  "./assets/avatar-jugador.svg","./assets/icon-192.png","./assets/icon-512.png",
+  "./assets/apple-touch-icon.png","./assets/favicon.png"
 ];
 
-self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(CORE_FILES)));
+self.addEventListener("install",event=>{
+  event.waitUntil(caches.open(APP_CACHE).then(async cache=>{
+    const results=await Promise.allSettled(CORE_FILES.map(file=>{
+      const url=new URL(file,self.registration.scope).href;
+      return cache.add(new Request(url,{cache:"reload"}));
+    }));
+    const failed=results.filter(x=>x.status==="rejected").length;
+    if(failed)console.warn(`Manager Multiclub V1.0.32: ${failed} recursos se cargarán bajo demanda.`);
+  }));
   self.skipWaiting();
 });
-
-self.addEventListener("activate", event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(key => (key.startsWith("cdsb-manager-")||key.startsWith("manager-multiclub-")) && key !== CACHE).map(key => caches.delete(key))
-    ))
-  );
+self.addEventListener("activate",event=>{
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys
+    .filter(key=>(key.startsWith("cdsb-manager-")||key.startsWith("manager-multiclub-"))&&key!==APP_CACHE&&key!==ASSET_CACHE)
+    .map(key=>caches.delete(key)))));
   self.clients.claim();
 });
-
-self.addEventListener("fetch", event => {
-  const request = event.request;
-  if (request.method !== "GET") return;
-  const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
-
-  if (url.pathname.endsWith("/config.js")) {
-    event.respondWith(fetch(request, { cache: "no-store" }));
+function cacheName(url){return /\/assets\//.test(url.pathname)?ASSET_CACHE:APP_CACHE}
+self.addEventListener("fetch",event=>{
+  const request=event.request;
+  if(request.method!=="GET")return;
+  const url=new URL(request.url);
+  if(url.origin!==self.location.origin)return;
+  if(url.pathname.endsWith("/config.js")){event.respondWith(fetch(request,{cache:"no-store"}));return}
+  if(request.mode==="navigate"){
+    event.respondWith(fetch(request,{cache:"no-store"}).then(response=>{
+      if(response&&response.ok){const copy=response.clone();caches.open(APP_CACHE).then(cache=>cache.put(request,copy))}
+      return response;
+    }).catch(()=>caches.match(request).then(cached=>cached||caches.match("./index.html"))));
     return;
   }
-
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request, { cache: "no-store" })
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put(request, copy));
-          return response;
-        })
-        .catch(() => caches.match(request).then(cached => cached || caches.match("./index.html")))
-    );
-    return;
-  }
-
-  event.respondWith(
-    caches.match(request).then(cached => {
-      const network = fetch(request, { cache: "no-store" }).then(response => {
-        if (response && response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put(request, copy));
-        }
-        return response;
-      });
-      return cached || network;
-    })
-  );
+  event.respondWith(caches.match(request).then(cached=>{
+    if(cached)return cached;
+    return fetch(request).then(response=>{
+      if(response&&response.ok){const copy=response.clone();caches.open(cacheName(url)).then(cache=>cache.put(request,copy))}
+      return response;
+    });
+  }));
 });
