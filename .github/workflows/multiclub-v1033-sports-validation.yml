@@ -1,0 +1,29 @@
+name: Multiclub V1.0.33 Deportes validation
+on:
+  pull_request:
+  push:
+    branches: [ "v1-0-33-deportes-multiclub" ]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validar JavaScript y regresión
+        run: |
+          node --check app-multiclub-v1033.js
+          node --check sports-v1033-multiclub.js
+          node --check multiclub-v1032-modernization.js
+          node tests/multiclub-v1033-sports-regression.mjs
+      - name: Comprobar SQL no destructivo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          sql=Path("EJECUTAR_ACTUALIZACION_MULTICLUB_V1_0_33_DEPORTES.sql").read_text(encoding="utf-8").lower()
+          forbidden=["drop table","truncate table","delete from public.players","delete from public.teams"]
+          bad=[x for x in forbidden if x in sql]
+          if bad: raise SystemExit("Operaciones destructivas: "+", ".join(bad))
+          print("SQL V1.0.33: comprobación estática OK")
+          PY

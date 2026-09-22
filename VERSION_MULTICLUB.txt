@@ -1,2 +1,3 @@
-Manager Multiclub V1.0.15
-Tallaje técnicos: núcleo JS con nombre nuevo, singular/plural y escudo PDF embebido
+Manager Multiclub V1.0.33
+Deportes Multiclub: aislamiento por club, goles por jugador y minutos reales de partido.
+Trabajo directo mediante GitHub; no requiere distribución por ZIP.

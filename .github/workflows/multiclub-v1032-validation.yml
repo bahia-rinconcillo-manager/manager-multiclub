@@ -1,6 +1,6 @@
 name: Multiclub V1.0.32 validation
 on:
-  pull_request:
+  workflow_dispatch:
   push:
     branches: [ "v1-0-32-paridad-v285" ]
 jobs:

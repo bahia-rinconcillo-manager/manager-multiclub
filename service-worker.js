@@ -1,4 +1,4 @@
-const APP_CACHE = "manager-multiclub-app-v1-0-32";
+const APP_CACHE = "manager-multiclub-app-v1-0-33";
 const ASSET_CACHE = "manager-multiclub-static-v1";
 const CORE_FILES = [
   "./",
@@ -15,9 +15,9 @@ const CORE_FILES = [
   "./sports-v2702.css?v=27248",
   "./cards-v27249.css?v=27249",
   "./mobile-v1030.css?v=1030",
-  "./app-multiclub-v1032.js?v=1032",
+  "./app-multiclub-v1033.js?v=1033",
   "./multiclub-v1032-modernization.js?v=1032",
-  "./sports-v27238-multiclub.js?v=118b",
+  "./sports-v1033-multiclub.js?v=1033",
   "./cards-v27249.js?v=106",
   "./calendar-v27247.js?v=104",
   "./inventory-v2600.js?v=114",
@@ -35,7 +35,7 @@ self.addEventListener("install",event=>{
       return cache.add(new Request(url,{cache:"reload"}));
     }));
     const failed=results.filter(x=>x.status==="rejected").length;
-    if(failed)console.warn(`Manager Multiclub V1.0.32: ${failed} recursos se cargarán bajo demanda.`);
+    if(failed)console.warn(`Manager Multiclub V1.0.33: ${failed} recursos se cargarán bajo demanda.`);
   }));
   self.skipWaiting();
 });
