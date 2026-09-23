@@ -1,0 +1,17 @@
+name: Multiclub V1.0.40 Events lazy validation
+on:
+  pull_request:
+  push:
+    branches: [ "v1-0-40-agenda-escalonada" ]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validar
+        run: |
+          node --check app-multiclub-v1040.js
+          node tests/multiclub-v1040-events-regression.mjs
