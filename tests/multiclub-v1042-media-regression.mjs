@@ -1,0 +1,18 @@
+import fs from "node:fs";
+const read=p=>fs.readFileSync(p,"utf8");
+const ok=(v,m)=>{if(!v){console.error("FAIL:",m);process.exitCode=1}};
+const app=read("app-multiclub-v1042.js");
+const index=read("index.html");
+const sw=read("service-worker.js");
+ok(app.includes('MULTICLUB_BUILD_VERSION="V1.0.42"'),"build 1.0.42");
+ok(app.includes("ensureSponsorshipLogosV1042"),"patrocinio bajo demanda");
+ok(app.includes("clothingImagesLoadedV1042"),"ropa bajo demanda");
+ok(app.includes('nav?.dataset.view==="kits"'),"carga al entrar en equipaciones");
+ok(app.includes('nav?.dataset.view==="sponsorships"'),"carga al entrar en patrocinio");
+ok(app.includes('["playerDialog","staffDialog","kitDialog"]'),"fichas personales cargan ropa");
+ok(!app.includes("await Promise.all([loadTrashAndActivity(),loadClothingImages()]);"),"sin fotos de ropa en arranque");
+ok(!app.includes("await Promise.all((sponsorships||[]).map(async sponsor=>"),"sin logos de patrocinio en arranque");
+ok(index.includes('content="1.0.42"'),"index 1.0.42");
+ok(index.includes("app-multiclub-v1042.js?v=1042"),"app 1042");
+ok(sw.includes("manager-multiclub-app-v1-0-42"),"cache 1042");
+if(!process.exitCode)console.log("Manager Multiclub V1.0.42: imágenes bajo demanda OK.");
