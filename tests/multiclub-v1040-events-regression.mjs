@@ -1,0 +1,17 @@
+import fs from "node:fs";
+const read=p=>fs.readFileSync(p,"utf8");
+const ok=(v,m)=>{if(!v){console.error("FAIL:",m);process.exitCode=1}};
+const app=read("app-multiclub-v1040.js");
+const index=read("index.html");
+const sw=read("service-worker.js");
+ok(app.includes('MULTICLUB_BUILD_VERSION="V1.0.40"'),"build 1.0.40");
+ok(app.includes("EVENTS_DASHBOARD_LIMIT_V1040=5"),"Inicio limita eventos");
+ok(app.includes('.gte("event_date",todayIsoV1040())'),"Inicio solo futuros");
+ok(app.includes("ensureFullEventsV1040"),"Calendario carga agenda completa");
+ok(app.includes('nav[data-view="calendar"]'),"demanda al abrir Calendario");
+ok(app.includes("eventsFullLoadedV1040"),"estado de carga completa");
+ok(app.includes('if(table==="events"&&!eventsFullLoadedV1040)'),"realtime respeta resumen");
+ok(index.includes('content="1.0.40"'),"index 1.0.40");
+ok(index.includes("app-multiclub-v1040.js?v=1040"),"app 1040");
+ok(sw.includes("manager-multiclub-app-v1-0-40"),"cache 1040");
+if(!process.exitCode)console.log("Manager Multiclub V1.0.40: agenda escalonada OK.");
