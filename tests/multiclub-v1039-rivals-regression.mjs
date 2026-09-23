@@ -1,0 +1,16 @@
+import fs from "node:fs";
+const read=p=>fs.readFileSync(p,"utf8");
+const ok=(v,m)=>{if(!v){console.error("FAIL:",m);process.exitCode=1}};
+const app=read("app-multiclub-v1039.js");
+const index=read("index.html");
+const sw=read("service-worker.js");
+ok(app.includes('MULTICLUB_BUILD_VERSION="V1.0.39"'),"build 1.0.39");
+ok(app.includes("rivalTeamsStorageKeyV1039"),"clave de rivales por club");
+ok(app.includes("manager_multiclub_rival_teams_v1039_"),"prefijo multiclub");
+ok(app.includes("migrateLegacyRivalTeamsV1039"),"migración legado");
+ok(app.includes("localStorage.removeItem(RIVAL_TEAMS_LEGACY_KEY_V1039)"),"legado consumido una sola vez");
+ok(!app.includes('localStorage.setItem(RIVAL_TEAMS_STORAGE_KEY'),"sin guardado global antiguo");
+ok(index.includes('content="1.0.39"'),"index 1.0.39");
+ok(index.includes("app-multiclub-v1039.js?v=1039"),"app 1039");
+ok(sw.includes("manager-multiclub-app-v1-0-39"),"cache 1039");
+if(!process.exitCode)console.log("Manager Multiclub V1.0.39: rivales aislados por club OK.");
