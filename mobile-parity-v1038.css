@@ -1,0 +1,1078 @@
+/* ==========================================================================
+   MANAGER MULTICLUB · V1.0.38
+   PARIDAD VISUAL Y DESPLAZAMIENTO MÓVIL
+   Adaptación de las mejoras estables del Manager CD San Bernabé.
+   ========================================================================== */
+
+/* V27.2.52 · Inicio móvil: enfrentamiento horizontal real */
+@media (max-width: 620px) {
+  .dashboard-matches-panel {
+    padding: 8px !important;
+    margin-top: 10px !important;
+  }
+  .dashboard-match-group {
+    padding: 8px !important;
+    border-radius: 14px !important;
+  }
+  .dashboard-match-list { gap: 9px !important; }
+
+  .dashboard-match-item {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      "date"
+      "body"
+      "score" !important;
+    gap: 8px !important;
+    min-height: 0 !important;
+    padding: 10px 11px 11px !important;
+    border-radius: 14px !important;
+    align-items: stretch !important;
+  }
+
+  .dashboard-match-datebox {
+    grid-area: date !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 6px 8px !important;
+    border-radius: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 5px !important;
+    text-align: left !important;
+  }
+  .dashboard-match-datebox span,
+  .dashboard-match-datebox strong,
+  .dashboard-match-datebox small {
+    display: inline !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+  }
+  .dashboard-match-datebox span { font-size: 10px !important; }
+  .dashboard-match-datebox strong { font-size: 18px !important; }
+  .dashboard-match-datebox small { font-size: 10px !important; }
+  .dashboard-match-datebox em {
+    margin: 0 0 0 auto !important;
+    padding: 4px 7px !important;
+    font-size: 10px !important;
+    border-radius: 8px !important;
+  }
+
+  .dashboard-match-body {
+    grid-area: body !important;
+    display: grid !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
+  .dashboard-match-badges {
+    justify-content: center !important;
+    gap: 5px !important;
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+  }
+  .dashboard-match-competition,
+  .dashboard-match-round {
+    min-height: 21px !important;
+    padding: 3px 7px !important;
+    font-size: 9px !important;
+  }
+
+  .dashboard-match-versus {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) 32px minmax(0,1fr) !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .dashboard-match-team {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 5px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+  .dashboard-match-team .match-team-crest {
+    width: 48px !important;
+    height: 48px !important;
+    flex: 0 0 48px !important;
+    padding: 0 !important;
+  }
+  .dashboard-match-team .match-team-crest img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+  }
+  .dashboard-match-team strong {
+    width: 100% !important;
+    min-width: 0 !important;
+    font-size: 11px !important;
+    line-height: 1.15 !important;
+    text-align: center !important;
+    overflow-wrap: anywhere !important;
+  }
+  .dashboard-match-versus b {
+    justify-self: center !important;
+    align-self: center !important;
+    margin: 0 !important;
+    width: 30px !important;
+    height: 26px !important;
+    border-radius: 8px !important;
+    font-size: 9px !important;
+  }
+
+  .dashboard-match-meta {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 5px 10px !important;
+    flex-wrap: wrap !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+  }
+
+  .dashboard-match-score {
+    grid-area: score !important;
+    justify-self: center !important;
+    margin: 0 !important;
+    min-width: 66px !important;
+    max-width: none !important;
+    padding: 6px 10px !important;
+    border-radius: 10px !important;
+  }
+  .dashboard-match-score.is-result { font-size: 15px !important; }
+}
+
+@media (max-width: 380px) {
+  .dashboard-match-team .match-team-crest {
+    width: 42px !important;
+    height: 42px !important;
+    flex-basis: 42px !important;
+  }
+  .dashboard-match-team strong { font-size: 10px !important; }
+  .dashboard-match-versus { grid-template-columns: minmax(0,1fr) 28px minmax(0,1fr) !important; }
+  .dashboard-match-versus b { width: 28px !important; }
+}
+
+
+/* V27.2.55 — Móvil: scroll real en Editar partido y estadísticas */
+@media (max-width: 900px){
+  #sportsMatchDialog,
+  #sportsTrainingDialog{
+    position:fixed !important;
+    inset:0 !important;
+    width:100vw !important;
+    max-width:100vw !important;
+    height:100vh !important;
+    height:100dvh !important;
+    max-height:100vh !important;
+    max-height:100dvh !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    overflow:hidden !important;
+  }
+
+  #sportsMatchDialog > .sports-modal,
+  #sportsTrainingDialog > .sports-modal{
+    box-sizing:border-box !important;
+    display:flex !important;
+    flex-direction:column !important;
+    width:100% !important;
+    max-width:none !important;
+    height:100% !important;
+    max-height:none !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    border-radius:0 !important;
+    overflow:hidden !important;
+  }
+
+  #sportsMatchDialog > .sports-modal > .modal-head,
+  #sportsTrainingDialog > .sports-modal > .modal-head{
+    position:relative !important;
+    z-index:5 !important;
+    flex:0 0 auto !important;
+    margin:0 !important;
+    padding:calc(12px + env(safe-area-inset-top)) 14px 12px !important;
+    background:#fff !important;
+    border-bottom:1px solid #dfe8f0 !important;
+  }
+
+  #sportsMatchDialog .sports-match-scroll-body{
+    display:block !important;
+    flex:1 1 0 !important;
+    min-height:0 !important;
+    height:auto !important;
+    max-height:none !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-y:contain !important;
+    touch-action:pan-y !important;
+    scrollbar-gutter:auto !important;
+    padding:14px 12px 30px !important;
+  }
+
+  #sportsTrainingDialog .sports-roster-panel{
+    min-height:0 !important;
+  }
+
+  #sportsMatchDialog #sportsMatchRoster,
+  #sportsTrainingDialog #sportsTrainingRoster{
+    display:block !important;
+    width:100% !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    padding:0 !important;
+  }
+
+  #sportsMatchDialog .sports-match-roster,
+  #sportsTrainingDialog .sports-roster-list{
+    display:grid !important;
+    gap:10px !important;
+    width:100% !important;
+    min-height:0 !important;
+    overflow:visible !important;
+  }
+
+  #sportsMatchDialog .sports-roster-panel,
+  #sportsTrainingDialog .sports-roster-panel{
+    display:block !important;
+    min-height:0 !important;
+    margin:14px 0 0 !important;
+    padding:14px 0 8px !important;
+  }
+
+  #sportsMatchDialog .sports-dialog-actions,
+  #sportsTrainingDialog .sports-dialog-actions{
+    position:relative !important;
+    z-index:6 !important;
+    flex:0 0 auto !important;
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+    width:100% !important;
+    margin:0 !important;
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom)) !important;
+    background:#fff !important;
+    border-top:1px solid #dfe8f0 !important;
+  }
+
+  #sportsMatchDialog .sports-dialog-actions > button,
+  #sportsTrainingDialog .sports-dialog-actions > button{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  #sportsMatchDialog .sports-match-player,
+  #sportsTrainingDialog .sports-roster-row{
+    min-width:0 !important;
+  }
+}
+
+
+/* V27.2.64 — Ventanas realmente utilizables: tamaño, aire interior y scroll completo */
+
+/* Tamaño general en escritorio: más superficie útil sin pegarse al borde de la pantalla. */
+@media (min-width:761px){
+  dialog:not(#posterDialog):not(#seasonRolloverWizard):not(#technicalTeamChooser){
+    width:min(1240px,calc(100vw - 24px))!important;
+    max-width:calc(100vw - 24px)!important;
+    max-height:calc(100dvh - 18px)!important;
+    margin:auto!important;
+    border-radius:22px!important;
+  }
+
+  /* Ventanas compactas */
+  #paymentDialog,#documentDialog,#eventDialog,#pitchDialog,#resultDialog{
+    width:min(980px,calc(100vw - 28px))!important;
+  }
+
+  /* Formularios medianos */
+  #clothingItemDialog,#kitDialog,#teamDialog,#sponsorshipDialog,#movementDialog,#teamUserDialog,#matchDialog{
+    width:min(1220px,calc(100vw - 24px))!important;
+  }
+
+  /* Fichas personales: casi toda la pantalla */
+  #playerDialog,#staffDialog{
+    width:min(1500px,calc(100vw - 18px))!important;
+    max-width:calc(100vw - 18px)!important;
+  }
+
+  /* Pantallas de gestión compleja */
+  #teamDetailDialog,#matchesPdfDialog,#rivalTeamsDialog,#sportsTrainingDialog,#sportsMatchDialog{
+    width:min(1540px,calc(100vw - 14px))!important;
+    max-width:calc(100vw - 14px)!important;
+  }
+}
+
+/* Más separación real entre texto, controles y bordes. */
+dialog:not(#posterDialog):not(#seasonRolloverWizard) > .modal > .modal-head,
+#rivalTeamsDialog .modal-head,
+#matchesPdfDialog .modal-head{
+  padding:28px 34px 26px!important;
+}
+dialog:not(#posterDialog):not(#seasonRolloverWizard) > .modal > .form-grid{
+  padding:30px 34px 38px!important;
+  gap:18px 22px!important;
+}
+dialog:not(#posterDialog):not(#seasonRolloverWizard) > .modal > .modal-actions{
+  padding:18px 34px 24px!important;
+}
+dialog:not(#posterDialog):not(#seasonRolloverWizard) .form-grid label{
+  gap:9px!important;
+  line-height:1.4!important;
+}
+dialog:not(#posterDialog):not(#seasonRolloverWizard) .form-grid input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+dialog:not(#posterDialog):not(#seasonRolloverWizard) .form-grid select,
+dialog:not(#posterDialog):not(#seasonRolloverWizard) .form-grid textarea{
+  padding:14px 16px!important;
+  line-height:1.4!important;
+}
+
+/*
+   FICHAS DE JUGADOR Y TÉCNICO
+   El scroll pasa al propio <dialog>. Así TODO el contenido cuenta para la altura desplazable,
+   incluidas las prendas personalizadas, y nunca puede quedar cortado fuera del scroll.
+*/
+#staffDialog,#playerDialog{
+  height:calc(100dvh - 18px)!important;
+  max-height:calc(100dvh - 18px)!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  padding:0!important;
+}
+#staffDialog .staff-profile-modal,#playerDialog .player-profile-modal{
+  width:100%!important;
+  height:auto!important;
+  min-height:100%!important;
+  max-height:none!important;
+  overflow:visible!important;
+  display:block!important;
+}
+#staffDialog .staff-profile-header,#playerDialog .player-profile-header{
+  position:sticky!important;
+  top:0!important;
+  z-index:60!important;
+  padding:26px 34px 28px!important;
+  box-shadow:0 4px 12px rgba(7,35,58,.08);
+}
+#staffDialog .staff-profile-scroll,#playerDialog .player-profile-scroll{
+  display:block!important;
+  height:auto!important;
+  max-height:none!important;
+  min-height:0!important;
+  overflow:visible!important;
+  padding:28px 32px 42px!important;
+}
+#staffDialog .staff-profile-section,#playerDialog .player-profile-section{
+  padding:22px!important;
+  margin:0 0 20px!important;
+  overflow:visible!important;
+}
+#staffDialog .staff-profile-section:last-child,#playerDialog .player-profile-section:last-child{
+  margin-bottom:0!important;
+}
+#staffDialog .staff-profile-fields,#playerDialog .player-profile-fields{
+  gap:15px 20px!important;
+}
+#staffDialog .staff-profile-field,#playerDialog .player-profile-field{
+  padding:15px 18px!important;
+  gap:7px!important;
+}
+#staffDialog .staff-profile-field>span,#playerDialog .player-profile-field>span{
+  line-height:1.35!important;
+  margin-bottom:1px!important;
+}
+#staffDialog .staff-profile-actions,#playerDialog .player-profile-actions{
+  position:sticky!important;
+  bottom:0!important;
+  z-index:55!important;
+  margin:0!important;
+  padding:16px 32px 18px!important;
+  background:rgba(255,255,255,.98)!important;
+  border-top:1px solid #d9e5ed!important;
+  box-shadow:0 -8px 24px rgba(14,47,70,.09)!important;
+}
+
+/* Las prendas añadidas al catálogo forman parte normal de la ficha y ya no pueden desbordarla. */
+#staffDialog .staff-profile-custom-clothing,
+#playerDialog .player-profile-custom-clothing,
+#staffDialog .custom-clothing-fields,
+#playerDialog .custom-clothing-fields{
+  position:static!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+  grid-template-columns:repeat(auto-fill,minmax(245px,320px))!important;
+  justify-content:start!important;
+  align-items:stretch!important;
+  gap:16px!important;
+  padding:18px!important;
+  margin:16px 0 0!important;
+}
+#staffDialog .custom-clothing-fields-title,#playerDialog .custom-clothing-fields-title{
+  grid-column:1/-1!important;
+  padding:0 0 2px!important;
+}
+#staffDialog .custom-visual-size-field,#playerDialog .custom-visual-size-field{
+  width:100%!important;
+  min-width:0!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+  padding:12px!important;
+}
+#staffDialog .custom-visual-size-field .visual-size-photo,
+#playerDialog .custom-visual-size-field .visual-size-photo{
+  height:105px!important;
+  min-height:105px!important;
+  max-height:105px!important;
+}
+#staffDialog .custom-visual-size-field select,#playerDialog .custom-visual-size-field select{
+  min-height:42px!important;
+  padding:9px 12px!important;
+}
+
+/* Scroll visible y fácil de usar. */
+#staffDialog::-webkit-scrollbar,#playerDialog::-webkit-scrollbar{width:12px}
+#staffDialog::-webkit-scrollbar-track,#playerDialog::-webkit-scrollbar-track{background:#e7f0f6}
+#staffDialog::-webkit-scrollbar-thumb,#playerDialog::-webkit-scrollbar-thumb{background:#8faabc;border:3px solid #e7f0f6;border-radius:999px}
+
+/* Gestión compleja: más aire sin romper sus scrolls internos. */
+#teamDetailDialog .team-detail-content{padding:30px 34px 36px!important}
+#rivalTeamsDialog .rival-teams-scroll-body{padding:30px 34px 38px!important}
+#matchesPdfDialog .match-import-grid{padding:30px 34px 0!important;gap:18px 22px!important}
+#matchesPdfDialog .match-import-help,#matchesPdfDialog .match-import-status{margin-left:34px!important;margin-right:34px!important}
+#matchesPdfDialog .match-import-preview-wrap{margin:0 34px 12px!important}
+#sportsTrainingDialog .sports-form-grid{padding:28px 32px 10px!important;gap:18px!important}
+#sportsTrainingDialog .sports-roster-panel{margin:14px 32px 0!important;padding-top:20px!important}
+#sportsTrainingDialog .sports-dialog-actions{padding:16px 32px 22px!important}
+#sportsMatchDialog .sports-match-scroll-body{padding:28px 32px 34px!important}
+#sportsMatchDialog .sports-form-grid{gap:18px!important}
+#sportsMatchDialog .sports-dialog-actions{padding:16px 32px 22px!important}
+
+@media(max-width:760px){
+  dialog:not(#posterDialog):not(#seasonRolloverWizard){
+    width:100vw!important;
+    max-width:100vw!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    border-radius:0!important;
+  }
+  #staffDialog,#playerDialog{
+    height:100dvh!important;
+    max-height:100dvh!important;
+  }
+  #staffDialog .staff-profile-header,#playerDialog .player-profile-header{
+    padding:18px 18px 20px!important;
+  }
+  #staffDialog .staff-profile-scroll,#playerDialog .player-profile-scroll{
+    padding:16px 14px 32px!important;
+  }
+  #staffDialog .staff-profile-section,#playerDialog .player-profile-section{
+    padding:16px!important;
+    margin-bottom:14px!important;
+  }
+  #staffDialog .staff-profile-field,#playerDialog .player-profile-field{
+    padding:13px 14px!important;
+  }
+  #staffDialog .staff-profile-actions,#playerDialog .player-profile-actions{
+    padding:11px 14px 13px!important;
+  }
+  #staffDialog .staff-profile-custom-clothing,
+  #playerDialog .player-profile-custom-clothing,
+  #staffDialog .custom-clothing-fields,
+  #playerDialog .custom-clothing-fields{
+    grid-template-columns:1fr!important;
+    padding:14px!important;
+    gap:12px!important;
+  }
+  dialog:not(#posterDialog):not(#seasonRolloverWizard) > .modal > .modal-head{padding:19px 18px 20px!important}
+  dialog:not(#posterDialog):not(#seasonRolloverWizard) > .modal > .form-grid{padding:19px 17px 26px!important;gap:14px!important}
+  dialog:not(#posterDialog):not(#seasonRolloverWizard) > .modal > .modal-actions{padding:12px 17px 16px!important}
+  #teamDetailDialog .team-detail-content{padding:18px 15px 24px!important}
+  #rivalTeamsDialog .rival-teams-scroll-body{padding:18px 15px 24px!important}
+}
+
+
+/* V27.2.68 — Asistencia móvil: desplazamiento vertical completo y visible */
+@media (max-width: 900px){
+  /* Ficha de equipo: cabecera y acciones fijas, contenido central desplazable. */
+  #teamDetailDialog{
+    overflow:hidden !important;
+  }
+  #teamDetailDialog > .team-detail-modal{
+    display:flex !important;
+    flex-direction:column !important;
+    width:100% !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    min-height:0 !important;
+    overflow:hidden !important;
+  }
+  #teamDetailDialog > .team-detail-modal > .modal-head{
+    flex:0 0 auto !important;
+    position:relative !important;
+    top:auto !important;
+  }
+  #teamDetailDialog .team-detail-content{
+    display:block !important;
+    flex:1 1 0 !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow-y:scroll !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-y:contain !important;
+    touch-action:pan-y !important;
+    scrollbar-width:auto !important;
+    scrollbar-color:#6f93ad #e7f0f6 !important;
+    padding-bottom:44px !important;
+  }
+  #teamDetailDialog .team-detail-tab-content,
+  #teamDetailDialog .team-sports-panel,
+  #teamDetailDialog #sportsAttendance{
+    height:auto !important;
+    max-height:none !important;
+    min-height:0 !important;
+    overflow:visible !important;
+  }
+  #teamDetailDialog .team-sports-panel .table-wrap{
+    max-height:none !important;
+    overflow-x:auto !important;
+    overflow-y:visible !important;
+  }
+  #teamDetailDialog > .team-detail-modal > .modal-actions{
+    flex:0 0 auto !important;
+    position:relative !important;
+    bottom:auto !important;
+    z-index:20 !important;
+  }
+  #teamDetailDialog .team-detail-content::-webkit-scrollbar{
+    width:10px !important;
+  }
+  #teamDetailDialog .team-detail-content::-webkit-scrollbar-track{
+    background:#e7f0f6 !important;
+  }
+  #teamDetailDialog .team-detail-content::-webkit-scrollbar-thumb{
+    background:#6f93ad !important;
+    border:2px solid #e7f0f6 !important;
+    border-radius:999px !important;
+  }
+
+  /* Nuevo entrenamiento / Asistencia: toda la ficha se puede desplazar. */
+  #sportsTrainingDialog{
+    overflow:hidden !important;
+  }
+  #sportsTrainingDialog > .sports-modal{
+    display:block !important;
+    width:100% !important;
+    height:100dvh !important;
+    max-height:100dvh !important;
+    min-height:0 !important;
+    overflow-y:scroll !important;
+    overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-y:contain !important;
+    touch-action:pan-y !important;
+    scrollbar-width:auto !important;
+    scrollbar-color:#6f93ad #e7f0f6 !important;
+    padding:0 !important;
+  }
+  #sportsTrainingDialog > .sports-modal > .modal-head{
+    position:sticky !important;
+    top:0 !important;
+    z-index:80 !important;
+    background:#fff !important;
+  }
+  #sportsTrainingDialog .sports-form-grid{
+    padding:16px 14px 10px !important;
+  }
+  #sportsTrainingDialog .sports-roster-panel{
+    display:block !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+    margin:10px 14px 0 !important;
+    padding:14px 0 20px !important;
+  }
+  #sportsTrainingDialog #sportsTrainingRoster,
+  #sportsTrainingDialog .sports-roster-list{
+    display:block !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    overflow:visible !important;
+  }
+  #sportsTrainingDialog .sports-roster-row{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:10px !important;
+    margin-bottom:10px !important;
+  }
+  #sportsTrainingDialog .sports-dialog-actions{
+    position:sticky !important;
+    bottom:0 !important;
+    z-index:80 !important;
+    margin:0 !important;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom)) !important;
+    background:#fff !important;
+    border-top:1px solid #dfe8f0 !important;
+    box-shadow:0 -6px 18px rgba(16,44,69,.10) !important;
+  }
+  #sportsTrainingDialog > .sports-modal::-webkit-scrollbar{
+    width:10px !important;
+  }
+  #sportsTrainingDialog > .sports-modal::-webkit-scrollbar-track{
+    background:#e7f0f6 !important;
+  }
+  #sportsTrainingDialog > .sports-modal::-webkit-scrollbar-thumb{
+    background:#6f93ad !important;
+    border:2px solid #e7f0f6 !important;
+    border-radius:999px !important;
+  }
+}
+
+
+/* =====================================================================
+   CD SAN BERNABÉ MANAGER · V27.2.69
+   AUDITORÍA GLOBAL DE DESPLAZAMIENTO MÓVIL
+   Objetivo: ninguna vista, pestaña o diálogo puede dejar contenido
+   inaccesible por falta de desplazamiento vertical.
+   Se carga la última para prevalecer sobre estilos anteriores.
+   ===================================================================== */
+
+@media (max-width:900px){
+  html{
+    width:100%!important;
+    height:100%!important;
+    overflow:hidden!important;
+  }
+  body:not(.registration-page){
+    width:100%!important;
+    height:100dvh!important;
+    min-height:0!important;
+    max-width:100vw!important;
+    overflow:hidden!important;
+  }
+  body.registration-page{
+    min-height:100dvh!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  /* Estructura general: el contenido principal siempre puede bajar. */
+  #app.app{
+    height:100dvh!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  #app.app > main{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    height:auto!important;
+    overflow-y:scroll!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-y:contain!important;
+    scrollbar-gutter:stable!important;
+    padding-bottom:calc(34px + env(safe-area-inset-bottom))!important;
+  }
+  #app .view,
+  #app .view.active,
+  #app .panel,
+  #app .columns,
+  #app .cards-grid,
+  #app .dashboard-grid,
+  #app .backup-grid,
+  #app .trash-grid,
+  #app .season-manager-grid,
+  #app .players-professional-grid{
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:visible!important;
+  }
+
+  /* Listados largos: la página es quien desplaza verticalmente. */
+  #app .calendar-list,
+  #app .activity-list,
+  #app .trash-list,
+  #app .seasons-list,
+  #app .team-calendar-list,
+  #app .players-professional-grid,
+  #app .clothing-catalog-grid,
+  #app .technical-entry-team-grid,
+  #app .sports-roster-list,
+  #app .v243-match-list{
+    max-height:none!important;
+    overflow-y:visible!important;
+  }
+
+  /* Tablas: desplazamiento horizontal propio; el vertical lo hace la vista. */
+  #app .table-wrap,
+  #app .players-table-wrap,
+  #app .kits-detail-table,
+  #app .staff-sizing-report-table,
+  #app .pitch-table-wrap{
+    width:100%!important;
+    max-width:100%!important;
+    max-height:none!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+
+  /* -----------------------------------------------------------------
+     REGLA DE SEGURIDAD PARA TODOS LOS DIÁLOGOS, INCLUSO LOS CREADOS
+     DINÁMICAMENTE POR JAVASCRIPT.
+     ----------------------------------------------------------------- */
+  dialog[open]{
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    max-width:100vw!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    margin:0!important;
+    padding:0!important;
+    border-radius:0!important;
+    overflow:hidden!important;
+    overscroll-behavior:contain!important;
+  }
+  dialog[open] > :first-child{
+    box-sizing:border-box!important;
+    width:100%!important;
+    max-width:100%!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    min-height:0!important;
+    margin:0!important;
+    border-radius:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior-y:contain!important;
+    scrollbar-gutter:stable!important;
+    padding-bottom:env(safe-area-inset-bottom)!important;
+  }
+
+  /* Cabeceras y pies accesibles mientras se desplaza el contenido. */
+  dialog[open] .modal-head,
+  dialog[open] .player-profile-header,
+  dialog[open] .staff-profile-header,
+  dialog[open] .team-cards-dialog-head,
+  dialog[open] .team-card-viewer-shell > header{
+    position:sticky!important;
+    top:0!important;
+    z-index:90!important;
+  }
+  dialog[open] .modal-actions,
+  dialog[open] .sports-dialog-actions,
+  dialog[open] .player-profile-actions,
+  dialog[open] .staff-profile-actions,
+  dialog[open] .team-cards-dialog-actions,
+  dialog[open] .team-card-viewer-shell > footer{
+    position:sticky!important;
+    bottom:0!important;
+    z-index:85!important;
+  }
+
+  /* Formularios normales: nada interno debe recortar la parte inferior. */
+  dialog[open] .form-grid,
+  dialog[open] .sports-form-grid,
+  dialog[open] .sports-roster-panel,
+  dialog[open] .sports-match-scroll-body,
+  dialog[open] .match-import-grid,
+  dialog[open] .match-import-preview-wrap,
+  dialog[open] .technical-team-choice-grid,
+  dialog[open] .team-card-transfer-body{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+  }
+
+  /* Jugadores y técnicos: un único scroll fiable en toda la ficha. */
+  #playerDialog,
+  #staffDialog{
+    overflow:hidden!important;
+  }
+  #playerDialog > .player-profile-modal,
+  #staffDialog > .staff-profile-modal{
+    display:block!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+  #playerDialog .player-profile-scroll,
+  #staffDialog .staff-profile-scroll,
+  #playerDialog .player-profile-section,
+  #staffDialog .staff-profile-section,
+  #playerDialog .custom-clothing-fields,
+  #staffDialog .custom-clothing-fields,
+  #playerDialog .player-profile-custom-clothing,
+  #staffDialog .staff-profile-custom-clothing{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  /* Ficha del equipo: pestañas horizontales y cuerpo vertical completo. */
+  #teamDetailDialog > .team-detail-modal{
+    display:flex!important;
+    flex-direction:column!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+  }
+  #teamDetailDialog .modal-head,
+  #teamDetailDialog .modal-actions{
+    flex:0 0 auto!important;
+    position:relative!important;
+  }
+  #teamDetailDialog .team-detail-content{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:scroll!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding-bottom:calc(28px + env(safe-area-inset-bottom))!important;
+  }
+  #teamDetailDialog .team-detail-tab-content,
+  #teamDetailDialog .team-detail-body,
+  #teamDetailDialog .team-sports-panel,
+  #teamDetailDialog .team-cards-panel,
+  #teamDetailDialog .team-accidents-panel,
+  #teamDetailDialog .teams-tab-panel{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:visible!important;
+  }
+  #teamDetailDialog .team-detail-tabs{
+    flex:0 0 auto!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #teamDetailDialog .table-wrap,
+  #teamDetailDialog .players-table-wrap{
+    max-height:none!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+  }
+
+  /* Asistencia y partidos/estadísticas: lista completa + botones finales. */
+  #sportsTrainingDialog > .sports-modal,
+  #sportsMatchDialog > .sports-modal{
+    display:block!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    overflow-y:scroll!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding-bottom:0!important;
+  }
+  #sportsTrainingDialog #sportsTrainingRoster,
+  #sportsMatchDialog #sportsMatchRoster,
+  #sportsTrainingDialog .sports-roster-panel,
+  #sportsMatchDialog .sports-roster-panel,
+  #sportsMatchDialog .sports-match-scroll-body{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  #sportsTrainingDialog .sports-dialog-actions,
+  #sportsMatchDialog .sports-dialog-actions{
+    background:#fff!important;
+    padding-bottom:calc(12px + env(safe-area-inset-bottom))!important;
+  }
+
+  /* Importación de calendario: que la previsualización no encierre el scroll vertical. */
+  #matchesPdfDialog > .match-import-modal{
+    display:block!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+  #matchesPdfDialog .match-import-preview-wrap{
+    max-height:none!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+  }
+
+  /* Equipos rivales/campos: un único desplazamiento de principio a fin. */
+  #rivalTeamsDialog > .rival-teams-modal{
+    display:block!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+  }
+  #rivalTeamsDialog .rival-teams-scroll-body,
+  #rivalTeamsDialog .rival-teams-list,
+  #rivalTeamsDialog .v258-fields-list{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:visible!important;
+  }
+
+  /* Cambio de temporada: cabecera/pasos/pie fijos y cuerpo desplazable. */
+  #seasonRolloverWizard > .season-wizard-shell{
+    display:flex!important;
+    flex-direction:column!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+  }
+  #seasonRolloverWizard .season-wizard-head,
+  #seasonRolloverWizard .season-wizard-steps,
+  #seasonRolloverWizard .season-wizard-footer{
+    flex:0 0 auto!important;
+  }
+  #seasonRolloverWizard .season-wizard-body{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:scroll!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #seasonRolloverWizard .season-wizard-table-wrap{
+    max-height:none!important;
+    overflow-x:auto!important;
+    overflow-y:visible!important;
+  }
+
+  /* Editor de carteles: en móvil se desplaza la pantalla completa del editor. */
+  #posterDialog > .v261-poster-shell{
+    display:block!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    overflow-y:scroll!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #posterDialog .v261-editor-grid,
+  #posterDialog .v261-left-panel,
+  #posterDialog .v261-right-panel{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  /* Tarjetero: también cubre diálogos creados en tiempo de ejecución. */
+  #teamCardsImportDialog > .team-cards-dialog-shell,
+  #teamCardTransferDialog > .team-cards-dialog-shell,
+  #teamCardViewerDialog > .team-card-viewer-shell{
+    display:block!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    border-radius:0!important;
+  }
+  #teamCardsImportDialog .team-cards-import-preview,
+  #teamCardTransferDialog .team-card-transfer-body,
+  #teamCardTransferDialog .team-card-transfer-teams{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow-y:visible!important;
+  }
+  #teamCardViewerDialog .team-card-viewer-stage{
+    min-height:0!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  #teamCardViewerDialog .team-card-viewer-stage img{
+    max-height:calc(100dvh - 190px)!important;
+  }
+
+  /* Selector de equipo del cuerpo técnico. */
+  #technicalTeamChooser > .technical-team-chooser-modal{
+    height:100dvh!important;
+    max-height:100dvh!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    padding-bottom:calc(24px + env(safe-area-inset-bottom))!important;
+  }
+
+  /* Scrollbar visible en navegadores que permiten personalizarla. */
+  #app.app > main,
+  dialog[open] > :first-child,
+  #teamDetailDialog .team-detail-content,
+  #seasonRolloverWizard .season-wizard-body{
+    scrollbar-width:auto!important;
+    scrollbar-color:#5e8eae #e7eff5!important;
+  }
+  #app.app > main::-webkit-scrollbar,
+  dialog[open] > :first-child::-webkit-scrollbar,
+  #teamDetailDialog .team-detail-content::-webkit-scrollbar,
+  #seasonRolloverWizard .season-wizard-body::-webkit-scrollbar{
+    width:9px!important;
+    height:9px!important;
+  }
+  #app.app > main::-webkit-scrollbar-track,
+  dialog[open] > :first-child::-webkit-scrollbar-track,
+  #teamDetailDialog .team-detail-content::-webkit-scrollbar-track,
+  #seasonRolloverWizard .season-wizard-body::-webkit-scrollbar-track{
+    background:#e7eff5!important;
+  }
+  #app.app > main::-webkit-scrollbar-thumb,
+  dialog[open] > :first-child::-webkit-scrollbar-thumb,
+  #teamDetailDialog .team-detail-content::-webkit-scrollbar-thumb,
+  #seasonRolloverWizard .season-wizard-body::-webkit-scrollbar-thumb{
+    background:#5e8eae!important;
+    border-radius:999px!important;
+    border:2px solid #e7eff5!important;
+  }
+}
+
+
+/* Ajustes multiclub: conservar colores del club y no bloquear la pantalla de selección. */
+@media (max-width:900px){
+  #clubSelectorScreen,
+  #authScreen{
+    min-height:100dvh!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  .club-choice-grid,
+  .auth-card{
+    max-height:none!important;
+  }
+}
