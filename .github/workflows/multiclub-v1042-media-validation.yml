@@ -1,0 +1,17 @@
+name: Multiclub V1.0.42 Lazy media validation
+on:
+  pull_request:
+  push:
+    branches: [ "v1-0-42-imagenes-bajo-demanda" ]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validar
+        run: |
+          node --check app-multiclub-v1042.js
+          node tests/multiclub-v1042-media-regression.mjs
